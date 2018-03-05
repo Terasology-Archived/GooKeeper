@@ -5,8 +5,8 @@
     "displayName" : "GooKeeper",
     "description" : "GooKeeper is a new gameplay mode, developed according to the game design by SuperShark.",
     "dependencies" : [
-        {"id": "Core", "minVersion": "2.0.0-SNAPSHOT"},
-	    {"id": "Behaviors", "minVersion": "0.2.0-SNAPSHOT"},
+        {"id": "Core", "minVersion": "2.0.0"},
+	{"id": "Behaviors", "minVersion": "0.2.0"}
     ],
     "serverSideOnly" : false
 }
