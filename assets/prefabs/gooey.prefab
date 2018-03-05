@@ -1,0 +1,125 @@
+{
+  /* Gooey must not be unloaded, as otherwise we spawn a new one */
+  "alwaysRelevant": true,
+  "DisplayName": {
+    "name": "Gooey",
+    "description": "NPC character"
+  },
+  "Color": {
+    "color": [
+      135,
+      128,
+      191,
+      255
+    ]
+  },
+  "skeletalmesh": {
+    "mesh": "gooey",
+    "heightOffset": -2.0,
+    "material": "gooeySkin",
+    "animationPool": [
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyLookRightLeft",
+      "gooeyLookRightLeft",
+      "gooeyLookRightUp"
+    ],
+    "loop": true,
+    "scale": [
+      0.25,
+      0.25,
+      0.25
+    ]
+  },
+  "Behavior": {
+    "tree": "gooey"
+  },
+  "Stand": {
+    "animationPool": [
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyLookRightLeft",
+      "gooeyLookRightLeft",
+      "gooeyLookRightUp"
+    ]
+  },
+  "Walk": {
+    "animationPool": [
+      "gooeyIdleBreathing"
+    ]
+  },
+  "location": {},
+  "Character": {},
+  "AliveCharacter": {},
+  "CharacterMovement": {
+    "groundFriction": 16,
+    "speedMultiplier": 0.3,
+    "distanceBetweenFootsteps": 0.2,
+    "distanceBetweenSwimStrokes": 2.5,
+    "height": 1.0,
+    "radius": 0.5,
+    "jumpSpeed": 12
+  },
+  "Network": {},
+  "MinionMove": {},
+  "Health": {},
+  "BoxShape": {
+    "extents": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "Trigger": {
+    "detectGroups": [
+      "engine:debris",
+      "engine:sensor"
+    ]
+  },
+  "InteractionTarget": {},
+  "InteractionScreen": {
+    "screen": "GooeysQuests:GooeyMainDialog"
+  },
+  "Follow": {},
+  "NPCMovement": {},
+  "Gooey": {}
+}
+
