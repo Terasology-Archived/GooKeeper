@@ -1,0 +1,9 @@
+{
+    "id" : "GooKeeper",
+    "version" : "0.1.0-SNAPSHOT",
+    "author" : "",
+    "displayName" : "GooKeeper",
+    "description" : "",
+    "dependencies" : [],
+    "serverSideOnly" : false
+}
