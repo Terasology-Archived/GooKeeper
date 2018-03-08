@@ -1,0 +1,22 @@
+{
+  sequence:[
+  {
+    animation : {
+      play: "engine:Walk.animationPool",
+      loop: "engine:Walk.animationPool"
+    }
+  },
+  {
+    set_speed : {
+      speedMultiplier: 1.2
+    }
+
+  },
+  {
+    sequence : [
+      set_target_nearby_block_away_from_instigator,
+      move_to
+    ]
+  }
+  ]
+}

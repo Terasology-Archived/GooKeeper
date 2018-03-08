@@ -1,0 +1,8 @@
+{
+  sequence: [
+    check_attack_stop,
+    { set_speed : {speedMultiplier: 0.9}},
+    { lookup: {tree: "GooKeeper:attackFollowedEntity"}}
+  ]
+
+}

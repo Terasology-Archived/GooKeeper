@@ -1,0 +1,20 @@
+{
+  dynamic: [
+      {
+        guard: {
+          componentPresent: "Behaviors:AttackOnHit",
+          values: ["N instigator exists"],
+          child: {
+            lookup: {
+              tree: "GooKeeper:hostile"
+            }
+          }
+        }
+      },
+      {
+        lookup: {
+          tree: "GooKeeper:stray"
+        }
+      }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  sequence: [
+    {
+      dynamic: [
+        {
+          sequence: [
+            { continue_following_check: { minDistance: 2}},
+            {
+              animation: {
+                play: "engine:Walk.animationPool",
+                loop: "engine:Walk.animationPool"
+              }
+            },
+            {
+              parallel: [
+                {
+                  loop: {
+                    child: {
+                      sequence: [
+                        set_target_to_followed_entity,
+                        { sleep: {time: 0.5}}
+                      ]
+                    }
+                  }
+                },
+                move_to
+              ]
+            }
+          ]
+        },
+        {
+          sequence: [
+          stop_moving,
+            {
+              animation: {
+                play: "engine:Stand.animationPool",
+                loop: "engine:Stand.animationPool"
+              }
+            },
+            damage_followed_entity,
+            {sleep: {time: 0.3}}
+          ]
+        }
+      ]
+    }
+  ]
+}
