@@ -1,0 +1,31 @@
+{
+  loop : {
+    child : {
+      sequence : [
+        {
+          set_speed : { speedMultiplier: 0.3 }
+        },
+        {
+          animation : {
+            play: "engine:Walk.animationPool",
+            loop: "engine:Walk.animationPool"
+          }
+        },
+        {
+          lookup: { tree: "GooKeeper:doRandomMove" }
+        },
+        {
+          animation : {
+            play: "engine:Stand.animationPool",
+            loop: "engine:Stand.animationPool"
+          }
+        },
+        {
+          sleep : {
+            time : 3
+          }
+        }
+      ]
+    }
+  }
+}

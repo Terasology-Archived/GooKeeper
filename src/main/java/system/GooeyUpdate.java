@@ -18,9 +18,9 @@ package system;
 import org.terasology.audio.StaticSound;
 import org.terasology.audio.events.PlaySoundEvent;
 import org.terasology.behaviors.components.FollowComponent;
-import org.terasology.creepers.component.CreeperComponent;
+
+import org.terasology.creepers.component.GooeyComponent;
 import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.prefab.Prefab;
@@ -31,26 +31,22 @@ import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.delay.DelayedActionComponent;
 import org.terasology.logic.delay.DelayedActionTriggeredEvent;
-import org.terasology.logic.health.DoDamageEvent;
-import org.terasology.logic.health.DoDestroyEvent;
 import org.terasology.logic.health.OnDamagedEvent;
 import org.terasology.logic.actions.ExplosionActionComponent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.geom.Vector3f;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.In;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 
 import java.util.Optional;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
-public class CreeperExplosionEvent extends BaseComponentSystem implements UpdateSubscriberSystem {
+public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriberSystem {
     @In
     private WorldProvider worldProvider;
 
@@ -74,8 +70,8 @@ public class CreeperExplosionEvent extends BaseComponentSystem implements Update
 
     @Override
     public void update (float delta) {
-        for (EntityRef entity : entityManager.getEntitiesWith(FollowComponent.class, ExplosionActionComponent.class, CreeperComponent.class)) {
-            CreeperComponent component = entity.getComponent(CreeperComponent.class);
+        for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class)) {
+            GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
             FollowComponent followComponent = entity.getComponent(FollowComponent.class);
 
             if (followComponent.entityToFollow != EntityRef.NULL) {
@@ -84,16 +80,16 @@ public class CreeperExplosionEvent extends BaseComponentSystem implements Update
 
                 Vector3f entityFollowingLocation = followComponent.entityToFollow.getComponent(LocationComponent.class).getWorldPosition();
                 Vector3f currentActorLocation = entity.getComponent(LocationComponent.class).getWorldPosition();
-                float maxDistance = entity.getComponent(CreeperComponent.class).maxDistanceTillExplode;
-
-                if (currentActorLocation.distanceSquared(entityFollowingLocation) <= maxDistance * maxDistance) {
-                    if (!component.isAgitated && entity != EntityRef.NULL) {
-                        entity.send(new PlaySoundEvent(fuseAudio.get(), 0.8f));
-                        delayManager.addDelayedAction(entity, delayActionID, component.explosionDelay);
-                        component.isAgitated = true;
-                        entity.saveComponent(component);
-                    }
-                }
+//                float maxDistance = gooeyComponent.maxDistanceTillExplode;
+//
+//                if (currentActorLocation.distanceSquared(entityFollowingLocation) <= maxDistance * maxDistance) {
+//                    if (!gooeyComponent.isAgitated && entity != EntityRef.NULL) {
+//                        entity.send(new PlaySoundEvent(fuseAudio.get(), 0.8f));
+//                        delayManager.addDelayedAction(entity, delayActionID, gooeyComponent.explosionDelay);
+//                        gooeyComponent.isAgitated = true;
+//                        entity.saveComponent(gooeyComponent);
+//                    }
+//                }
             }
         }
     }
@@ -111,42 +107,7 @@ public class CreeperExplosionEvent extends BaseComponentSystem implements Update
         Vector3f entityFollowingLocation = followComponent.entityToFollow.getComponent(LocationComponent.class).getWorldPosition();
 
         if (event.getActionId().equals(delayActionID)) {
-            if (currentActorLocation.distanceSquared(entityFollowingLocation) <= explosionComp.maxRange * explosionComp.maxRange)
-                followComponent.entityToFollow.send(new DoDamageEvent(explosionComp.damageAmount, damageType.get(), entityRef));
             entityRef.destroy();
-            doExplosion(explosionComp, currentActorLocation, EntityRef.NULL);
-        }
-    }
-
-    void doExplosion(ExplosionActionComponent explosionComp, Vector3f origin, EntityRef instigatingBlockEntity) {
-        EntityBuilder builder = entityManager.newBuilder("core:smokeExplosion");
-        builder.getComponent(LocationComponent.class).setWorldPosition(origin);
-        EntityRef smokeEntity = builder.build();
-
-        smokeEntity.send(new PlaySoundEvent(explosionAudio.get(), 0.8f));
-
-        Vector3i blockPos = new Vector3i();
-        for (int i = 0; i < explosionComp.maxRange; i++) {
-            Vector3f direction = random.nextVector3f(1.0f);
-
-            for (int j = 0; j < 4; j++) {
-                Vector3f target = new Vector3f(origin);
-
-                target.x += direction.x * j;
-                target.y += direction.y * j;
-                target.z += direction.z * j;
-                blockPos.set((int) target.x, (int) target.y, (int) target.z);
-                Block currentBlock = worldProvider.getBlock(blockPos);
-
-                if (currentBlock.isDestructible()) {
-                    EntityRef blockEntity = blockEntityRegistry.getEntityAt(blockPos);
-                    if (!blockEntity.equals(instigatingBlockEntity) && blockEntity.hasComponent(ExplosionActionComponent.class)) {
-                        doExplosion(blockEntity.getComponent(ExplosionActionComponent.class), blockPos.toVector3f(), blockEntity);
-                    } else {
-                        blockEntity.send(new DoDamageEvent(explosionComp.damageAmount, explosionComp.damageType));
-                    }
-                }
-            }
         }
     }
 }

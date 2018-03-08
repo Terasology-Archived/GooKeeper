@@ -24,7 +24,7 @@ import org.terasology.logic.behavior.core.BehaviorState;
 
 
 @BehaviorAction(name = "CheckFollowStatus")
-public class CreeperFollowCharacterAction extends BaseAction {
+public class GooeyFollowCharacterAction extends BaseAction {
 
     @Override
     public void construct(Actor actor) {

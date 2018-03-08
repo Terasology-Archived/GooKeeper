@@ -1,0 +1,7 @@
+{
+  sequence : [
+    set_target_nearby_block,
+    move_to
+  ]
+}
+

@@ -1,15 +1,13 @@
 {
-  /* Gooey must not be unloaded, as otherwise we spawn a new one */
-  "alwaysRelevant": true,
   "DisplayName": {
-    "name": "Gooey",
+    "name": "Red Gooey",
     "description": "NPC character"
   },
   "Color": {
     "color": [
-      135,
-      128,
       191,
+      65,
+      65,
       255
     ]
   },
@@ -51,7 +49,7 @@
     ]
   },
   "Behavior": {
-    "tree": "gooey"
+    "tree": "GooKeeper:redgooey"
   },
   "Stand": {
     "animationPool": [
@@ -114,11 +112,12 @@
       "engine:sensor"
     ]
   },
-  "InteractionTarget": {},
-  "InteractionScreen": {
-    "screen": "GooeysQuests:GooeyMainDialog"
+  "FindNearbyPlayers": {
+    "searchRadius": 20
   },
-  "Follow": {},
+  "Follow": {
+    "entityToFollow": EntityRef.NULL
+  },
   "NPCMovement": {},
   "Gooey": {}
 }

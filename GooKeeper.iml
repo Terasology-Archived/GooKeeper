@@ -15,17 +15,8 @@
     <orderEntry type="module" module-name="engine"/>
     <orderEntry type="module" module-name="engine-tests"/>
     <orderEntry type="module" module-name="Core"/>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar:///home/l0fty-whizz/.gradle/caches/modules-2/files-2.1/org.terasology.modules/Behaviors/0.2.0-SNAPSHOT/82dfb8a4de3fe299541b96471b1924f18d3c4443/Behaviors-0.2.0-SNAPSHOT.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES>
-          <root url="jar:///home/l0fty-whizz/.gradle/caches/modules-2/files-2.1/org.terasology.modules/Behaviors/0.2.0-SNAPSHOT/8235282408a37419397bb8e608302af80f945ae5/Behaviors-0.2.0-SNAPSHOT-sources.jar!/"/>
-        </SOURCES>
-      </library>
-    </orderEntry>
+    <orderEntry type="module" module-name="Behaviors"/>
+    <orderEntry type="module" module-name="Pathfinding"/>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -389,17 +380,6 @@
         <JAVADOC/>
         <SOURCES>
           <root url="jar:///home/l0fty-whizz/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/2.7.22/e35d08824983a8f40d8b699b7fee0e1cefb8480e/mockito-core-2.7.22-sources.jar!/"/>
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar:///home/l0fty-whizz/.gradle/caches/modules-2/files-2.1/org.terasology.modules/Pathfinding/0.3.0-SNAPSHOT/2266d632ddfba32f5571008b358e528bf55adea3/Pathfinding-0.3.0-SNAPSHOT.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES>
-          <root url="jar:///home/l0fty-whizz/.gradle/caches/modules-2/files-2.1/org.terasology.modules/Pathfinding/0.3.0-SNAPSHOT/b3975773eef9c92767715e45d9e4ae25f48a41f0/Pathfinding-0.3.0-SNAPSHOT-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
