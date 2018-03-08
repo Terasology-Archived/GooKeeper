@@ -14,7 +14,7 @@
   "skeletalmesh": {
     "mesh": "gooey",
     "heightOffset": -2.0,
-    "material": "gooeySkin",
+    "material": "blueGooeySkin",
     "animationPool": [
       "gooeyIdleBreathing",
       "gooeyIdleBreathing",
