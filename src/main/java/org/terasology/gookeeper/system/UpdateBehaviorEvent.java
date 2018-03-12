@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package system;
+package org.terasology.gookeeper.system;
 
 import org.terasology.entitySystem.event.AbstractConsumableEvent;
 
 /**
  * This event is sent whenever an entity requires a change in it's behavior tree.
  * Using this event several behavior trees can be chained together to facilitate
- * an event driven behavior tree system.
+ * an event driven behavior tree org.terasology.gookeeper.system.
  */
 public class UpdateBehaviorEvent extends AbstractConsumableEvent {
 
