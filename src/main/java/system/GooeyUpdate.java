@@ -15,11 +15,10 @@
  */
 package system;
 
-import com.google.common.collect.Lists;
 import org.terasology.behaviors.components.FollowComponent;
 
 import org.terasology.core.world.CoreBiome;
-import org.terasology.creepers.component.GooeyComponent;
+import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
