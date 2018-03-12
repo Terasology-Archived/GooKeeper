@@ -16,10 +16,13 @@
 package org.terasology.creepers.component;
 
 import org.terasology.entitySystem.Component;
+import org.terasology.world.biomes.Biome;
 import org.terasology.world.block.ForceBlockActive;
 
 @ForceBlockActive
 public class GooeyComponent implements Component {
-    /* The boolean corresponding to whether the creeper has been agitated. */
+    public float profitPayOff;
+    public Biome biome;
+    /* The boolean corresponding to whether the gooey has been agitated. */
     public boolean isAgitated = false;
 }
