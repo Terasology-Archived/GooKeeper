@@ -112,11 +112,8 @@
       "engine:sensor"
     ]
   },
-  "FindNearbyPlayers": {
-    "searchRadius": 20
-  },
   "Follow": {
-    "entityToFollow": EntityRef.NULL
+
   },
   "AttackOnHit": {
     "maxDistance": 10

@@ -1,6 +1,6 @@
 {
   "DisplayName": {
-    "name": "Red Gooey",
+    "name": "Yellow Gooey",
     "description": "NPC character"
   },
   "Color": {
@@ -14,7 +14,7 @@
   "skeletalmesh": {
     "mesh": "gooey",
     "heightOffset": -2.0,
-    "material": "redGooeySkin",
+    "material": "greenGooeySkin",
     "animationPool": [
       "gooeyIdleBreathing",
       "gooeyIdleBreathing",
@@ -49,7 +49,7 @@
     ]
   },
   "Behavior": {
-    "tree": "GooKeeper:redgooey"
+    "tree": "GooKeeper:yellowgooey"
   },
   "Stand": {
     "animationPool": [
@@ -113,7 +113,7 @@
     ]
   },
   "FindNearbyPlayers": {
-    "searchRadius": 20
+    "searchRadius": 15
   },
   "Follow": {
 
@@ -121,4 +121,3 @@
   "NPCMovement": {},
   "Gooey": {}
 }
-

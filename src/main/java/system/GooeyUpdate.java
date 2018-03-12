@@ -70,27 +70,9 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
 
     @Override
     public void update (float delta) {
-        for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class)) {
+        for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class, FollowComponent.class)) {
             GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
-            FollowComponent followComponent = entity.getComponent(FollowComponent.class);
 
-            if (followComponent.entityToFollow != EntityRef.NULL) {
-                if (entity.getComponent(DelayedActionComponent.class) == null)
-                    entity.addComponent(new DelayedActionComponent());
-
-                Vector3f entityFollowingLocation = followComponent.entityToFollow.getComponent(LocationComponent.class).getWorldPosition();
-                Vector3f currentActorLocation = entity.getComponent(LocationComponent.class).getWorldPosition();
-//                float maxDistance = gooeyComponent.maxDistanceTillExplode;
-//
-//                if (currentActorLocation.distanceSquared(entityFollowingLocation) <= maxDistance * maxDistance) {
-//                    if (!gooeyComponent.isAgitated && entity != EntityRef.NULL) {
-//                        entity.send(new PlaySoundEvent(fuseAudio.get(), 0.8f));
-//                        delayManager.addDelayedAction(entity, delayActionID, gooeyComponent.explosionDelay);
-//                        gooeyComponent.isAgitated = true;
-//                        entity.saveComponent(gooeyComponent);
-//                    }
-//                }
-            }
         }
     }
 
