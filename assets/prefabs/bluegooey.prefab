@@ -49,7 +49,7 @@
     ]
   },
   "Behavior": {
-    "tree": "GooKeeper:bluegooey"
+    "tree": "GooKeeper:gooey"
   },
   "Stand": {
     "animationPool": [

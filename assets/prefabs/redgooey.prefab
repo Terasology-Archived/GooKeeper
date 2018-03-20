@@ -49,7 +49,7 @@
     ]
   },
   "Behavior": {
-    "tree": "GooKeeper:redgooey"
+    "tree": "GooKeeper:gooey"
   },
   "Stand": {
     "animationPool": [
@@ -119,6 +119,7 @@
 
   },
   "NPCMovement": {},
-  "Gooey": {}
+  "Gooey": {},
+  "Aggressive": {}
 }
 

@@ -79,15 +79,15 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
         }
     }
 
-    @ReceiveEvent
-    public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
-        boolean trySpawn = SPAWN_CHANCE_IN_PERCENT > random.nextInt(100);
-        if (!trySpawn) {
-            return;
-        }
-        Vector3i chunkPos = event.getChunkPos();
-        tryGooeySpawn(chunkPos);
-    }
+//    @ReceiveEvent
+//    public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
+//        boolean trySpawn = SPAWN_CHANCE_IN_PERCENT > random.nextInt(100);
+//        if (!trySpawn) {
+//            return;
+//        }
+//        Vector3i chunkPos = event.getChunkPos();
+//        tryGooeySpawn(chunkPos);
+//    }
 
     /**
      * Attempts to spawn GOOEY on the specified chunk. The number of GOOEYs spawned will depend on probabiliy
