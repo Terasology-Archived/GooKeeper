@@ -115,11 +115,16 @@
   "FindNearbyPlayers": {
     "searchRadius": 20
   },
+  "AttackOnHit": {
+    "maxDistance": 10
+  },
   "Follow": {
 
   },
   "NPCMovement": {},
   "Gooey": {},
-  "Aggressive": {}
+  "Aggressive": {
+    "aggressivenessFactor": 85
+  }
 }
 

@@ -3,15 +3,18 @@
       {
         guard: {
           componentPresent: "GooKeeper:Aggressive",
-          componentPresent: "Behaviors:FindNearbyPlayers",
-
-          values: ["N charactersWithinRange nonEmpty"],
           child: {
-          sequence: [
-            { sleep: {time: 0.1f }},
-            CheckFollowStatus,
-            { lookup: {tree: "GooKeeper:follow" }}
-           ]
+            guard: {
+              componentPresent: "Behaviors:FindNearbyPlayers",
+              values: ["N charactersWithinRange nonEmpty"],
+              child: {
+                sequence: [
+                  { sleep: {time: 0.1f }},
+                  CheckFollowStatus,
+                  { lookup: {tree: "GooKeeper:hostile" }}
+                ]
+              }
+            }
           }
         }
       },
@@ -29,15 +32,18 @@
       {
         guard: {
           componentPresent: "GooKeeper:Friendly",
-          componentPresent: "Behaviors:FindNearbyPlayers",
-
-          values: ["N charactersWithinRange nonEmpty"],
           child: {
-            sequence: [
-              { sleep: {time: 0.1f }},
-              CheckFollowStatus,
-              { lookup: {tree: "GooKeeper:follow" }}
-            ]
+            guard: {
+              componentPresent: "Behaviors:FindNearbyPlayers",
+              values: ["N charactersWithinRange nonEmpty"],
+              child: {
+                sequence: [
+                  { sleep: {time: 0.1f }},
+                  CheckFollowStatus,
+                  { lookup: {tree: "GooKeeper:follow" }}
+                ]
+              }
+            }
           }
         }
       },
