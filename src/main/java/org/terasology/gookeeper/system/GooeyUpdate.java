@@ -16,9 +16,6 @@
 package org.terasology.gookeeper.system;
 
 import com.google.common.collect.Lists;
-import jdk.nashorn.internal.runtime.Debug;
-import org.lwjgl.Sys;
-import org.terasology.behaviors.components.FollowComponent;
 
 import org.terasology.core.world.CoreBiome;
 import org.terasology.gookeeper.component.GooeyComponent;
@@ -31,6 +28,7 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
@@ -71,12 +69,10 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
     private Random random = new FastRandom();
     private List<Optional<Prefab>> gooeyPrefabs = new ArrayList();
 
-    private Block grassBlock;
     private Block airBlock;
 
     @Override
     public void initialise() {
-        grassBlock = blockManager.getBlock("core:Grass");
         airBlock = blockManager.getBlock(BlockManager.AIR_ID);
 
         gooeyPrefabs.add(Assets.getPrefab("GooKeeper:redgooey"));
@@ -98,7 +94,7 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
     @ReceiveEvent
     public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
         for (Optional<Prefab> gooey : gooeyPrefabs) {
-            boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE > random.nextInt(20);
+            boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE > random.nextInt(100);
             if (!trySpawn) {
                 return;
             }
@@ -161,7 +157,9 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
         Vector3f yAxis = new Vector3f(0, 1, 0);
         float randomAngle = (float) (random.nextFloat()*Math.PI*2);
         Quat4f rotation = new Quat4f(yAxis, randomAngle);
-        entityManager.create(gooey.get(), floatVectorLocation, rotation);
+        if (gooey.isPresent() && gooey.get().getComponent(LocationComponent.class) != null) {
+            entityManager.create(gooey.get(), floatVectorLocation, rotation);
+        }
     }
 
     /**
@@ -173,7 +171,7 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
     private boolean isValidSpawnPosition(GooeyComponent gooeyComponent, Vector3i pos) {
         Vector3i below = new Vector3i(pos.x, pos.y - 1, pos.z);
         Block blockBelow = worldProvider.getBlock(below);
-        if (!blockBelow.equals(grassBlock)) {
+        if (!blockBelow.equals(getBlockFromString(gooeyComponent.blockBelow))) {
             return false;
         }
         Block blockAtPosition = worldProvider.getBlock(pos);
@@ -199,6 +197,14 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
             return CoreBiome.FOREST;
         } else {
             return CoreBiome.PLAINS;
+        }
+    }
+
+    private Block getBlockFromString (String blockName) {
+        if (blockName.equals("SAND")) {
+            return blockManager.getBlock("core:Sand");
+        } else {
+            return blockManager.getBlock("core:Grass");
         }
     }
     @ReceiveEvent

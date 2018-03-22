@@ -122,6 +122,7 @@
   "Gooey": {
     "profitPayOff": 1,
     "biome": "FOREST",
-    "SPAWN_CHANCE": 45
+    "blockBelow": "GRASS",
+    "SPAWN_CHANCE": 65
   }
 }

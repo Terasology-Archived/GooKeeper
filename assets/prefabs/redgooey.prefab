@@ -125,6 +125,7 @@
   "Gooey": {
     "profitPayOff": 5,
     "biome": "DESERT",
+    "blockBelow": "SAND",
     "SPAWN_CHANCE": 15
   },
   "Aggressive": {
