@@ -16,13 +16,22 @@
 package org.terasology.gookeeper.component;
 
 import org.terasology.entitySystem.Component;
+import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.world.biomes.Biome;
 import org.terasology.world.block.ForceBlockActive;
 
+import java.util.Optional;
+
 @ForceBlockActive
 public class GooeyComponent implements Component {
+    /* The prefab corresponding to this gooey type. */
+    public Optional<Prefab> prefab;
+    /* The profit factor. (i.e how much money does the player make from the visitors viewing the gooey) */
     public float profitPayOff;
-    public Biome biome;
-    /* The boolean corresponding to whether the gooey has been agitated. */
-    public boolean isAgitated = false;
+    /* The biome this type of gooey are to be found in. */
+    public String biome;
+    /* The percentage chance of spawning this type of gooey. (i.e rarity factor) */
+    public float SPAWN_CHANCE;
+    /* The maximum number of gooeys in a group. */
+    public int MAX_GROUP_SIZE;
 }

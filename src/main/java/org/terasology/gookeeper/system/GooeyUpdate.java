@@ -15,6 +15,9 @@
  */
 package org.terasology.gookeeper.system;
 
+import com.google.common.collect.Lists;
+import jdk.nashorn.internal.runtime.Debug;
+import org.lwjgl.Sys;
 import org.terasology.behaviors.components.FollowComponent;
 
 import org.terasology.core.world.CoreBiome;
@@ -39,9 +42,13 @@ import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.biomes.Biome;
+import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
+import org.terasology.world.chunks.ChunkConstants;
 import org.terasology.world.chunks.event.OnChunkGenerated;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
@@ -62,59 +69,99 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
     private DelayManager delayManager;
 
     private Random random = new FastRandom();
-    private Optional<Prefab> redGooeyPrefab = Assets.getPrefab("GooKeeper:redgooey");
+    private List<Optional<Prefab>> gooeyPrefabs = new ArrayList();
 
-    private Biome desertBiome = CoreBiome.DESERT;
+    private Block grassBlock;
+    private Block airBlock;
 
-    private int counter = 0;
+    @Override
+    public void initialise() {
+        grassBlock = blockManager.getBlock("core:Grass");
+        airBlock = blockManager.getBlock(BlockManager.AIR_ID);
 
-    private  int SPAWN_CHANCE_IN_PERCENT = 2;
-    private  int MAX_GOOEY_GROUP_SIZE = 2;
+        gooeyPrefabs.add(Assets.getPrefab("GooKeeper:redgooey"));
+        gooeyPrefabs.add(Assets.getPrefab("GooKeeper:bluegooey"));
+        gooeyPrefabs.add(Assets.getPrefab("GooKeeper:yellowgooey"));
+    }
 
     @Override
     public void update (float delta) {
-        for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class, FollowComponent.class)) {
+        for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class)) {
             GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
-
+            // All the updates regarding gooey entities goes here.
         }
     }
-
-//    @ReceiveEvent
-//    public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
-//        boolean trySpawn = SPAWN_CHANCE_IN_PERCENT > random.nextInt(100);
-//        if (!trySpawn) {
-//            return;
-//        }
-//        Vector3i chunkPos = event.getChunkPos();
-//        tryGooeySpawn(chunkPos);
-//    }
+    /**
+     * When a new chunk gets loaded, it checks which biome it falls under and tries to call a spawning method.
+     *
+     */
+    @ReceiveEvent
+    public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
+        for (Optional<Prefab> gooey : gooeyPrefabs) {
+            boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE > random.nextInt(20);
+            if (!trySpawn) {
+                return;
+            }
+            Vector3i chunkPos = event.getChunkPos();
+            tryGooeySpawn(gooey, chunkPos);
+        }
+    }
 
     /**
-     * Attempts to spawn GOOEY on the specified chunk. The number of GOOEYs spawned will depend on probabiliy
+     * Attempts to spawn gooey on the specified chunk. The number of gooeys spawned will depend on probability
      * configurations defined earlier.
      *
-     * @param chunkPos   The chunk which the game will try to spawn GOOEYs on
+     * @param gooey,chunkPos   The prefab to be spawned, and the chunk which the game will try to spawn gooeys on
      */
-    private void tryGooeySpawn(Vector3i chunkPos) {
-        if (isValidSpawnPosition(chunkPos) && counter < 2) {
-            for (int i = 0; i < MAX_GOOEY_GROUP_SIZE; i++) {
-                spawnGooey(chunkPos);
-            }
-            counter += 1;
+    private void tryGooeySpawn(Optional<Prefab> gooey, Vector3i chunkPos) {
+        GooeyComponent gooeyComponent = gooey.get().getComponent(GooeyComponent.class);
+        List<Vector3i> foundPositions = findGooeySpawnPositions(gooeyComponent, chunkPos);
+
+        if (foundPositions.size() < 1) {
+            return;
+        }
+
+        int maxGooeyCount = foundPositions.size();
+        if (maxGooeyCount > gooeyComponent.MAX_GROUP_SIZE) {
+            maxGooeyCount = gooeyComponent.MAX_GROUP_SIZE;
+        }
+        int gooeyCount = random.nextInt(maxGooeyCount - 1) + 1;
+
+        for (int i = 0; i < gooeyCount; i++ ) {
+            int randomIndex = random.nextInt(foundPositions.size());
+            Vector3i randomSpawnPosition = foundPositions.remove(randomIndex);
+            spawnGooey(gooey, randomSpawnPosition);
         }
     }
 
+    private List<Vector3i> findGooeySpawnPositions(GooeyComponent gooeyComponent, Vector3i chunkPos) {
+        Vector3i worldPos = new Vector3i(chunkPos);
+        worldPos.mul(ChunkConstants.SIZE_X, ChunkConstants.SIZE_Y, ChunkConstants.SIZE_Z);
+        List<Vector3i> foundPositions = Lists.newArrayList();
+        Vector3i blockPos = new Vector3i();
+        for (int y = ChunkConstants.SIZE_Y - 1; y >= 0; y--) {
+            for (int z = 0; z < ChunkConstants.SIZE_Z; z++) {
+                for (int x = 0; x < ChunkConstants.SIZE_X; x++) {
+                    blockPos.set(x + worldPos.x, y + worldPos.y, z + worldPos.z);
+                    if (isValidSpawnPosition(gooeyComponent, blockPos)) {
+                        foundPositions.add(new Vector3i(blockPos));
+                    }
+                }
+            }
+        }
+        return foundPositions;
+    }
     /**
      * Spawns the gooey at the location specified by the parameter.
      *
      * @param location   The location where the gooey is to be spawned
      */
-    private void spawnGooey(Vector3i location) {
+    private void spawnGooey(Optional<Prefab> gooey, Vector3i location) {
         Vector3f floatVectorLocation = location.toVector3f();
         Vector3f yAxis = new Vector3f(0, 1, 0);
         float randomAngle = (float) (random.nextFloat()*Math.PI*2);
         Quat4f rotation = new Quat4f(yAxis, randomAngle);
-        entityManager.create(redGooeyPrefab.get(), floatVectorLocation, rotation);
+        entityManager.create(gooey.get(), floatVectorLocation, rotation);
     }
 
     /**
@@ -123,17 +170,37 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
      * @param pos   The block to be checked if it's a valid spot for spawning
      * @return A boolean with the value of true if the block is a valid spot for spawing
      */
-    private boolean isValidSpawnPosition(Vector3i pos) {
-        Vector3i above = new Vector3i(pos.x, pos.y+1, pos.z);
-        if (!worldProvider.getBlock(above).equals(BlockManager.AIR_ID)) {
+    private boolean isValidSpawnPosition(GooeyComponent gooeyComponent, Vector3i pos) {
+        Vector3i below = new Vector3i(pos.x, pos.y - 1, pos.z);
+        Block blockBelow = worldProvider.getBlock(below);
+        if (!blockBelow.equals(grassBlock)) {
             return false;
         }
-        if (worldProvider.getBiome(pos).equals(desertBiome))
+        Block blockAtPosition = worldProvider.getBlock(pos);
+        if (!blockAtPosition.isPenetrable()) {
+            return false;
+        }
+
+        Vector3i above = new Vector3i(pos.x, pos.y + 1, pos.z);
+        Block blockAbove = worldProvider.getBlock(above);
+        if (!blockAbove.equals(airBlock)) {
+            return false;
+        }
+        if (worldProvider.getBiome(pos).equals(getBiomeFromString(gooeyComponent.biome)))
             return true;
         else
             return false;
     }
 
+    private Biome getBiomeFromString (String biomeName) {
+        if (biomeName.equals("DESERT")) {
+            return CoreBiome.DESERT;
+        } else if (biomeName.equals("FOREST")) {
+            return CoreBiome.FOREST;
+        } else {
+            return CoreBiome.PLAINS;
+        }
+    }
     @ReceiveEvent
     public void onDamage(OnDamagedEvent event, EntityRef entity) {
         return;

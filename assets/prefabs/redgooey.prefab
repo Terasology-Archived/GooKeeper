@@ -122,7 +122,11 @@
 
   },
   "NPCMovement": {},
-  "Gooey": {},
+  "Gooey": {
+    "profitPayOff": 5,
+    "biome": "DESERT",
+    "SPAWN_CHANCE": 15
+  },
   "Aggressive": {
     "aggressivenessFactor": 85
   }

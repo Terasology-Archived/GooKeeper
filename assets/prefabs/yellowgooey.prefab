@@ -119,7 +119,11 @@
 
   },
   "NPCMovement": {},
-  "Gooey": {},
+  "Gooey": {
+    "profitPayOff": 3,
+    "biome": "PLAINS",
+    "SPAWN_CHANCE": 30
+  },
   "Friendly": {
      "friendlinessFactor": 85
   }

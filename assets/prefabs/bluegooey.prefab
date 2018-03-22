@@ -119,5 +119,9 @@
     "maxDistance": 10
   },
   "NPCMovement": {},
-  "Gooey": {}
+  "Gooey": {
+    "profitPayOff": 1,
+    "biome": "FOREST",
+    "SPAWN_CHANCE": 45
+  }
 }
