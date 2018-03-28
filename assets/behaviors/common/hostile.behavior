@@ -2,7 +2,7 @@
   sequence: [
     CheckAttackStop,
     { set_speed : {speedMultiplier: 0.9}},
-    { lookup: {tree: "GooKeeper:attackFollowedEntity"}}
+    { lookup: {tree: "Behaviors:attackFollowedEntity"}}
   ]
 
 }

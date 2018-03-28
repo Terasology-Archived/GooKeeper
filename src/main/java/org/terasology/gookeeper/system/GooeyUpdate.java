@@ -18,6 +18,7 @@ package org.terasology.gookeeper.system;
 import com.google.common.collect.Lists;
 
 import org.terasology.core.world.CoreBiome;
+import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -28,11 +29,14 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.location.LocationComponent;
+import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.logic.health.OnDamagedEvent;
+import org.terasology.protobuf.EntityData;
 import org.terasology.registry.In;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
@@ -48,8 +52,9 @@ import org.terasology.world.chunks.event.OnChunkGenerated;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
-@RegisterSystem(RegisterMode.AUTHORITY)
+@RegisterSystem
 public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriberSystem {
     @In
     private WorldProvider worldProvider;
@@ -66,10 +71,16 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
     @In
     private DelayManager delayManager;
 
+    @In
+    private LocalPlayer localPlayer;
+
+    private String delayActionID = "SPAWN_DELAY_ID";
+
     private Random random = new FastRandom();
     private List<Optional<Prefab>> gooeyPrefabs = new ArrayList();
 
     private Block airBlock;
+    Logger logger;
 
     @Override
     public void initialise() {
@@ -92,7 +103,7 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
      *
      */
     @ReceiveEvent
-    public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
+    public void onChunkLoaded(OnChunkGenerated event, EntityRef worldEntity) {
         for (Optional<Prefab> gooey : gooeyPrefabs) {
             boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE > random.nextInt(100);
             if (!trySpawn) {
@@ -126,6 +137,8 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
         for (int i = 0; i < gooeyCount; i++ ) {
             int randomIndex = random.nextInt(foundPositions.size());
             Vector3i randomSpawnPosition = foundPositions.remove(randomIndex);
+            //EntityRef newEntityRef;
+            //delayManager.addDelayedAction(newEntityRef, delayActionID, 1000);
             spawnGooey(gooey, randomSpawnPosition);
         }
     }
@@ -152,13 +165,19 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
      *
      * @param location   The location where the gooey is to be spawned
      */
+
     private void spawnGooey(Optional<Prefab> gooey, Vector3i location) {
         Vector3f floatVectorLocation = location.toVector3f();
         Vector3f yAxis = new Vector3f(0, 1, 0);
         float randomAngle = (float) (random.nextFloat()*Math.PI*2);
         Quat4f rotation = new Quat4f(yAxis, randomAngle);
         if (gooey.isPresent() && gooey.get().getComponent(LocationComponent.class) != null) {
-            entityManager.create(gooey.get(), floatVectorLocation, rotation);
+            EntityBuilder entityBuilder = entityManager.newBuilder(gooey.get());
+            LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
+            locationComponent.setWorldPosition(floatVectorLocation);
+            locationComponent.setWorldRotation(rotation);
+            entityBuilder.build();
+            //entityManager.create(gooey.get(), floatVectorLocation, rotation);
         }
     }
 
@@ -207,6 +226,7 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
             return blockManager.getBlock("core:Grass");
         }
     }
+
     @ReceiveEvent
     public void onDamage(OnDamagedEvent event, EntityRef entity) {
         return;

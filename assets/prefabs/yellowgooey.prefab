@@ -1,7 +1,6 @@
 {
   "DisplayName": {
-    "name": "Yellow Gooey",
-    "description": "NPC character"
+    "name": "Yellow Gooey"
   },
   "Color": {
     "color": [
@@ -116,14 +115,15 @@
     "searchRadius": 15
   },
   "Follow": {
-
+    "entityToFollow": EntityRef.NULL
   },
   "NPCMovement": {},
   "Gooey": {
     "profitPayOff": 3,
     "biome": "FOREST",
     "blockBelow": "GRASS",
-    "SPAWN_CHANCE": 35
+    "SPAWN_CHANCE": 35,
+    "MAX_GROUP_SIZE": 4
   },
   "Friendly": {
      "friendlinessFactor": 85

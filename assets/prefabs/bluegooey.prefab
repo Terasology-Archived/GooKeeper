@@ -1,7 +1,6 @@
 {
   "DisplayName": {
-    "name": "Blue Gooey",
-    "description": "NPC character"
+    "name": "Blue Gooey"
   },
   "Color": {
     "color": [
@@ -113,7 +112,7 @@
     ]
   },
   "Follow": {
-
+    "entityToFollow": EntityRef.NULL
   },
   "AttackOnHit": {
     "maxDistance": 10
@@ -123,6 +122,7 @@
     "profitPayOff": 1,
     "biome": "FOREST",
     "blockBelow": "GRASS",
-    "SPAWN_CHANCE": 65
+    "SPAWN_CHANCE": 85,
+    "MAX_GROUP_SIZE": 6
   }
 }
