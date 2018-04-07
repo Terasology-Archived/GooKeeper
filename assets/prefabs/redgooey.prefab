@@ -123,7 +123,7 @@
   "NPCMovement": {},
   "Gooey": {
     "profitPayOff": 5,
-    "biome": "DESERT",
+    "biome": ["DESERT"],
     "blockBelow": "SAND",
     "SPAWN_CHANCE": 15,
     "MAX_GROUP_SIZE": 1

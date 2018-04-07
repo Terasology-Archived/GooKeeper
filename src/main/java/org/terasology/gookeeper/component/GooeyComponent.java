@@ -15,10 +15,12 @@
  */
 package org.terasology.gookeeper.component;
 
+import com.google.common.collect.Lists;
 import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.world.block.ForceBlockActive;
 
+import java.util.List;
 import java.util.Optional;
 
 @ForceBlockActive
@@ -28,7 +30,7 @@ public class GooeyComponent implements Component {
     /* The profit factor. (i.e how much money does the player make from the visitors viewing the gooey) */
     public float profitPayOff;
     /* The biome this type of gooey are to be found in. */
-    public String biome;
+    public List<String> biome = Lists.newArrayList();
     /* This attribute is checked while spawning the gooey. */
     public String blockBelow;
     /* The percentage chance of spawning this type of gooey. (i.e rarity factor) */

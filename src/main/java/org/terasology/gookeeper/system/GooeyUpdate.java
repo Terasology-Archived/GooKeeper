@@ -80,7 +80,6 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
     private List<Optional<Prefab>> gooeyPrefabs = new ArrayList();
 
     private Block airBlock;
-    Logger logger;
 
     @Override
     public void initialise() {
@@ -203,10 +202,12 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
         if (!blockAbove.equals(airBlock)) {
             return false;
         }
-        if (worldProvider.getBiome(pos).equals(getBiomeFromString(gooeyComponent.biome)))
-            return true;
-        else
-            return false;
+        for (int i = 0; i < gooeyComponent.biome.size(); i++) {
+            if (worldProvider.getBiome(pos).equals(getBiomeFromString(gooeyComponent.biome.get(i))))
+                return true;
+        }
+
+        return false;
     }
 
     private Biome getBiomeFromString (String biomeName) {
@@ -214,8 +215,14 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
             return CoreBiome.DESERT;
         } else if (biomeName.equals("FOREST")) {
             return CoreBiome.FOREST;
-        } else {
+        } else if (biomeName.equals("PLAINS")) {
             return CoreBiome.PLAINS;
+        } else if (biomeName.equals("FOREST")) {
+            return CoreBiome.MOUNTAINS;
+        } else if (biomeName.equals("SNOW")) {
+            return CoreBiome.SNOW;
+        } else {
+            return null;
         }
     }
 
