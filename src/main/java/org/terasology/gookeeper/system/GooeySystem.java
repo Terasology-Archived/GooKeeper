@@ -48,6 +48,7 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.chunks.ChunkConstants;
 import org.terasology.world.chunks.event.OnChunkGenerated;
+import org.terasology.world.chunks.event.OnChunkLoaded;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @RegisterSystem
-public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriberSystem {
+public class GooeySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
     @In
     private WorldProvider worldProvider;
 
@@ -102,7 +103,7 @@ public class GooeyUpdate extends BaseComponentSystem implements UpdateSubscriber
      *
      */
     @ReceiveEvent
-    public void onChunkLoaded(OnChunkGenerated event, EntityRef worldEntity) {
+    public void onChunkLoaded(OnChunkLoaded event, EntityRef worldEntity) {
         for (Optional<Prefab> gooey : gooeyPrefabs) {
             boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE > random.nextInt(100);
             if (!trySpawn) {

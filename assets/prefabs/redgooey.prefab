@@ -112,10 +112,10 @@
     ]
   },
   "FindNearbyPlayers": {
-    "searchRadius": 20
+    "searchRadius": 5
   },
   "AttackOnHit": {
-    "maxDistance": 10
+    "maxDistance": 5
   },
   "Follow": {
     "entityToFollow": EntityRef.NULL
@@ -125,7 +125,7 @@
     "profitPayOff": 5,
     "biome": ["DESERT"],
     "blockBelow": "SAND",
-    "SPAWN_CHANCE": 15,
+    "SPAWN_CHANCE": 5,
     "MAX_GROUP_SIZE": 1
   },
   "Aggressive": {

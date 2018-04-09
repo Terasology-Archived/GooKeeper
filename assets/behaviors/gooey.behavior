@@ -1,51 +1,68 @@
 {
   dynamic: [
       {
-        guard: {
-          componentPresent: "GooKeeper:Aggressive",
-          child: {
-            guard: {
-              componentPresent: "Behaviors:FindNearbyPlayers",
-              values: ["N charactersWithinRange nonEmpty"],
-              child: {
-                sequence: [
-                  { sleep: {time: 0.1f }},
-                  CheckFollowStatus,
-                  { lookup: {tree: "GooKeeper:hostile" }}
-                ]
+        sequence: [
+        {
+          guard: {
+            componentPresent: "GooKeeper:Aggressive"
+          }
+        },
+        {
+          guard: {
+            componentPresent: "Behaviors:FindNearbyPlayers",
+            values: ["N charactersWithinRange nonEmpty"],
+            child: {
+              sequence: [
+                { sleep: {time: 0.1f }},
+                CheckFollowStatus,
+                { lookup: {tree: "GooKeeper:hostile" }}
+              ]
+            }
+          }
+        }
+        ]
+      },
+      {
+        sequence: [
+        {
+          guard: {
+            componentPresent: "GooKeeper:Neutral"
+          }
+        },
+        {
+          guard: {
+            componentPresent: "Behaviors:AttackOnHit",
+            values: ["N instigator exists"],
+            child: {
+              lookup: {
+                tree: "GooKeeper:hostile"
               }
             }
           }
         }
+        ]
       },
       {
-        guard: {
-          componentPresent: "Behaviors:AttackOnHit",
-          values: ["N instigator exists"],
-          child: {
-            lookup: {
-              tree: "GooKeeper:hostile"
+        sequence: [
+        {
+          guard: {
+            componentPresent: "GooKeeper:Friendly"
+          }
+        },
+        {
+          guard: {
+            componentPresent: "Behaviors:FindNearbyPlayers",
+            values: ["N charactersWithinRange nonEmpty"],
+            child: {
+              sequence: [
+                { sleep: {time: 0.1f }},
+                CheckFollowStatus,
+                { lookup: {tree: "GooKeeper:follow" }}
+              ]
             }
           }
         }
-      },
-      {
-        guard: {
-          componentPresent: "GooKeeper:Friendly",
-          child: {
-            guard: {
-              componentPresent: "Behaviors:FindNearbyPlayers",
-              values: ["N charactersWithinRange nonEmpty"],
-              child: {
-                sequence: [
-                  { sleep: {time: 0.1f }},
-                  CheckFollowStatus,
-                  { lookup: {tree: "GooKeeper:follow" }}
-                ]
-              }
-            }
-          }
-        }
+        ]
       },
       {
         lookup: {
