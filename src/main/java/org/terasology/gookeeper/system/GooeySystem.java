@@ -17,6 +17,7 @@ package org.terasology.gookeeper.system;
 
 import com.google.common.collect.Lists;
 
+import org.slf4j.LoggerFactory;
 import org.terasology.core.world.CoreBiome;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.gookeeper.component.GooeyComponent;
@@ -25,18 +26,16 @@ import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.logic.health.OnDamagedEvent;
-import org.terasology.protobuf.EntityData;
 import org.terasology.registry.In;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
@@ -46,6 +45,7 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.biomes.Biome;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
+import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.chunks.ChunkConstants;
 import org.terasology.world.chunks.event.OnChunkGenerated;
 import org.terasology.world.chunks.event.OnChunkLoaded;
@@ -53,7 +53,7 @@ import org.terasology.world.chunks.event.OnChunkLoaded;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 @RegisterSystem
 public class GooeySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
@@ -75,12 +75,17 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     @In
     private LocalPlayer localPlayer;
 
-    private String delayActionID = "SPAWN_DELAY_ID";
+    private static final String delayActionID = "SPAWN_DELAY_ID";
 
     private Random random = new FastRandom();
     private List<Optional<Prefab>> gooeyPrefabs = new ArrayList();
 
     private Block airBlock;
+
+    private static final int numOfEntitiesAllowed = 40;
+    private static int currentNumOfEntities = 0;
+
+    private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
 
     @Override
     public void initialise() {
@@ -98,9 +103,12 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             // All the updates regarding gooey entities goes here.
         }
     }
+
     /**
-     * When a new chunk gets loaded, it checks which biome it falls under and tries to call a spawning method.
+     * When a new chunk gets loaded, it tries to call the gooey spawning method
      *
+     *
+     * @param event,worldEntity   The corresponding OnChunkLoaded event and the worldEntity ref
      */
     @ReceiveEvent
     public void onChunkLoaded(OnChunkLoaded event, EntityRef worldEntity) {
@@ -116,9 +124,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     /**
      * Attempts to spawn gooey on the specified chunk. The number of gooeys spawned will depend on probability
-     * configurations defined earlier.
+     * configurations defined earlier
      *
-     * @param gooey,chunkPos   The prefab to be spawned, and the chunk which the game will try to spawn gooeys on
+     * @param gooey,chunkPos   The prefab to be spawned and the chunk which the game will try to spawn gooeys on
      */
     private void tryGooeySpawn(Optional<Prefab> gooey, Vector3i chunkPos) {
         GooeyComponent gooeyComponent = gooey.get().getComponent(GooeyComponent.class);
@@ -139,7 +147,11 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             Vector3i randomSpawnPosition = foundPositions.remove(randomIndex);
             //EntityRef newEntityRef;
             //delayManager.addDelayedAction(newEntityRef, delayActionID, 1000);
-            spawnGooey(gooey, randomSpawnPosition);
+            currentNumOfEntities ++;
+            if (currentNumOfEntities < numOfEntitiesAllowed) {
+                spawnGooey(gooey, randomSpawnPosition);
+            }
+            currentNumOfEntities = TeraMath.clamp (currentNumOfEntities, 0, numOfEntitiesAllowed);
         }
     }
 
@@ -160,12 +172,12 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         }
         return foundPositions;
     }
+
     /**
      * Spawns the gooey at the location specified by the parameter.
      *
-     * @param location   The location where the gooey is to be spawned
+     * @param gooey,location   Gooey prefab to be spawned and the location where the gooey is to be spawned
      */
-
     private void spawnGooey(Optional<Prefab> gooey, Vector3i location) {
         Vector3f floatVectorLocation = location.toVector3f();
         Vector3f yAxis = new Vector3f(0, 1, 0);
@@ -184,7 +196,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Check blocks at and around the target position and check if it's a valid spawning spot
      *
-     * @param pos   The block to be checked if it's a valid spot for spawning
+     * @param gooeyComponent,pos   GooeyComponent of the particular gooey to be spawned & the block to be checked if it's a valid spot for spawning
      * @return A boolean with the value of true if the block is a valid spot for spawing
      */
     private boolean isValidSpawnPosition(GooeyComponent gooeyComponent, Vector3i pos) {
@@ -211,6 +223,12 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         return false;
     }
 
+    /**
+     * Returns the Biome from the string provided as an argument.
+     *
+     * @param biomeName   The name of the biome (String)
+     * @return Corresponding biome
+     */
     private Biome getBiomeFromString (String biomeName) {
         if (biomeName.equals("DESERT")) {
             return CoreBiome.DESERT;
@@ -218,20 +236,26 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             return CoreBiome.FOREST;
         } else if (biomeName.equals("PLAINS")) {
             return CoreBiome.PLAINS;
-        } else if (biomeName.equals("FOREST")) {
-            return CoreBiome.MOUNTAINS;
         } else if (biomeName.equals("SNOW")) {
             return CoreBiome.SNOW;
+        } else if (biomeName.equals("MOUNTAINS")) {
+            return CoreBiome.MOUNTAINS;
         } else {
             return null;
         }
     }
 
+    /**
+     * Returns the Block from the string provided as an argument.
+     *
+     * @param blockName   The name of the block (String)
+     * @return Corresponding block
+     */
     private Block getBlockFromString (String blockName) {
-        if (blockName.equals("SAND")) {
-            return blockManager.getBlock("core:Sand");
+        if (blockName != null) {
+            return blockManager.getBlock(blockName);
         } else {
-            return blockManager.getBlock("core:Grass");
+            return null;
         }
     }
 

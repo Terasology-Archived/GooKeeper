@@ -120,8 +120,8 @@
   "NPCMovement": {},
   "Gooey": {
     "profitPayOff": 1,
-    "biome": ["FOREST", "PLAINS"],
-    "blockBelow": "GRASS",
+    "biome": ["FOREST", "PLAINS", "MOUNTAINS"],
+    "blockBelow": "core:Grass",
     "SPAWN_CHANCE": 85,
     "MAX_GROUP_SIZE": 6
   },
