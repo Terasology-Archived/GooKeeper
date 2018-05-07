@@ -36,6 +36,7 @@ import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.logic.health.OnDamagedEvent;
+import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
@@ -43,6 +44,7 @@ import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.biomes.Biome;
+import org.terasology.world.biomes.BiomeManager;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.chunks.CoreChunk;
@@ -84,6 +86,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     private static final int numOfEntitiesAllowed = 40;
     private static int currentNumOfEntities = 0;
+    private static final float maxDistanceFromPlayer = 300f;
 
     private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
 
@@ -98,12 +101,33 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     @Override
     public void update (float delta) {
+
         for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class)) {
             GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
-            // All the updates regarding gooey entities goes here.
+            LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
+
+            float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
+            logger.info("Distance: " + distanceFromPlayer);
+            if (distanceFromPlayer > maxDistanceFromPlayer) {
+                entity.destroy();
+                currentNumOfEntities --;
+            }
         }
+        spawnNearPlayer();
     }
 
+    private void spawnNearPlayer () {
+        Vector3i blockPos = new Vector3i(localPlayer.getPosition());
+        if (worldProvider.isBlockRelevant(blockPos)) {
+            for (Optional<Prefab> gooey : gooeyPrefabs) {
+                boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE/2f > random.nextInt(100);
+                if (!trySpawn) {
+                    return;
+                }
+                tryGooeySpawn(gooey, blockPos);
+            }
+        }
+    }
     /**
      * When a new chunk gets loaded, it tries to call the gooey spawning method
      *

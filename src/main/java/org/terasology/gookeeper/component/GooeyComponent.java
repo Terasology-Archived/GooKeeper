@@ -37,4 +37,6 @@ public class GooeyComponent implements Component {
     public float SPAWN_CHANCE;
     /* The maximum number of gooeys in a group. */
     public int MAX_GROUP_SIZE;
+    /* Bool regarding whether the gooey has been captured by the player or not. */
+    public boolean isCaptured = false;
 }
