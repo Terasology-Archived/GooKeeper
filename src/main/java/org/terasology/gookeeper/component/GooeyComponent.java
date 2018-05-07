@@ -37,6 +37,8 @@ public class GooeyComponent implements Component {
     public float SPAWN_CHANCE;
     /* The maximum number of gooeys in a group. */
     public int MAX_GROUP_SIZE;
+    /* The PlazMaster 3000 cannon frequency required for stunning the gooey. */
+    public float stunFrequency;
     /* Bool regarding whether the gooey has been captured by the player or not. */
     public boolean isCaptured = false;
 }

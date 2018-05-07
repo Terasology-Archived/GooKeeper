@@ -107,8 +107,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
 
             float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
-            logger.info("Distance: " + distanceFromPlayer);
-            if (distanceFromPlayer > maxDistanceFromPlayer) {
+            if (distanceFromPlayer > maxDistanceFromPlayer && !gooeyComponent.isCaptured) {
                 entity.destroy();
                 currentNumOfEntities --;
             }
@@ -116,10 +115,14 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         spawnNearPlayer();
     }
 
+    /**
+     * Try spawning gooeys based on the player's current world position
+     */
     private void spawnNearPlayer () {
         Vector3i blockPos = new Vector3i(localPlayer.getPosition());
         if (worldProvider.isBlockRelevant(blockPos)) {
             for (Optional<Prefab> gooey : gooeyPrefabs) {
+                /* Decreasing the spawn chance since it could lead to spawning MANY gooeys, hence decreasing performance. */
                 boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE/2f > random.nextInt(100);
                 if (!trySpawn) {
                     return;
@@ -128,6 +131,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             }
         }
     }
+
     /**
      * When a new chunk gets loaded, it tries to call the gooey spawning method
      *
