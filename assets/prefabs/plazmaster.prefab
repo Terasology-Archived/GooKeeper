@@ -8,7 +8,10 @@
     "usage": "IN_DIRECTION"
   },
   "PlazMaster": {
-    "numOfCharges": 3,
-    "chargeUpTime": 3f,
+    "maxDistance": 30,
+    "maxCharges": 300,
+    "charges": 300,
+    "rateOfFire": 1,
+    "frequency": 100
   }
 }

@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.gookeeper.component;
+package org.terasology.gookeeper.event;
 
-import org.terasology.entitySystem.Component;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.Event;
 
-public class PlazMasterComponent implements Component {
-    /* The max. distance till which the cannon is viable. */
-    public float maxDistance;
-    /* The max. number of charges in the tank. */
-    public float maxCharges;
-    /* The current number of charges in the tank. */
-    public float charges;
-    /* The rate of fire of the cannon (per sec). */
-    public float rateOfFire;
-    /* The frequency to which the cannon is set to currently. */
-    public float frequency;
+public class OnStunnedEvent implements Event {
+
+    public OnStunnedEvent() {}
 }

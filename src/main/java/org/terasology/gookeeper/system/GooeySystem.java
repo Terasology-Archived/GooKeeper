@@ -28,6 +28,7 @@ import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
@@ -86,7 +87,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     private static final int numOfEntitiesAllowed = 40;
     private static int currentNumOfEntities = 0;
-    private static final float maxDistanceFromPlayer = 300f;
+    private static final float maxDistanceFromPlayer = 1000f;
 
     private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
 
@@ -112,7 +113,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
                 currentNumOfEntities --;
             }
         }
-        spawnNearPlayer();
+        //spawnNearPlayer();
     }
 
     /**
@@ -211,13 +212,17 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         Vector3f yAxis = new Vector3f(0, 1, 0);
         float randomAngle = (float) (random.nextFloat()*Math.PI*2);
         Quat4f rotation = new Quat4f(yAxis, randomAngle);
-        if (gooey.isPresent() && gooey.get().getComponent(LocationComponent.class) != null) {
-            EntityBuilder entityBuilder = entityManager.newBuilder(gooey.get());
-            LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
-            locationComponent.setWorldPosition(floatVectorLocation);
-            locationComponent.setWorldRotation(rotation);
-            entityBuilder.build();
-            //entityManager.create(gooey.get(), floatVectorLocation, rotation);
+
+        float distanceFromPlayer = Vector3f.distance(new Vector3f((float)location.x, (float)location.y, (float)location.z), localPlayer.getPosition());
+        if (distanceFromPlayer < maxDistanceFromPlayer) {
+            if (gooey.isPresent() && gooey.get().getComponent(LocationComponent.class) != null) {
+                EntityBuilder entityBuilder = entityManager.newBuilder(gooey.get());
+                LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
+                locationComponent.setWorldPosition(floatVectorLocation);
+                locationComponent.setWorldRotation(rotation);
+                entityBuilder.build();
+                //entityManager.create(gooey.get(), floatVectorLocation, rotation);
+            }
         }
     }
 
@@ -289,6 +294,15 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     @ReceiveEvent
     public void onDamage(OnDamagedEvent event, EntityRef entity) {
+        return;
+    }
+
+    @ReceiveEvent
+    public void onStunned(OnStunnedEvent event, EntityRef entity) {
+        GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
+        if (!gooeyComponent.isStunned) {
+            gooeyComponent.isStunned = true;
+        }
         return;
     }
 }
