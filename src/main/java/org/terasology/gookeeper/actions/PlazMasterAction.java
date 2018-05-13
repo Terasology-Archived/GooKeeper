@@ -31,6 +31,7 @@ import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.location.LocationComponent;
+import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
@@ -59,6 +60,9 @@ public class PlazMasterAction extends BaseComponentSystem {
 
     @In
     private Time time;
+
+    @In
+    private LocalPlayer localPlayer;
 
     private CollisionGroup filter = StandardCollisionGroup.ALL;
     private static final Logger logger = LoggerFactory.getLogger(PlazMasterAction.class);
@@ -97,9 +101,12 @@ public class PlazMasterAction extends BaseComponentSystem {
             if (hitEntity.hasComponent(GooeyComponent.class)) {
                 GooeyComponent gooeyComponent = hitEntity.getComponent(GooeyComponent.class);
                 logger.info("Hit Gooey!");
-                if (TeraMath.fastAbs(gooeyComponent.stunFrequency - plazMasterComponent.frequency) <= 10f) {
+                if (TeraMath.fastAbs(gooeyComponent.stunFrequency - plazMasterComponent.frequency) <= 10f && !gooeyComponent.isStunned) {
                     // Begin the gooey wrangling.
-                    hitEntity.send(new OnStunnedEvent());
+                    gooeyComponent.stunChargesReq --;
+                    if (gooeyComponent.stunChargesReq == 0) {
+                        hitEntity.send(new OnStunnedEvent(localPlayer.getCharacterEntity()));
+                    }
                 } else {
                     logger.info("Adjust the frequency!");
                 }

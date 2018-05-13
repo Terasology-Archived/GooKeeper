@@ -6,10 +6,7 @@
           values: ["V isStunned == true"],
           child: {
             sequence: [
-              { set_speed : { speedMultiplier: 0 }},
-              { sleep: {time: 5f }},
-              CheckStunStatus,
-              { set_speed : { speedMultiplier: 0.5 }}
+              CheckStunStatus
             ]
           }
         }

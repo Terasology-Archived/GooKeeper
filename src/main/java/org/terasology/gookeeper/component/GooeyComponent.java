@@ -37,6 +37,12 @@ public class GooeyComponent implements Component {
     public float SPAWN_CHANCE;
     /* The maximum number of gooeys in a group. */
     public int MAX_GROUP_SIZE;
+    /* The max. number of charges required to stun the gooey. */
+    public int maxStunChargesReq = 3;
+    /* The number of charges required to stun the gooey. (current) */
+    public int stunChargesReq = 3;
+    /* Time (in sec) for which the gooey remains stunned. */
+    public float stunTime = 3f;
     /* The PlazMaster 3000 cannon frequency required for stunning the gooey. */
     public float stunFrequency = 100f;
     /* Bool regarding whether the gooey has been stunned by the player or not. */

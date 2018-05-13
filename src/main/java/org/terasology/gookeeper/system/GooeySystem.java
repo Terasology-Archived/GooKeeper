@@ -87,7 +87,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     private static final int numOfEntitiesAllowed = 40;
     private static int currentNumOfEntities = 0;
-    private static final float maxDistanceFromPlayer = 1000f;
+    private static final float maxDistanceFromPlayer = 300f;
 
     private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
 
@@ -302,6 +302,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
         if (!gooeyComponent.isStunned) {
             gooeyComponent.isStunned = true;
+            gooeyComponent.stunChargesReq = gooeyComponent.maxStunChargesReq;
         }
         return;
     }

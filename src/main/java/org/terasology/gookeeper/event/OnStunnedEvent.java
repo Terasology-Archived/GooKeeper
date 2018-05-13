@@ -20,5 +20,13 @@ import org.terasology.entitySystem.event.Event;
 
 public class OnStunnedEvent implements Event {
 
-    public OnStunnedEvent() {}
+    private EntityRef instigator;
+
+    public OnStunnedEvent(EntityRef instigator) {
+        this.instigator = instigator;
+    }
+
+    public EntityRef getInstigator() {
+        return instigator;
+    }
 }

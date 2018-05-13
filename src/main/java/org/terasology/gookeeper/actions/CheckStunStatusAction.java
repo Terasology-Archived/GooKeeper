@@ -15,56 +15,53 @@
  */
 package org.terasology.gookeeper.actions;
 
+import org.terasology.engine.Time;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.logic.behavior.BehaviorAction;
 import org.terasology.logic.behavior.core.Actor;
 import org.terasology.logic.behavior.core.BaseAction;
 import org.terasology.logic.behavior.core.BehaviorState;
+import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.geom.Vector3f;
+import org.terasology.registry.In;
 import org.terasology.rendering.nui.properties.Range;
 
 
 @BehaviorAction(name = "CheckStunStatus")
 public class CheckStunStatusAction extends BaseAction {
 
-    @Range(max = 7)
-    private float stunTime = 5f;
+    @In
+    private Time time;
+
+    private float stunTime = 0f;
 
     @Override
     public BehaviorState modify(Actor actor, BehaviorState state) {
-//        BehaviorState status = getBehaviorStateWithoutReturn(actor);
-//        if (status == BehaviorState.FAILURE) {
-        GooeyComponent gooeyComponent = actor.getComponent(GooeyComponent.class);
-        gooeyComponent.isStunned = false;
-        actor.getEntity().saveComponent(gooeyComponent);
-//        }
-//        return status;
+        BehaviorState status = getBehaviorStateWithoutReturn(actor);
+
+        if (status == BehaviorState.SUCCESS) {
+            GooeyComponent gooeyComponent = actor.getComponent(GooeyComponent.class);
+            gooeyComponent.isStunned = false;
+            actor.getEntity().saveComponent(gooeyComponent);
+        }
         return BehaviorState.SUCCESS;
     }
 
-//    private BehaviorState getBehaviorStateWithoutReturn(Actor actor) {
-//        LocationComponent actorLocationComponent = actor.getComponent(LocationComponent.class);
-//        if (actorLocationComponent == null) {
-//            return BehaviorState.FAILURE;
-//        }
-//        Vector3f actorPosition = actorLocationComponent.getWorldPosition();
-//        float maxDistance = actor.hasComponent(AttackOnHitComponent.class) ? actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistance;
-//
-//        float maxDistanceSquared = maxDistance * maxDistance;
-//        FollowComponent followWish = actor.getComponent(FollowComponent.class);
-//        if (followWish == null || followWish.entityToFollow == null) {
-//            return BehaviorState.FAILURE;
-//        }
-//
-//        LocationComponent locationComponent = followWish.entityToFollow.getComponent(LocationComponent.class);
-//        if (locationComponent == null) {
-//            return BehaviorState.FAILURE;
-//        }
-//        if (locationComponent.getWorldPosition().distanceSquared(actorPosition) <= maxDistanceSquared) {
-//            return BehaviorState.SUCCESS;
-//        }
-//        return BehaviorState.FAILURE;
-//    }
+    private BehaviorState getBehaviorStateWithoutReturn(Actor actor) {
+        CharacterMovementComponent characterMovementComponent = actor.getComponent(CharacterMovementComponent.class);
+
+        stunTime += time.getGameDelta();
+        if (stunTime < actor.getComponent(GooeyComponent.class).stunTime) {
+            characterMovementComponent.speedMultiplier = 0f;
+            actor.getEntity().saveComponent(characterMovementComponent);
+            return BehaviorState.FAILURE;
+        } else {
+            characterMovementComponent.speedMultiplier = 1f;
+            actor.getEntity().saveComponent(characterMovementComponent);
+            stunTime = 0f;
+            return BehaviorState.SUCCESS;
+        }
+    }
 
 }
