@@ -11,7 +11,8 @@
     "maxDistance": 30,
     "maxCharges": 300,
     "charges": 300,
-    "rateOfFire": 1,
+    "shotRecoveryTime": 1,
+    "rateOfFire": 5,
     "frequency": 100
   }
 }

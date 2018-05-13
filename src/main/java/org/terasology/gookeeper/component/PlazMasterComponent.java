@@ -16,16 +16,44 @@
 package org.terasology.gookeeper.component;
 
 import org.terasology.entitySystem.Component;
+import org.terasology.entitySystem.prefab.Prefab;
+import org.terasology.logic.health.EngineDamageTypes;
 
 public class PlazMasterComponent implements Component {
-    /* The max. distance till which the cannon is viable. */
+    /**
+     * The max. distance till which the cannon is viable.
+     */
     public float maxDistance;
-    /* The max. number of charges in the tank. */
+
+    /**
+     *  The max. number of charges in the tank.
+     */
     public float maxCharges;
-    /* The current number of charges in the tank. */
+
+    /**
+     *  The current number of charges in the tank.
+     */
     public float charges;
-    /* The rate of fire of the cannon (per sec). */
+
+    /**
+     *  Time required for the rifle to recover to it's original stance after shooting.
+     */
+    public float shotRecoveryTime;
+
+    /**
+     *  The rate of fire of the cannon (per sec).
+     */
     public float rateOfFire;
-    /* The frequency to which the cannon is set to currently. */
+
+    /**
+     *  The frequency to which the cannon is set to currently.
+     */
     public float frequency;
+
+    /**
+     * The damage each plasma shot does
+     */
+    public int damageAmount = 6;
+
+    public Prefab damageType = EngineDamageTypes.PHYSICAL.get();
 }

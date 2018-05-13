@@ -40,6 +40,8 @@ import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
 import org.terasology.physics.StandardCollisionGroup;
 import org.terasology.registry.In;
+import org.terasology.utilities.random.FastRandom;
+import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
@@ -67,6 +69,7 @@ public class PlazMasterAction extends BaseComponentSystem {
     private CollisionGroup filter = StandardCollisionGroup.ALL;
     private static final Logger logger = LoggerFactory.getLogger(PlazMasterAction.class);
     private float lastTime = 0f;
+    private Random random = new FastRandom();
 
     @Override
     public void initialise() {
@@ -81,10 +84,16 @@ public class PlazMasterAction extends BaseComponentSystem {
         if ((time.getGameTime() > lastTime + 1.0f / plazMasterComponent.rateOfFire) && plazMasterComponent.charges > 0f) {
             Vector3f target = event.getHitNormal();
             Vector3i blockPos = new Vector3i(target);
-
+            Vector3f dir;
             Vector3f position = new Vector3f(event.getOrigin());
-            // Add noise to this dir for simulating recoil.
-            Vector3f dir = new Vector3f(event.getDirection());
+            if (time.getGameTime() > lastTime + plazMasterComponent.shotRecoveryTime) {
+                // No recoil here; 100% accurate shot.
+                dir = new Vector3f(event.getDirection());
+            } else {
+                // Add noise to this dir for simulating recoil.
+                float timeDiff = TeraMath.fastAbs(time.getGameTime() - (lastTime + plazMasterComponent.shotRecoveryTime));
+                dir = new Vector3f(event.getDirection().x + random.nextFloat(-0.15f, -0.15f) * timeDiff,  event.getDirection().y + random.nextFloat(-0.15f, 0.15f) * timeDiff, event.getDirection().z + random.nextFloat(-0.15f, 0.15f) * timeDiff);
+            }
 
             HitResult result;
             result = physicsRenderer.rayTrace(position, dir, plazMasterComponent.maxDistance, filter);
@@ -97,7 +106,6 @@ public class PlazMasterAction extends BaseComponentSystem {
                 builder.build();
             }
             EntityRef hitEntity = result.getEntity();
-            //blockEntity.send(new DoDamageEvent(arrowActionComponent.damageAmount, arrowActionComponent.damageType));
             if (hitEntity.hasComponent(GooeyComponent.class)) {
                 GooeyComponent gooeyComponent = hitEntity.getComponent(GooeyComponent.class);
                 logger.info("Hit Gooey!");
@@ -110,6 +118,8 @@ public class PlazMasterAction extends BaseComponentSystem {
                 } else {
                     logger.info("Adjust the frequency!");
                 }
+            } else {
+                hitEntity.send(new DoDamageEvent(plazMasterComponent.damageAmount, plazMasterComponent.damageType));
             }
             plazMasterComponent.charges --;
             plazMasterComponent.charges = TeraMath.clamp(plazMasterComponent.maxCharges, 0f, plazMasterComponent.maxCharges);
