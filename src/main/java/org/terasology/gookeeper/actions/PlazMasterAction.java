@@ -17,6 +17,7 @@ package org.terasology.gookeeper.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terasology.config.Config;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -25,9 +26,12 @@ import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
+import org.terasology.gookeeper.input.DecreaseFrequencyButton;
+import org.terasology.gookeeper.input.IncreaseFrequencyButton;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.location.LocationComponent;
@@ -35,6 +39,7 @@ import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.network.ClientComponent;
 import org.terasology.physics.CollisionGroup;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
@@ -47,7 +52,7 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
-public class PlazMasterAction extends BaseComponentSystem {
+public class PlazMasterAction extends BaseComponentSystem implements UpdateSubscriberSystem {
     @In
     private WorldProvider worldProvider;
 
@@ -70,6 +75,7 @@ public class PlazMasterAction extends BaseComponentSystem {
     private static final Logger logger = LoggerFactory.getLogger(PlazMasterAction.class);
     private float lastTime = 0f;
     private Random random = new FastRandom();
+    private PlazMasterComponent _plazMasterComponent = null;
 
     @Override
     public void initialise() {
@@ -79,6 +85,15 @@ public class PlazMasterAction extends BaseComponentSystem {
     public void shutdown() {
     }
 
+    @Override
+    public void update(float delta) {
+        if (_plazMasterComponent == null) {
+            for (EntityRef entity : entityManager.getEntitiesWith(PlazMasterComponent.class)) {
+                _plazMasterComponent = entity.getComponent(PlazMasterComponent.class);
+                break;
+            }
+        }
+    }
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, PlazMasterComponent plazMasterComponent) {
         if ((time.getGameTime() > lastTime + 1.0f / plazMasterComponent.rateOfFire) && plazMasterComponent.charges > 0f) {
@@ -122,9 +137,21 @@ public class PlazMasterAction extends BaseComponentSystem {
                 hitEntity.send(new DoDamageEvent(plazMasterComponent.damageAmount, plazMasterComponent.damageType));
             }
             plazMasterComponent.charges --;
-            plazMasterComponent.charges = TeraMath.clamp(plazMasterComponent.maxCharges, 0f, plazMasterComponent.maxCharges);
+            plazMasterComponent.charges = TeraMath.clamp(plazMasterComponent.charges, 0f, plazMasterComponent.maxCharges);
 
             lastTime = time.getGameTime();
         }
+    }
+
+    @ReceiveEvent(components = ClientComponent.class)
+    public void onIncreaseFrequency(IncreaseFrequencyButton event, EntityRef entityRef) {
+        _plazMasterComponent.frequency += 10f;
+        logger.info("Increased PlazMaster's Frequency!");
+    }
+
+    @ReceiveEvent(components = ClientComponent.class)
+    public void onDecreaseFrequency(DecreaseFrequencyButton event, EntityRef entityRef) {
+        _plazMasterComponent.frequency -= 10f;
+        logger.info("Decreased PlazMaster's Frequency!");
     }
 }
