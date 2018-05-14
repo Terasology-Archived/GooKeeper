@@ -94,6 +94,7 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
             }
         }
     }
+
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, PlazMasterComponent plazMasterComponent) {
         if ((time.getGameTime() > lastTime + 1.0f / plazMasterComponent.rateOfFire) && plazMasterComponent.charges > 0f) {

@@ -32,7 +32,10 @@ import org.terasology.gookeeper.component.SlimePodComponent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.gookeeper.input.DecreaseFrequencyButton;
 import org.terasology.gookeeper.input.IncreaseFrequencyButton;
+import org.terasology.logic.characters.CharacterMovementComponent;
+import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.health.DestroyEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
@@ -71,6 +74,8 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
     @In
     private LocalPlayer localPlayer;
 
+    private static final Logger logger = LoggerFactory.getLogger(SlimePodAction.class);
+
     @Override
     public void initialise() {
     }
@@ -86,5 +91,17 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, SlimePodComponent slimePodComponent) {
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
+    }
+
+    @ReceiveEvent
+    public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
+        Block block = event.getNewBlock();
+        if (block.getEntity().hasComponent(SlimePodComponent.class) && entity.hasComponent(GooeyComponent.class)) {
+            SlimePodComponent slimePodComponent = block.getEntity().getComponent(SlimePodComponent.class);
+            if (slimePodComponent.isActivated) {
+                slimePodComponent.capturedEntity = entity.copy();
+                entity.destroy();
+            }
+        }
     }
 }
