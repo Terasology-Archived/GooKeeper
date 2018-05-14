@@ -33,5 +33,5 @@ public class SlimePodComponent implements Component {
     /**
      * The boolean whether the slime pod has been activated by the player or not
      */
-    public boolean isActivated = false;
+    public boolean isActivated = true;
 }
