@@ -1,0 +1,14 @@
+{
+    "displayName": "SlimePod",
+    "attachmentAllowed" : true,
+    "shadowCasting" : false,
+    "rotation" : "horizontal",
+    "categories" : ["SlimePod"],
+    "hardness": 15,
+    "tiles": "GooKeeper:slimePod",
+    "entity" : {
+         "prefab" : "GooKeeper:slimepod",
+         "temporary" : false,
+         "keepActive" : true
+    }
+}
