@@ -112,10 +112,10 @@
     ]
   },
   "FindNearbyPlayers": {
-    "searchRadius": 5
+    "searchRadius": 10
   },
   "AttackOnHit": {
-    "maxDistance": 5
+    "maxDistance": 10
   },
   "Follow": {
     "entityToFollow": EntityRef.NULL

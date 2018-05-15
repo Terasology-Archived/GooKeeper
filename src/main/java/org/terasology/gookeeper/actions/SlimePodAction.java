@@ -17,6 +17,7 @@ package org.terasology.gookeeper.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terasology.behaviors.components.NPCMovementComponent;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
@@ -25,18 +26,29 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.SlimePodComponent;
+import org.terasology.gookeeper.event.OnCapturedEvent;
+import org.terasology.logic.behavior.BehaviorComponent;
+import org.terasology.logic.characters.CharacterComponent;
+import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.location.LocationComponent;
+import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.geom.Vector3f;
+import org.terasology.minion.move.MinionMoveComponent;
 import org.terasology.registry.In;
+import org.terasology.rendering.logic.SkeletalMeshComponent;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SlimePodAction extends BaseComponentSystem implements UpdateSubscriberSystem {
+
     @In
     private WorldProvider worldProvider;
+
+    @In
+    private LocalPlayer localPlayer;
 
     private static final Logger logger = LoggerFactory.getLogger(SlimePodAction.class);
 
@@ -68,8 +80,23 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
             SlimePodComponent slimePodComponent = block.getEntity().getComponent(SlimePodComponent.class);
             if (slimePodComponent.isActivated) {
                 slimePodComponent.capturedEntity = entity;
-                entity.destroy();
+                entity.send(new OnCapturedEvent(localPlayer.getCharacterEntity()));
+                deactivateComponents(entity);
             }
         }
+    }
+
+    private void deactivateComponents (EntityRef entity) {
+        GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
+        gooeyComponent.isCaptured = true;
+
+        // Disable the components to essentially disable the entity.
+        entity.removeComponent(BehaviorComponent.class);
+        entity.removeComponent(SkeletalMeshComponent.class);
+        entity.removeComponent(LocationComponent.class);
+        entity.removeComponent(CharacterMovementComponent.class);
+        entity.removeComponent(CharacterComponent.class);
+        entity.removeComponent(MinionMoveComponent.class);
+        entity.removeComponent(NPCMovementComponent.class);
     }
 }

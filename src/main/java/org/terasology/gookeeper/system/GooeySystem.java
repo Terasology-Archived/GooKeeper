@@ -28,7 +28,11 @@ import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
+import org.terasology.logic.behavior.BehaviorComponent;
+import org.terasology.logic.characters.CharacterComponent;
+import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
@@ -37,8 +41,11 @@ import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.logic.health.OnDamagedEvent;
+import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.protobuf.EntityData;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
+import org.terasology.rendering.logic.SkeletalMeshComponent;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
@@ -305,5 +312,18 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             gooeyComponent.stunChargesReq = gooeyComponent.maxStunChargesReq;
         }
         return;
+    }
+
+    @ReceiveEvent
+    public void onCaptured(OnCapturedEvent event, EntityRef entity) {
+        GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
+        gooeyComponent.isCaptured = true;
+
+        // Disable the components to essentially disable the entity.
+        entity.removeComponent(BehaviorComponent.class);
+        entity.removeComponent(SkeletalMeshComponent.class);
+        entity.removeComponent(LocationComponent.class);
+        entity.removeComponent(CharacterMovementComponent.class);
+        entity.removeComponent(MinionMoveComponent.class);
     }
 }
