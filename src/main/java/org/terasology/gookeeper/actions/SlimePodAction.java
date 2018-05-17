@@ -65,10 +65,21 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
     }
 
     @ReceiveEvent
-    public void onActivate(ActivateEvent event, EntityRef entity, SlimePodComponent slimePodComponent) {
+    public void onActivate(ActivateEvent event, EntityRef entity) {
+        SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
 
+        logger.info("Khali hai kya: " + (slimePodComponent.capturedEntity == EntityRef.NULL));
         // TODO: Add implementation to release captured gooeys by reattaching removed comps.
+        if (slimePodComponent.capturedEntity != EntityRef.NULL) {
+            EntityRef releasedGooey = slimePodComponent.capturedEntity;
+            for (int i = 0; i < slimePodComponent.disabledComponents.size(); i++) {
+                releasedGooey.addOrSaveComponent(slimePodComponent.disabledComponents.get(i));
+            }
+            LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
+            LocationComponent blockPos = entity.getComponent(LocationComponent.class);
+            locationComponent.setWorldPosition(new Vector3f(blockPos.getWorldPosition().x, blockPos.getWorldPosition().y + 1, blockPos.getWorldPosition().z));
+        }
     }
 
     @ReceiveEvent
@@ -83,6 +94,7 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
             if (slimePodComponent.isActivated && slimePodComponent.capturedEntity == EntityRef.NULL) {
                 slimePodComponent.capturedEntity = entity;
                 entity.send(new OnCapturedEvent(localPlayer.getCharacterEntity(), slimePodComponent));
+                block.getEntity().saveComponent(slimePodComponent);
             }
         }
     }

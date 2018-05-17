@@ -35,6 +35,8 @@ import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.logic.behavior.BehaviorComponent;
 import org.terasology.logic.characters.CharacterComponent;
 import org.terasology.logic.characters.CharacterMovementComponent;
+import org.terasology.logic.characters.StandComponent;
+import org.terasology.logic.characters.WalkComponent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
@@ -325,6 +327,13 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         gooeyComponent.isCaptured = true;
         entity.saveComponent(gooeyComponent);
 
+        slimePodComponent.disabledComponents.add(entity.getComponent(WalkComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(StandComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(BehaviorComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(SkeletalMeshComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(LocationComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(CharacterMovementComponent.class));
+
         if (entity.hasComponent(AggressiveComponent.class)) {
             slimePodComponent.disabledComponents.add(entity.getComponent(AggressiveComponent.class));
             slimePodComponent.disabledComponents.add(entity.getComponent(FindNearbyPlayersComponent.class));
@@ -345,12 +354,10 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             entity.removeComponent(FindNearbyPlayersComponent.class);
         }
 
-        slimePodComponent.disabledComponents.add(entity.getComponent(BehaviorComponent.class));
-        slimePodComponent.disabledComponents.add(entity.getComponent(SkeletalMeshComponent.class));
-        slimePodComponent.disabledComponents.add(entity.getComponent(LocationComponent.class));
-        slimePodComponent.disabledComponents.add(entity.getComponent(CharacterMovementComponent.class));
-
         // Disable the components to essentially disable the entity.
+        entity.removeComponent(WalkComponent.class);
+        entity.removeComponent(StandComponent.class);
+        entity.removeComponent(MinionMoveComponent.class);
         entity.removeComponent(BehaviorComponent.class);
         entity.removeComponent(SkeletalMeshComponent.class);
         entity.removeComponent(LocationComponent.class);

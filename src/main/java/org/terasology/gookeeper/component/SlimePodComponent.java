@@ -15,6 +15,7 @@
  */
 package org.terasology.gookeeper.component;
 
+import com.google.common.collect.Lists;
 import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.world.block.ForceBlockActive;
@@ -40,5 +41,5 @@ public class SlimePodComponent implements Component {
     /**
      * The list of components disabled from the entity
      */
-    public List<Component> disabledComponents;
+    public List<Component> disabledComponents = Lists.newArrayList();
 }
