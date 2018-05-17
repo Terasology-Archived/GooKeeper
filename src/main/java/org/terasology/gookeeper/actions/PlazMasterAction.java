@@ -144,6 +144,7 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
         }
     }
 
+    // TODO: Instead of the current implementation, use itemHeld... and related funcs for multiplayer support.
     @ReceiveEvent(components = ClientComponent.class)
     public void onIncreaseFrequency(IncreaseFrequencyButton event, EntityRef entityRef) {
         _plazMasterComponent.frequency += 10f;

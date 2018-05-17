@@ -18,9 +18,11 @@ package org.terasology.gookeeper.system;
 import com.google.common.collect.Lists;
 
 import org.slf4j.LoggerFactory;
+import org.terasology.behaviors.components.AttackOnHitComponent;
+import org.terasology.behaviors.components.FindNearbyPlayersComponent;
 import org.terasology.core.world.CoreBiome;
 import org.terasology.entitySystem.entity.EntityBuilder;
-import org.terasology.gookeeper.component.GooeyComponent;
+import org.terasology.gookeeper.component.*;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -114,10 +116,12 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
             LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
 
-            float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
-            if (distanceFromPlayer > maxDistanceFromPlayer && !gooeyComponent.isCaptured) {
-                entity.destroy();
-                currentNumOfEntities --;
+            if (locationComponent != null) {
+                float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
+                if (distanceFromPlayer > maxDistanceFromPlayer && !gooeyComponent.isCaptured) {
+                    entity.destroy();
+                    currentNumOfEntities--;
+                }
             }
         }
         //spawnNearPlayer();
@@ -316,14 +320,40 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     @ReceiveEvent
     public void onCaptured(OnCapturedEvent event, EntityRef entity) {
+        SlimePodComponent slimePodComponent = event.getSlimePodComponent();
         GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
         gooeyComponent.isCaptured = true;
+        entity.saveComponent(gooeyComponent);
+
+        if (entity.hasComponent(AggressiveComponent.class)) {
+            slimePodComponent.disabledComponents.add(entity.getComponent(AggressiveComponent.class));
+            slimePodComponent.disabledComponents.add(entity.getComponent(FindNearbyPlayersComponent.class));
+
+            entity.removeComponent(AggressiveComponent.class);
+            entity.removeComponent(FindNearbyPlayersComponent.class);
+        } else if (entity.hasComponent(NeutralComponent.class)) {
+            slimePodComponent.disabledComponents.add(entity.getComponent(NeutralComponent.class));
+            slimePodComponent.disabledComponents.add(entity.getComponent(AttackOnHitComponent.class));
+
+            entity.removeComponent(NeutralComponent.class);
+            entity.removeComponent(AttackOnHitComponent.class);
+        } else {
+            slimePodComponent.disabledComponents.add(entity.getComponent(FriendlyComponent.class));
+            slimePodComponent.disabledComponents.add(entity.getComponent(FindNearbyPlayersComponent.class));
+
+            entity.removeComponent(FriendlyComponent.class);
+            entity.removeComponent(FindNearbyPlayersComponent.class);
+        }
+
+        slimePodComponent.disabledComponents.add(entity.getComponent(BehaviorComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(SkeletalMeshComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(LocationComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(CharacterMovementComponent.class));
 
         // Disable the components to essentially disable the entity.
         entity.removeComponent(BehaviorComponent.class);
         entity.removeComponent(SkeletalMeshComponent.class);
         entity.removeComponent(LocationComponent.class);
         entity.removeComponent(CharacterMovementComponent.class);
-        entity.removeComponent(MinionMoveComponent.class);
     }
 }

@@ -67,6 +67,8 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, SlimePodComponent slimePodComponent) {
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
+
+        // TODO: Add implementation to release captured gooeys by reattaching removed comps.
     }
 
     @ReceiveEvent
@@ -78,25 +80,10 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
 
         if (block.getEntity().hasComponent(SlimePodComponent.class) && entity.hasComponent(GooeyComponent.class)) {
             SlimePodComponent slimePodComponent = block.getEntity().getComponent(SlimePodComponent.class);
-            if (slimePodComponent.isActivated) {
+            if (slimePodComponent.isActivated && slimePodComponent.capturedEntity == EntityRef.NULL) {
                 slimePodComponent.capturedEntity = entity;
-                entity.send(new OnCapturedEvent(localPlayer.getCharacterEntity()));
-                deactivateComponents(entity);
+                entity.send(new OnCapturedEvent(localPlayer.getCharacterEntity(), slimePodComponent));
             }
         }
-    }
-
-    private void deactivateComponents (EntityRef entity) {
-        GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
-        gooeyComponent.isCaptured = true;
-
-        // Disable the components to essentially disable the entity.
-        entity.removeComponent(BehaviorComponent.class);
-        entity.removeComponent(SkeletalMeshComponent.class);
-        entity.removeComponent(LocationComponent.class);
-        entity.removeComponent(CharacterMovementComponent.class);
-        entity.removeComponent(CharacterComponent.class);
-        entity.removeComponent(MinionMoveComponent.class);
-        entity.removeComponent(NPCMovementComponent.class);
     }
 }

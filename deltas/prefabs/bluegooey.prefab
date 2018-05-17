@@ -1,0 +1,129 @@
+{
+  "DisplayName": {
+    "name": "Blue Gooey"
+  },
+  "Color": {
+    "color": [
+      135,
+      128,
+      191,
+      255
+    ]
+  },
+  "skeletalmesh": {
+    "mesh": "gooey",
+    "heightOffset": -2.0,
+    "material": "blueGooeySkin",
+    "animationPool": [
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyLookRightLeft",
+      "gooeyLookRightLeft",
+      "gooeyLookRightUp"
+    ],
+    "loop": true,
+    "scale": [
+      0.25,
+      0.25,
+      0.25
+    ]
+  },
+  "Behavior": {
+    "tree": "GooKeeper:gooey"
+  },
+  "Stand": {
+    "animationPool": [
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyIdleBreathing",
+      "gooeyLookRightLeft",
+      "gooeyLookRightLeft",
+      "gooeyLookRightUp"
+    ]
+  },
+  "Walk": {
+    "animationPool": [
+      "gooeyIdleBreathing"
+    ]
+  },
+  "location": {},
+  "Character": {},
+  "AliveCharacter": {},
+  "CharacterMovement": {
+    "groundFriction": 16,
+    "speedMultiplier": 0.3,
+    "distanceBetweenFootsteps": 0.2,
+    "distanceBetweenSwimStrokes": 2.5,
+    "height": 1.0,
+    "radius": 0.5,
+    "jumpSpeed": 12
+  },
+  "Network": {},
+  "MinionMove": {},
+  "Health": {},
+  "BoxShape": {
+    "extents": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "Trigger": {
+    "detectGroups": [
+      "engine:debris",
+      "engine:sensor"
+    ]
+  },
+  "Follow": {
+    "entityToFollow": EntityRef.NULL
+  },
+  "AttackOnHit": {
+    "maxDistance": 10
+  },
+  "NPCMovement": {},
+  "Gooey": {
+    "profitPayOff": 1,
+    "biome": ["FOREST", "PLAINS", "MOUNTAINS"],
+    "blockBelow": "core:Grass",
+    "SPAWN_CHANCE": 85,
+    "MAX_GROUP_SIZE": 6
+  },
+  "Neutral": {}
+}

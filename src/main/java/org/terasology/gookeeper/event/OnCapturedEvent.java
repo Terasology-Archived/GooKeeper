@@ -17,16 +17,23 @@ package org.terasology.gookeeper.event;
 
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.Event;
+import org.terasology.gookeeper.component.SlimePodComponent;
 
 public class OnCapturedEvent implements Event {
 
     private EntityRef owner;
+    private SlimePodComponent slimePodComponent;
 
-    public OnCapturedEvent(EntityRef owner) {
+    public OnCapturedEvent(EntityRef owner, SlimePodComponent slimePodComponent) {
         this.owner = owner;
+        this.slimePodComponent = slimePodComponent;
     }
 
     public EntityRef getOwner() {
         return owner;
+    }
+
+    public SlimePodComponent getSlimePodComponent() {
+        return slimePodComponent;
     }
 }

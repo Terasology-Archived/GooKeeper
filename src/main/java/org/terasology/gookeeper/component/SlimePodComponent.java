@@ -19,6 +19,8 @@ import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.world.block.ForceBlockActive;
 
+import java.util.List;
+
 public class SlimePodComponent implements Component {
     /**
      * The entity captured in the slime pod
@@ -34,4 +36,9 @@ public class SlimePodComponent implements Component {
      * The boolean whether the slime pod has been activated by the player or not
      */
     public boolean isActivated = true;
+
+    /**
+     * The list of components disabled from the entity
+     */
+    public List<Component> disabledComponents;
 }
