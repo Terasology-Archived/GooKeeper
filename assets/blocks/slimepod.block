@@ -6,6 +6,7 @@
     "categories" : ["SlimePod"],
     "hardness": 15,
     "tiles": "GooKeeper:slimePod",
+    "targetable" : true,
     "entity" : {
          "prefab" : "GooKeeper:slimepod",
          "temporary" : false,

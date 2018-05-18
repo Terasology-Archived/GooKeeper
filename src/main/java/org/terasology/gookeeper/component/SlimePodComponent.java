@@ -22,6 +22,7 @@ import org.terasology.world.block.ForceBlockActive;
 
 import java.util.List;
 
+@ForceBlockActive
 public class SlimePodComponent implements Component {
     /**
      * The entity captured in the slime pod

@@ -18,6 +18,7 @@ package org.terasology.gookeeper.actions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.behaviors.components.NPCMovementComponent;
+import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
@@ -25,6 +26,7 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.GooeyComponent;
+import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.component.SlimePodComponent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.logic.behavior.BehaviorComponent;
@@ -35,17 +37,22 @@ import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.geom.Vector3f;
+import org.terasology.math.geom.Vector3i;
 import org.terasology.minion.move.MinionMoveComponent;
 import org.terasology.registry.In;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockComponent;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SlimePodAction extends BaseComponentSystem implements UpdateSubscriberSystem {
 
     @In
     private WorldProvider worldProvider;
+
+    @In
+    private EntityManager entityManager;
 
     @In
     private LocalPlayer localPlayer;
@@ -62,14 +69,23 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
 
     @Override
     public void update(float delta) {
+//        for (EntityRef entity : entityManager.getEntitiesWith(SlimePodComponent.class)) {
+//            logger.info("Slime Pod Captured entity check: " + entity.getComponent(SlimePodComponent.class).capturedEntity);
+//        }
     }
 
-    @ReceiveEvent
+    @ReceiveEvent(components = {SlimePodComponent.class, BlockComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
+
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
+        Vector3i blockPos = new Vector3i(entity.getComponent(LocationComponent.class).getWorldPosition());
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
 
-        logger.info("Khali hai kya: " + (slimePodComponent.capturedEntity == EntityRef.NULL));
+        logger.info("Captured Entity: " + slimePodComponent.capturedEntity);
+        for (int i = 0; i < slimePodComponent.disabledComponents.size(); i++) {
+            logger.info("Disabled Comps: " + slimePodComponent.disabledComponents.get(i));
+        }
+
         // TODO: Add implementation to release captured gooeys by reattaching removed comps.
         if (slimePodComponent.capturedEntity != EntityRef.NULL) {
             EntityRef releasedGooey = slimePodComponent.capturedEntity;
@@ -77,8 +93,7 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
                 releasedGooey.addOrSaveComponent(slimePodComponent.disabledComponents.get(i));
             }
             LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
-            LocationComponent blockPos = entity.getComponent(LocationComponent.class);
-            locationComponent.setWorldPosition(new Vector3f(blockPos.getWorldPosition().x, blockPos.getWorldPosition().y + 1, blockPos.getWorldPosition().z));
+            locationComponent.setWorldPosition(new Vector3f(blockPos.x, blockPos.y + 1, blockPos.z));
         }
     }
 
@@ -93,8 +108,11 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
             SlimePodComponent slimePodComponent = block.getEntity().getComponent(SlimePodComponent.class);
             if (slimePodComponent.isActivated && slimePodComponent.capturedEntity == EntityRef.NULL) {
                 slimePodComponent.capturedEntity = entity;
-                entity.send(new OnCapturedEvent(localPlayer.getCharacterEntity(), slimePodComponent));
                 block.getEntity().saveComponent(slimePodComponent);
+                entity.send(new OnCapturedEvent(localPlayer.getCharacterEntity(), slimePodComponent));
+
+                logger.info("Entity ID: " + entity);
+                logger.info("Captured entity ID: " + slimePodComponent.capturedEntity);
             }
         }
     }

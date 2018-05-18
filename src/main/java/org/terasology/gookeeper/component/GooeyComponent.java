@@ -23,7 +23,6 @@ import org.terasology.world.block.ForceBlockActive;
 import java.util.List;
 import java.util.Optional;
 
-@ForceBlockActive
 public class GooeyComponent implements Component {
     /* The prefab corresponding to this gooey type. */
     public Optional<Prefab> prefab;
