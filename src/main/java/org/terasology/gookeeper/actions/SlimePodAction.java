@@ -41,9 +41,12 @@ import org.terasology.math.geom.Vector3i;
 import org.terasology.minion.move.MinionMoveComponent;
 import org.terasology.registry.In;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
+import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
+
+import java.math.RoundingMode;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SlimePodAction extends BaseComponentSystem implements UpdateSubscriberSystem {
@@ -53,6 +56,9 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
 
     @In
     private EntityManager entityManager;
+
+    @In
+    private BlockEntityRegistry blockEntityRegistry;
 
     @In
     private LocalPlayer localPlayer;
@@ -102,17 +108,15 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
         LocationComponent loc = entity.getComponent(LocationComponent.class);
         Vector3f pos = loc.getWorldPosition();
         pos.setY(pos.getY() -1);
-        Block block = worldProvider.getBlock(pos);
 
-        if (block.getEntity().hasComponent(SlimePodComponent.class) && entity.hasComponent(GooeyComponent.class)) {
-            SlimePodComponent slimePodComponent = block.getEntity().getComponent(SlimePodComponent.class);
+        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(pos, RoundingMode.HALF_UP));
+
+        if (blockEntity.hasComponent(SlimePodComponent.class) && entity.hasComponent(GooeyComponent.class)) {
+            SlimePodComponent slimePodComponent = blockEntity.getComponent(SlimePodComponent.class);
             if (slimePodComponent.isActivated && slimePodComponent.capturedEntity == EntityRef.NULL) {
                 slimePodComponent.capturedEntity = entity;
-                block.getEntity().saveComponent(slimePodComponent);
+                blockEntity.saveComponent(slimePodComponent);
                 entity.send(new OnCapturedEvent(localPlayer.getCharacterEntity(), slimePodComponent));
-
-                logger.info("Entity ID: " + entity);
-                logger.info("Captured entity ID: " + slimePodComponent.capturedEntity);
             }
         }
     }

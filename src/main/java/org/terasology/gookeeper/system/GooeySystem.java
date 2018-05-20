@@ -327,13 +327,13 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         gooeyComponent.isCaptured = true;
         entity.saveComponent(gooeyComponent);
 
-        slimePodComponent.disabledComponents.add(entity.getComponent(MinionMoveComponent.class));
-        slimePodComponent.disabledComponents.add(entity.getComponent(WalkComponent.class));
-        slimePodComponent.disabledComponents.add(entity.getComponent(StandComponent.class));
-        slimePodComponent.disabledComponents.add(entity.getComponent(BehaviorComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(SkeletalMeshComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(LocationComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(CharacterMovementComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(WalkComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(StandComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(MinionMoveComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(BehaviorComponent.class));
 
         if (entity.hasComponent(AggressiveComponent.class)) {
             slimePodComponent.disabledComponents.add(entity.getComponent(AggressiveComponent.class));
