@@ -98,6 +98,7 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
             for (int i = 0; i < slimePodComponent.disabledComponents.size(); i++) {
                 releasedGooey.addOrSaveComponent(slimePodComponent.disabledComponents.get(i));
             }
+            releasedGooey.getComponent(SkeletalMeshComponent.class).mesh = slimePodComponent.capturedGooeyMesh;
             LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
             locationComponent.setWorldPosition(new Vector3f(blockPos.x, blockPos.y + 1, blockPos.z));
         }

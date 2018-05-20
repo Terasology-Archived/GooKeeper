@@ -49,6 +49,7 @@ import org.terasology.minion.move.MinionMoveComponent;
 import org.terasology.protobuf.EntityData;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
+import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
@@ -327,12 +328,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         gooeyComponent.isCaptured = true;
         entity.saveComponent(gooeyComponent);
 
-        slimePodComponent.disabledComponents.add(entity.getComponent(SkeletalMeshComponent.class));
-        slimePodComponent.disabledComponents.add(entity.getComponent(LocationComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(CharacterMovementComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(WalkComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(StandComponent.class));
-        slimePodComponent.disabledComponents.add(entity.getComponent(MinionMoveComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(BehaviorComponent.class));
 
         if (entity.hasComponent(AggressiveComponent.class)) {
@@ -356,12 +354,12 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         }
 
         // Disable the components to essentially disable the entity.
+        entity.removeComponent(BehaviorComponent.class);
         entity.removeComponent(WalkComponent.class);
         entity.removeComponent(StandComponent.class);
-        entity.removeComponent(MinionMoveComponent.class);
-        entity.removeComponent(BehaviorComponent.class);
-        entity.removeComponent(SkeletalMeshComponent.class);
-        entity.removeComponent(LocationComponent.class);
+
+        slimePodComponent.capturedGooeyMesh = entity.getComponent(SkeletalMeshComponent.class).mesh;
+        entity.getComponent(SkeletalMeshComponent.class).mesh = null;
         entity.removeComponent(CharacterMovementComponent.class);
     }
 }

@@ -18,6 +18,8 @@ package org.terasology.gookeeper.component;
 import com.google.common.collect.Lists;
 import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.rendering.assets.mesh.Mesh;
+import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.world.block.ForceBlockActive;
 
 import java.util.List;
@@ -43,4 +45,9 @@ public class SlimePodComponent implements Component {
      * The list of components disabled from the entity
      */
     public List<Component> disabledComponents = Lists.newArrayList();
+
+    /**
+     * The mesh corresponding to the captured gooey (used while releasing form pod)
+     */
+    public SkeletalMesh capturedGooeyMesh;
 }
