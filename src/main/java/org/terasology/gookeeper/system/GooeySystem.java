@@ -94,6 +94,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     private Random random = new FastRandom();
     private List<Optional<Prefab>> gooeyPrefabs = new ArrayList();
+    private SkeletalMesh gooeySkeletalMesh = null;
 
     private Block airBlock;
 
@@ -116,6 +117,12 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     public void update (float delta) {
 
         for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class)) {
+
+            if (gooeySkeletalMesh == null) {
+                SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
+                gooeySkeletalMesh = skeleton.mesh;
+            }
+
             GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
             LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
 
@@ -126,8 +133,26 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
                     currentNumOfEntities--;
                 }
             }
+            //cullDistantGooeys(entity, locationComponent);
         }
         //spawnNearPlayer();
+    }
+
+    /**
+     * Implementation of distance-based visual culling for gooey entities
+     *
+     * @param entity,locationComponent   The corresponding gooey entity and its location component
+     */
+    private void cullDistantGooeys(EntityRef entity, LocationComponent locationComponent) {
+        SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
+        if (locationComponent != null) {
+            float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
+            if (distanceFromPlayer > 50f && skeleton.mesh != null) {
+                skeleton.mesh = null;
+            } else if (distanceFromPlayer <= 50f && skeleton.mesh == null) {
+                skeleton.mesh = gooeySkeletalMesh;
+            }
+        }
     }
 
     /**
@@ -148,13 +173,12 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     }
 
     /**
-     * When a new chunk gets loaded, it tries to call the gooey spawning method
+     * When a new chunk gets generated, it tries to call the gooey spawning method
      *
-     *
-     * @param event,worldEntity   The corresponding OnChunkLoaded event and the worldEntity ref
+     * @param event,worldEntity   The corresponding OnChunkGenerated event and the worldEntity ref
      */
     @ReceiveEvent
-    public void onChunkLoaded(OnChunkLoaded event, EntityRef worldEntity) {
+    public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
         for (Optional<Prefab> gooey : gooeyPrefabs) {
             boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE > random.nextInt(100);
             if (!trySpawn) {

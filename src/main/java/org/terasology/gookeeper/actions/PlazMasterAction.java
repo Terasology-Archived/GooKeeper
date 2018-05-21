@@ -15,6 +15,7 @@
  */
 package org.terasology.gookeeper.actions;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.config.Config;
@@ -23,6 +24,7 @@ import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
@@ -32,11 +34,13 @@ import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.gookeeper.input.DecreaseFrequencyButton;
 import org.terasology.gookeeper.input.IncreaseFrequencyButton;
+import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.TeraMath;
+import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.network.ClientComponent;
@@ -44,7 +48,11 @@ import org.terasology.physics.CollisionGroup;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
 import org.terasology.physics.StandardCollisionGroup;
+import org.terasology.physics.components.TriggerComponent;
+import org.terasology.physics.components.shapes.BoxShapeComponent;
 import org.terasology.registry.In;
+import org.terasology.rendering.logic.MeshComponent;
+import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
@@ -76,6 +84,7 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
     private float lastTime = 0f;
     private Random random = new FastRandom();
     private PlazMasterComponent _plazMasterComponent = null;
+    private static final Prefab arrowPrefab = Assets.getPrefab("GooKeeper:arrow").get();
 
     @Override
     public void initialise() {
@@ -141,6 +150,40 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
             plazMasterComponent.charges = TeraMath.clamp(plazMasterComponent.charges, 0f, plazMasterComponent.maxCharges);
 
             lastTime = time.getGameTime();
+
+            EntityBuilder entityBuilder = entityManager.newBuilder(arrowPrefab);
+            LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
+
+            if (entityBuilder.hasComponent(MeshComponent.class)) {
+                MeshComponent mesh = entityBuilder.getComponent(MeshComponent.class);
+                BoxShapeComponent box = new BoxShapeComponent();
+                box.extents = mesh.mesh.getAABB().getExtents().scale(2.0f);
+                entityBuilder.addOrSaveComponent(box);
+            }
+
+            Vector3f initialDir = locationComponent.getWorldDirection();
+            Vector3f finalDir = dir;
+            finalDir.normalize();
+
+            locationComponent.setWorldScale(0.3f);
+
+            entityBuilder.saveComponent(locationComponent);
+
+            if(!entityBuilder.hasComponent(TriggerComponent.class)) {
+                TriggerComponent trigger = new TriggerComponent();
+                trigger.collisionGroup = StandardCollisionGroup.ALL;
+                trigger.detectGroups = Lists.<CollisionGroup>newArrayList(StandardCollisionGroup.DEFAULT, StandardCollisionGroup.WORLD, StandardCollisionGroup.CHARACTER, StandardCollisionGroup.SENSOR);
+                entityBuilder.addOrSaveComponent(trigger);
+            }
+
+            GazeMountPointComponent gaze = localPlayer.getCharacterEntity().getComponent(GazeMountPointComponent.class);
+            if (gaze != null) {
+                locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(0.3f)));
+            }
+
+            locationComponent.setWorldRotation(Quat4f.shortestArcQuat(initialDir, finalDir));
+            entityBuilder.setPersistent(false);
+            entityBuilder.build();
         }
     }
 
