@@ -6,5 +6,9 @@
 	"Mesh" : {
         "mesh" : "GooKeeper:arrow",
         "material" : "GooKeeper:arrow"
-    }
+    },
+    "Light" : {
+		"lightSpecularPower" : 85
+	},
+	"PlazMasterShot": {}
 }

@@ -1,8 +1,8 @@
 {
     "shader" : "engine:genericMeshMaterial",
     "params" : {
-        "diffuse" : "CombatSystem:arrow",
+        "diffuse" : "GooKeeper:plasma",
         "colorOffset" : [1.0, 1.0, 1.0],
-        "textured" : true
+        "textured" : false
     }
 }

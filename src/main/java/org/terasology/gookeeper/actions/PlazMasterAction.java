@@ -31,6 +31,7 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.PlazMasterComponent;
+import org.terasology.gookeeper.component.PlazMasterShotComponent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.gookeeper.input.DecreaseFrequencyButton;
 import org.terasology.gookeeper.input.IncreaseFrequencyButton;
@@ -39,6 +40,7 @@ import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.math.Direction;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
@@ -102,6 +104,14 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
                 break;
             }
         }
+
+        for (EntityRef projectile : entityManager.getEntitiesWith(PlazMasterShotComponent.class)) {
+            LocationComponent location = projectile.getComponent(LocationComponent.class);
+            PlazMasterShotComponent shot = projectile.getComponent(PlazMasterShotComponent.class);
+
+            location.setWorldPosition(location.getWorldPosition().add(location.getWorldDirection().mul(shot.velocity)));
+            projectile.saveComponent(location);
+        }
     }
 
     @ReceiveEvent
@@ -154,16 +164,10 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
             EntityBuilder entityBuilder = entityManager.newBuilder(arrowPrefab);
             LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
 
-            if (entityBuilder.hasComponent(MeshComponent.class)) {
-                MeshComponent mesh = entityBuilder.getComponent(MeshComponent.class);
-                BoxShapeComponent box = new BoxShapeComponent();
-                box.extents = mesh.mesh.getAABB().getExtents().scale(2.0f);
-                entityBuilder.addOrSaveComponent(box);
-            }
-
             Vector3f initialDir = locationComponent.getWorldDirection();
-            Vector3f finalDir = dir;
+            Vector3f finalDir = new Vector3f(dir);
             finalDir.normalize();
+            locationComponent.setWorldRotation(Quat4f.shortestArcQuat(initialDir, finalDir));
 
             locationComponent.setWorldScale(0.3f);
 
@@ -181,7 +185,6 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
                 locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(0.3f)));
             }
 
-            locationComponent.setWorldRotation(Quat4f.shortestArcQuat(initialDir, finalDir));
             entityBuilder.setPersistent(false);
             entityBuilder.build();
         }
