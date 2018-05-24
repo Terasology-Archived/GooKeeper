@@ -111,6 +111,8 @@
       "engine:sensor"
     ]
   },
+  "Flee": {},
+  "FleeOnHit": {},
   "FindNearbyPlayers": {
     "searchRadius": 15
   },

@@ -115,7 +115,7 @@
     "searchRadius": 10
   },
   "AttackOnHit": {
-    "maxDistance": 10
+    "maxDistance": 20
   },
   "Follow": {
     "entityToFollow": EntityRef.NULL

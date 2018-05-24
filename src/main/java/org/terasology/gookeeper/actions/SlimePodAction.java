@@ -75,9 +75,6 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
 
     @Override
     public void update(float delta) {
-//        for (EntityRef entity : entityManager.getEntitiesWith(SlimePodComponent.class)) {
-//            logger.info("Slime Pod Captured entity check: " + entity.getComponent(SlimePodComponent.class).capturedEntity);
-//        }
     }
 
     @ReceiveEvent(components = {SlimePodComponent.class, BlockComponent.class})

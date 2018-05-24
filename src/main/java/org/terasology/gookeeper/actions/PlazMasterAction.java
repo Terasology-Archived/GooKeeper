@@ -161,6 +161,7 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
                     gooeyComponent.stunChargesReq --;
                     if (gooeyComponent.stunChargesReq == 0) {
                         hitEntity.send(new OnStunnedEvent(localPlayer.getCharacterEntity()));
+                        hitEntity.send(new DoDamageEvent(plazMasterComponent.damageAmount, plazMasterComponent.damageType, localPlayer.getCharacterEntity()));
                     }
                 } else {
                     logger.info("Adjust the frequency!");
