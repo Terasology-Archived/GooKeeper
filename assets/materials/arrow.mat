@@ -2,7 +2,7 @@
     "shader" : "engine:genericMeshMaterial",
     "params" : {
         "diffuse" : "GooKeeper:plasma",
-        "colorOffset" : [1.0, 1.0, 1.0],
+        "colorOffset" : [0.0, 1.0, 0.0],
         "textured" : false
     }
 }

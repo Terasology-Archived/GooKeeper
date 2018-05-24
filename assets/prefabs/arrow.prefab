@@ -1,8 +1,5 @@
 {
 	"Location" : {},
-	"BoxShape" : {
-		"extents" : [0.5, 0.5, 1]
-	},
 	"Mesh" : {
         "mesh" : "GooKeeper:arrow",
         "material" : "GooKeeper:arrow"

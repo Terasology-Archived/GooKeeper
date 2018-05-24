@@ -12,7 +12,7 @@
     "maxCharges": 300,
     "charges": 300,
     "shotRecoveryTime": 1,
-    "rateOfFire": 5,
+    "rateOfFire": 2.5,
     "frequency": 100
   }
 }

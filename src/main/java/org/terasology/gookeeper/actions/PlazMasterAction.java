@@ -18,6 +18,8 @@ package org.terasology.gookeeper.actions;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terasology.audio.StaticSound;
+import org.terasology.audio.events.PlaySoundEvent;
 import org.terasology.config.Config;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityBuilder;
@@ -37,6 +39,8 @@ import org.terasology.gookeeper.input.DecreaseFrequencyButton;
 import org.terasology.gookeeper.input.IncreaseFrequencyButton;
 import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
@@ -61,6 +65,8 @@ import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 
+import java.util.Optional;
+
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class PlazMasterAction extends BaseComponentSystem implements UpdateSubscriberSystem {
     @In
@@ -76,6 +82,9 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
     private EntityManager entityManager;
 
     @In
+    private DelayManager delayManager;
+
+    @In
     private Time time;
 
     @In
@@ -87,6 +96,9 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
     private Random random = new FastRandom();
     private PlazMasterComponent _plazMasterComponent = null;
     private static final Prefab arrowPrefab = Assets.getPrefab("GooKeeper:arrow").get();
+    private StaticSound gunShotAudio = Assets.getSound("GooKeeper:PlasmaShot").get();
+
+    private static final String eventID = "ARROW_DESTROY_EVENT_ID";
 
     @Override
     public void initialise() {
@@ -173,20 +185,23 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
 
             entityBuilder.saveComponent(locationComponent);
 
-            if(!entityBuilder.hasComponent(TriggerComponent.class)) {
-                TriggerComponent trigger = new TriggerComponent();
-                trigger.collisionGroup = StandardCollisionGroup.ALL;
-                trigger.detectGroups = Lists.<CollisionGroup>newArrayList(StandardCollisionGroup.DEFAULT, StandardCollisionGroup.WORLD, StandardCollisionGroup.CHARACTER, StandardCollisionGroup.SENSOR);
-                entityBuilder.addOrSaveComponent(trigger);
-            }
-
             GazeMountPointComponent gaze = localPlayer.getCharacterEntity().getComponent(GazeMountPointComponent.class);
             if (gaze != null) {
                 locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(0.3f)));
             }
 
             entityBuilder.setPersistent(false);
-            entityBuilder.build();
+            EntityRef arrowEntity = entityBuilder.build();
+
+            arrowEntity.send(new PlaySoundEvent(gunShotAudio, 0.4f));
+            delayManager.addDelayedAction(arrowEntity, eventID, 3000);
+        }
+    }
+
+    @ReceiveEvent
+    public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef entityRef) {
+        if (event.getActionId().equals(eventID)) {
+            entityRef.destroy();
         }
     }
 

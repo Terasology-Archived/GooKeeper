@@ -18,5 +18,5 @@ package org.terasology.gookeeper.component;
 import org.terasology.entitySystem.Component;
 
 public class PlazMasterShotComponent implements Component {
-    public float velocity = 0.3f;
+    public float velocity = 0.7f;
 }
