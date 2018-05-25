@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.gookeeper.actions;
+package org.terasology.gookeeper.system;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +34,10 @@ import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.geom.Quat4f;
+import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.physics.components.RigidBodyComponent;
 import org.terasology.physics.components.shapes.BoxShapeComponent;
-import org.terasology.physics.engine.PhysicsEngine;
 import org.terasology.physics.events.ImpulseEvent;
 import org.terasology.registry.In;
 import org.terasology.rendering.logic.MeshComponent;
@@ -51,7 +49,7 @@ import org.terasology.world.block.BlockComponent;
 import java.math.RoundingMode;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
-public class SlimePodAction extends BaseComponentSystem implements UpdateSubscriberSystem {
+public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
 
     @In
     private WorldProvider worldProvider;
@@ -65,7 +63,7 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
     @In
     private LocalPlayer localPlayer;
 
-    private static final Logger logger = LoggerFactory.getLogger(SlimePodAction.class);
+    private static final Logger logger = LoggerFactory.getLogger(SlimePodSystem.class);
 
     @Override
     public void initialise() {
@@ -86,7 +84,6 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
         Vector3i blockPos = new Vector3i(entity.getComponent(LocationComponent.class).getWorldPosition());
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
 
-        // TODO: Add implementation to release captured gooeys by reattaching removed comps.
         if (slimePodComponent.capturedEntity != EntityRef.NULL) {
             EntityRef releasedGooey = slimePodComponent.capturedEntity;
             for (int i = 0; i < slimePodComponent.disabledComponents.size(); i++) {
@@ -102,35 +99,35 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
     public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
 
         SlimePodItemComponent slimePodItemComponent = entity.getComponent(SlimePodItemComponent.class);
-        RigidBodyComponent rigidBodyComponent = entity.getComponent(RigidBodyComponent.class);
+        if (slimePodItemComponent.slimePods > 0) {
+            EntityBuilder entityBuilder = entityManager.newBuilder(slimePodItemComponent.launchPrefab);
+            LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
 
-        EntityBuilder entityBuilder = entityManager.newBuilder(slimePodItemComponent.launchPrefab);
-        LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
+            Vector3f dir = new Vector3f(event.getDirection());
+            Vector3f finalDir = new Vector3f(dir);
+            finalDir.normalize();
 
-        Vector3f dir = new Vector3f(event.getDirection());
-        Vector3f initialDir = locationComponent.getWorldDirection();
-        Vector3f finalDir = new Vector3f(dir);
-        finalDir.normalize();
+            if (entityBuilder.hasComponent(MeshComponent.class)) {
+                MeshComponent mesh = entityBuilder.getComponent(MeshComponent.class);
+                BoxShapeComponent box = new BoxShapeComponent();
+                box.extents = mesh.mesh.getAABB().getExtents().scale(2.0f);
+                entityBuilder.addOrSaveComponent(box);
+            }
+            locationComponent.setWorldScale(0.3f);
 
-        if(entityBuilder.hasComponent(MeshComponent.class)){
-            MeshComponent mesh = entityBuilder.getComponent(MeshComponent.class);
-            BoxShapeComponent box = new BoxShapeComponent();
-            box.extents = mesh.mesh.getAABB().getExtents().scale(2.0f);
-            entityBuilder.addOrSaveComponent(box);
+            entityBuilder.saveComponent(locationComponent);
+
+            GazeMountPointComponent gaze = localPlayer.getCharacterEntity().getComponent(GazeMountPointComponent.class);
+            if (gaze != null) {
+                locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(0.3f)));
+            }
+
+            entityBuilder.setPersistent(false);
+            EntityRef slimePodEntity = entityBuilder.build();
+
+            slimePodEntity.send(new ImpulseEvent(dir.mul(200f)));
+            slimePodItemComponent.slimePods --;
         }
-        locationComponent.setWorldScale(0.3f);
-
-        entityBuilder.saveComponent(locationComponent);
-
-        GazeMountPointComponent gaze = localPlayer.getCharacterEntity().getComponent(GazeMountPointComponent.class);
-        if (gaze != null) {
-            locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(0.3f)));
-        }
-
-        entityBuilder.setPersistent(false);
-        EntityRef slimePodEntity = entityBuilder.build();
-
-        slimePodEntity.send(new ImpulseEvent(dir.mul(200f)));
     }
 
     @ReceiveEvent
@@ -149,5 +146,24 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
                 entity.send(new OnCapturedEvent(localPlayer.getCharacterEntity(), slimePodComponent));
             }
         }
+    }
+
+    private float tryToCapture (EntityRef slimePodEntity, EntityRef gooeyEntity) {
+        SlimePodComponent slimePodComponent = slimePodEntity.getComponent(SlimePodComponent.class);
+        GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
+        LocationComponent slimePodLocation = slimePodEntity.getComponent(LocationComponent.class);
+        LocationComponent gooeyLocation = gooeyEntity.getComponent(LocationComponent.class);
+
+        if (slimePodComponent == null || !slimePodComponent.isActivated) {
+            return 0f;
+        }
+
+        float distanceFromGooey = Vector3f.distance(slimePodLocation.getWorldPosition(), gooeyLocation.getWorldPosition());
+        if (distanceFromGooey > slimePodComponent.maxDistance) {
+            return 0f;
+        }
+
+        float captureProbability = TeraMath.fastAbs(distanceFromGooey - slimePodComponent.maxDistance) * gooeyComponent.captureProbabiltyFactor;
+        return captureProbability;
     }
 }

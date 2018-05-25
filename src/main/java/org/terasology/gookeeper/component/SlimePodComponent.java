@@ -43,6 +43,11 @@ public class SlimePodComponent implements Component {
     public String podType;
 
     /**
+     * The max distance the slime pod can be from the gooey to capture it
+     */
+    public float maxDistance = 10f;
+
+    /**
      * The boolean whether the slime pod has been activated by the player or not
      */
     public boolean isActivated = true;

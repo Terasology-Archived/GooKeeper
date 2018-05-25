@@ -15,20 +15,17 @@
  */
 package org.terasology.gookeeper.component;
 
-import com.google.common.collect.Lists;
 import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.prefab.Prefab;
-import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
-import org.terasology.world.block.ForceBlockActive;
 
-import java.util.List;
-
-@ForceBlockActive
 public class SlimePodItemComponent implements Component {
     /**
      * The prefab that is actually thrown as a projectile
      */
     public Prefab launchPrefab;
 
+    /**
+     * The number of slime pods available in the launcher
+     */
+    public int slimePods = 3;
 }

@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.gookeeper.actions;
+package org.terasology.gookeeper.system;
 
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.audio.StaticSound;
 import org.terasology.audio.events.PlaySoundEvent;
-import org.terasology.config.Config;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -44,7 +42,6 @@ import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.Direction;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
@@ -54,10 +51,7 @@ import org.terasology.physics.CollisionGroup;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
 import org.terasology.physics.StandardCollisionGroup;
-import org.terasology.physics.components.TriggerComponent;
-import org.terasology.physics.components.shapes.BoxShapeComponent;
 import org.terasology.registry.In;
-import org.terasology.rendering.logic.MeshComponent;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
@@ -65,10 +59,8 @@ import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 
-import java.util.Optional;
-
 @RegisterSystem(RegisterMode.AUTHORITY)
-public class PlazMasterAction extends BaseComponentSystem implements UpdateSubscriberSystem {
+public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
     @In
     private WorldProvider worldProvider;
 
@@ -91,7 +83,7 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
     private LocalPlayer localPlayer;
 
     private CollisionGroup filter = StandardCollisionGroup.ALL;
-    private static final Logger logger = LoggerFactory.getLogger(PlazMasterAction.class);
+    private static final Logger logger = LoggerFactory.getLogger(PlazMasterSystem.class);
     private float lastTime = 0f;
     private Random random = new FastRandom();
     private PlazMasterComponent _plazMasterComponent = null;
@@ -139,7 +131,7 @@ public class PlazMasterAction extends BaseComponentSystem implements UpdateSubsc
             } else {
                 // Add noise to this dir for simulating recoil.
                 float timeDiff = TeraMath.fastAbs(time.getGameTime() - (lastTime + plazMasterComponent.shotRecoveryTime));
-                dir = new Vector3f(event.getDirection().x + random.nextFloat(-0.15f, -0.15f) * timeDiff,  event.getDirection().y + random.nextFloat(-0.15f, 0.15f) * timeDiff, event.getDirection().z + random.nextFloat(-0.15f, 0.15f) * timeDiff);
+                dir = new Vector3f(event.getDirection().x + random.nextFloat(-0.05f, 0.05f) * timeDiff,  event.getDirection().y + random.nextFloat(-0.05f, 0.05f) * timeDiff, event.getDirection().z + random.nextFloat(-0.05f, 0.05f) * timeDiff);
             }
 
             HitResult result;

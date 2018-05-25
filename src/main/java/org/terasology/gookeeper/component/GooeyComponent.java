@@ -24,28 +24,69 @@ import java.util.List;
 import java.util.Optional;
 
 public class GooeyComponent implements Component {
-    /* The prefab corresponding to this gooey type. */
+    /**
+     *  The prefab corresponding to this gooey type
+     */
     public Optional<Prefab> prefab;
-    /* The profit factor. (i.e how much money does the player make from the visitors viewing the gooey) */
+
+    /**
+     *  The profit factor. (i.e how much money does the player make from the visitors viewing the gooey)
+     */
     public float profitPayOff;
-    /* The biome this type of gooey are to be found in. */
+
+    /**
+     * The biome this type of gooey are to be found in.
+     */
     public List<String> biome = Lists.newArrayList();
-    /* This attribute is checked while spawning the gooey. */
+
+    /**
+     * This attribute is checked while spawning the gooey.
+     */
     public String blockBelow;
-    /* The percentage chance of spawning this type of gooey. (i.e rarity factor) */
+
+    /**
+     * The percentage chance of spawning this type of gooey. (i.e rarity factor)
+     */
     public float SPAWN_CHANCE;
-    /* The maximum number of gooeys in a group. */
+
+    /**
+     * The maximum number of gooeys in a group.
+     */
     public int MAX_GROUP_SIZE;
-    /* The max. number of charges required to stun the gooey. */
+
+    /**
+     * The max. number of charges required to stun the gooey.
+     */
     public int maxStunChargesReq = 3;
-    /* The number of charges required to stun the gooey. (current) */
+
+    /**
+     * The number of charges required to stun the gooey. (current)
+     */
     public int stunChargesReq = 3;
-    /* Time (in sec) for which the gooey remains stunned. */
+
+    /**
+     * Time (in sec) for which the gooey remains stunned.
+     */
     public float stunTime = 3f;
-    /* The PlazMaster 3000 cannon frequency required for stunning the gooey. */
+
+    /**
+     * The PlazMaster 3000 cannon frequency required for stunning the gooey.
+     */
     public float stunFrequency = 100f;
-    /* Bool regarding whether the gooey has been stunned by the player or not. */
+
+    /**
+     * Bool regarding whether the gooey has been stunned by the player or not.
+     */
     public boolean isStunned = false;
-    /* Bool regarding whether the gooey has been captured by the player or not. */
+
+    /**
+     * Bool regarding whether the gooey has been captured by the player or not.
+     */
     public boolean isCaptured = false;
+
+    /**
+     * The probability factor of getting captured in a slime pod
+     */
+    public float captureProbabiltyFactor = 15f;
+
 }
