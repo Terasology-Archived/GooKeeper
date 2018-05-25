@@ -17,7 +17,9 @@ package org.terasology.gookeeper.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terasology.audio.events.PlaySoundEvent;
 import org.terasology.behaviors.components.NPCMovementComponent;
+import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
@@ -28,17 +30,21 @@ import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.component.SlimePodComponent;
+import org.terasology.gookeeper.component.SlimePodItemComponent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.logic.behavior.BehaviorComponent;
 import org.terasology.logic.characters.CharacterComponent;
 import org.terasology.logic.characters.CharacterMovementComponent;
+import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.physics.events.ImpulseEvent;
 import org.terasology.registry.In;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
 import org.terasology.world.BlockEntityRegistry;
@@ -84,11 +90,6 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
         Vector3i blockPos = new Vector3i(entity.getComponent(LocationComponent.class).getWorldPosition());
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
 
-        logger.info("Captured Entity: " + slimePodComponent.capturedEntity);
-        for (int i = 0; i < slimePodComponent.disabledComponents.size(); i++) {
-            logger.info("Disabled Comps: " + slimePodComponent.disabledComponents.get(i));
-        }
-
         // TODO: Add implementation to release captured gooeys by reattaching removed comps.
         if (slimePodComponent.capturedEntity != EntityRef.NULL) {
             EntityRef releasedGooey = slimePodComponent.capturedEntity;
@@ -99,6 +100,33 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
             LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
             locationComponent.setWorldPosition(new Vector3f(blockPos.x, blockPos.y + 1, blockPos.z));
         }
+    }
+
+    @ReceiveEvent(components = {SlimePodItemComponent.class})
+    public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
+
+        SlimePodItemComponent slimePodItemComponent = entity.getComponent(SlimePodItemComponent.class);
+
+        EntityBuilder entityBuilder = entityManager.newBuilder(slimePodItemComponent.launchPrefab);
+        LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
+
+        Vector3f dir = new Vector3f(event.getDirection());
+        Vector3f initialDir = locationComponent.getWorldDirection();
+        Vector3f finalDir = new Vector3f(dir);
+        finalDir.normalize();
+        locationComponent.setWorldRotation(Quat4f.shortestArcQuat(initialDir, finalDir));
+
+        locationComponent.setWorldScale(0.3f);
+
+        entityBuilder.saveComponent(locationComponent);
+
+        GazeMountPointComponent gaze = localPlayer.getCharacterEntity().getComponent(GazeMountPointComponent.class);
+        if (gaze != null) {
+            locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(0.3f)));
+        }
+
+        entityBuilder.setPersistent(false);
+        EntityRef slimePodEntity = entityBuilder.build();
     }
 
     @ReceiveEvent

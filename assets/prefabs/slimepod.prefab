@@ -1,4 +1,6 @@
 {
-        "name": "SlimePod",
-        "SlimePod": {}
+    "name": "SlimePod",
+    "SlimePodItem": {
+        "launchPrefab": "GooKeeper:slimepodthrowable"
+    }
 }
