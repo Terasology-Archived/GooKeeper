@@ -8,6 +8,6 @@
         "mesh" : "GooKeeper:ball",
         "material" : "GooKeeper:slimePodMat"
     },
-
+    "RigidBody": {},
     "SlimePod": {}
 }

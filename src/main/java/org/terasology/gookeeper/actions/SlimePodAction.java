@@ -17,8 +17,6 @@ package org.terasology.gookeeper.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.audio.events.PlaySoundEvent;
-import org.terasology.behaviors.components.NPCMovementComponent;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -28,13 +26,9 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.GooeyComponent;
-import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.component.SlimePodComponent;
 import org.terasology.gookeeper.component.SlimePodItemComponent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
-import org.terasology.logic.behavior.BehaviorComponent;
-import org.terasology.logic.characters.CharacterComponent;
-import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
@@ -43,13 +37,15 @@ import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.physics.components.RigidBodyComponent;
+import org.terasology.physics.components.shapes.BoxShapeComponent;
+import org.terasology.physics.engine.PhysicsEngine;
 import org.terasology.physics.events.ImpulseEvent;
 import org.terasology.registry.In;
+import org.terasology.rendering.logic.MeshComponent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 
 import java.math.RoundingMode;
@@ -106,6 +102,7 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
     public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
 
         SlimePodItemComponent slimePodItemComponent = entity.getComponent(SlimePodItemComponent.class);
+        RigidBodyComponent rigidBodyComponent = entity.getComponent(RigidBodyComponent.class);
 
         EntityBuilder entityBuilder = entityManager.newBuilder(slimePodItemComponent.launchPrefab);
         LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
@@ -114,8 +111,13 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
         Vector3f initialDir = locationComponent.getWorldDirection();
         Vector3f finalDir = new Vector3f(dir);
         finalDir.normalize();
-        locationComponent.setWorldRotation(Quat4f.shortestArcQuat(initialDir, finalDir));
 
+        if(entityBuilder.hasComponent(MeshComponent.class)){
+            MeshComponent mesh = entityBuilder.getComponent(MeshComponent.class);
+            BoxShapeComponent box = new BoxShapeComponent();
+            box.extents = mesh.mesh.getAABB().getExtents().scale(2.0f);
+            entityBuilder.addOrSaveComponent(box);
+        }
         locationComponent.setWorldScale(0.3f);
 
         entityBuilder.saveComponent(locationComponent);
@@ -127,6 +129,8 @@ public class SlimePodAction extends BaseComponentSystem implements UpdateSubscri
 
         entityBuilder.setPersistent(false);
         EntityRef slimePodEntity = entityBuilder.build();
+
+        slimePodEntity.send(new ImpulseEvent(dir.mul(200f)));
     }
 
     @ReceiveEvent

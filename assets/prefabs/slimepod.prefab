@@ -1,5 +1,12 @@
 {
-    "name": "SlimePod",
+    "parent": "engine:iconItem",
+    "DisplayName": {
+        "name": "PlazMaster 3000"
+    },
+    "Item": {
+        "icon": "engine:items#crossbow",
+        "usage": "IN_DIRECTION"
+    },
     "SlimePodItem": {
         "launchPrefab": "GooKeeper:slimepodthrowable"
     }
