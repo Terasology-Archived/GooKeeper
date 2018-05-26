@@ -17,6 +17,7 @@ package org.terasology.gookeeper.system;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terasology.audio.StaticSound;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -42,9 +43,11 @@ import org.terasology.physics.events.ImpulseEvent;
 import org.terasology.registry.In;
 import org.terasology.rendering.logic.MeshComponent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
+import org.terasology.utilities.Assets;
+import org.terasology.utilities.random.FastRandom;
+import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
-import org.terasology.world.block.BlockComponent;
 
 import java.math.RoundingMode;
 
@@ -64,6 +67,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     private LocalPlayer localPlayer;
 
     private static final Logger logger = LoggerFactory.getLogger(SlimePodSystem.class);
+    private Random random = new FastRandom();
 
     @Override
     public void initialise() {
@@ -75,9 +79,23 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
     @Override
     public void update(float delta) {
+        for (EntityRef entity : entityManager.getEntitiesWith(SlimePodComponent.class)) {
+            SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
+
+            for (EntityRef gooeyEntity : entityManager.getEntitiesWith(GooeyComponent.class)) {
+                GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
+                if (gooeyComponent.isCaptured) {
+                    continue;
+                }
+                boolean capture = tryToCapture(entity, gooeyEntity) > random.nextInt(100);
+                if (capture) {
+                    captureGooey(slimePodComponent, gooeyEntity);
+                }
+            }
+        }
     }
 
-    @ReceiveEvent(components = {SlimePodComponent.class, BlockComponent.class})
+    @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
 
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
@@ -165,5 +183,16 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
         float captureProbability = TeraMath.fastAbs(distanceFromGooey - slimePodComponent.maxDistance) * gooeyComponent.captureProbabiltyFactor;
         return captureProbability;
+    }
+
+    private void captureGooey (SlimePodComponent slimePodComponent, EntityRef gooeyEntity) {
+        GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
+
+        if (slimePodComponent != null) {
+            if (slimePodComponent.isActivated && slimePodComponent.capturedEntity == EntityRef.NULL && gooeyComponent.isStunned) {
+                slimePodComponent.capturedEntity = gooeyEntity;
+                gooeyEntity.send(new OnCapturedEvent(localPlayer.getCharacterEntity(), slimePodComponent));
+            }
+        }
     }
 }

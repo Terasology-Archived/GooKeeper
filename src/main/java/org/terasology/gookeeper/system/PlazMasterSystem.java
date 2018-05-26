@@ -89,6 +89,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     private PlazMasterComponent _plazMasterComponent = null;
     private static final Prefab arrowPrefab = Assets.getPrefab("GooKeeper:arrow").get();
     private StaticSound gunShotAudio = Assets.getSound("GooKeeper:PlasmaShot").get();
+    private StaticSound gooeyHitAudio = Assets.getSound("GooKeeper:GooeyHit").get();
 
     private static final String eventID = "ARROW_DESTROY_EVENT_ID";
 
@@ -154,6 +155,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
                     if (gooeyComponent.stunChargesReq == 0) {
                         hitEntity.send(new OnStunnedEvent(localPlayer.getCharacterEntity()));
                         hitEntity.send(new DoDamageEvent(plazMasterComponent.damageAmount, plazMasterComponent.damageType, localPlayer.getCharacterEntity()));
+                        hitEntity.send(new PlaySoundEvent(gooeyHitAudio, 0.8f));
                     }
                 } else {
                     logger.info("Adjust the frequency!");
@@ -187,6 +189,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
             EntityRef arrowEntity = entityBuilder.build();
 
             arrowEntity.send(new PlaySoundEvent(gunShotAudio, 0.4f));
+
             delayManager.addDelayedAction(arrowEntity, eventID, 3000);
         }
     }

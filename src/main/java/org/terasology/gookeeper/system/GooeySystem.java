@@ -217,8 +217,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             currentNumOfEntities ++;
             if (currentNumOfEntities < numOfEntitiesAllowed) {
                 spawnGooey(gooey, randomSpawnPosition);
+            } else {
+                currentNumOfEntities = numOfEntitiesAllowed;
             }
-            currentNumOfEntities = TeraMath.clamp (currentNumOfEntities, 0, numOfEntitiesAllowed);
         }
     }
 
