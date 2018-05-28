@@ -33,6 +33,7 @@ import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.TeraMath;
@@ -66,6 +67,9 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     @In
     private LocalPlayer localPlayer;
 
+    @In
+    private InventoryManager inventoryManager;
+
     private static final Logger logger = LoggerFactory.getLogger(SlimePodSystem.class);
     private Random random = new FastRandom();
 
@@ -92,6 +96,14 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
                     captureGooey(slimePodComponent, gooeyEntity);
                 }
             }
+
+//            LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
+//            float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
+//
+//            if (distanceFromPlayer <= 1f) {
+//                inventoryManager.giveItem(localPlayer.getCharacterEntity(), localPlayer.getCharacterEntity(), entity);
+//                entity.destroy();
+//            }
         }
     }
 

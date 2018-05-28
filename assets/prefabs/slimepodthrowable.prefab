@@ -1,5 +1,9 @@
 {
-    "name": "SlimePod",
+    "parent": "engine:iconItem",
+    "DisplayName": {
+        "name": "Slime Pod"
+    },
+    "Item": {},
     "BoxShape" : {
         "extents" : [0.5, 0.5, 1]
     },
@@ -7,6 +11,10 @@
     "Mesh" : {
         "mesh" : "GooKeeper:ball",
         "material" : "GooKeeper:slimePodMat"
+    },
+    "Pickup": {
+        "timeToPickUp": 0,
+        "timeDropped": 0
     },
     "RigidBody": {},
     "SlimePod": {}
