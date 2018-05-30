@@ -1,0 +1,38 @@
+{
+    "StructureTemplate" : {
+        "type": "GooKeeper:GooZoo"
+    },
+    "SpawnBlockRegions": {
+        "regionsToFill":[
+            { "blockType": "Core:CobbleStone", "region": { "min": [-11, 0, 1], "size": [23, 1, 21]}},
+            { "blockType": "Core:CobbleStone", "region": { "min": [-11, 1, 1], "size": [10, 3, 1]}},
+            { "blockType": "Core:CobbleStone", "region": { "min": [-11, 4, 1], "size": [23, 7, 1]}},
+            { "blockType": "Core:CobbleStone", "region": { "min": [2, 1, 1], "size": [10, 3, 1]}},
+            { "blockType": "Core:CobbleStone", "region": { "min": [-11, 1, 2], "size": [1, 9, 20]}},
+            { "blockType": "Core:CobbleStone", "region": { "min": [-11, 10, 2], "size": [23, 1, 20]}},
+            { "blockType": "Core:CobbleStone", "region": { "min": [11, 1, 2], "size": [1, 9, 20]}},
+            { "blockType": "Core:CobbleStone", "region": { "min": [-11, 0, 22], "size": [23, 11, 1]}},
+            { "blockType": "engine:air", "region": { "min": [-1, 1, 1], "size": [3, 3, 1]}},
+            { "blockType": "engine:air", "region": { "min": [-10, 1, 2], "size": [21, 9, 20]}}
+        ]
+    },
+
+    "ScheduleStructurePlacement" : {
+    },
+    "SpawnPrefabs": {
+    },
+    "CheckBlockRegionCondition" : {
+        "checksToPerform": [
+            {"condition": "StructureTemplates:IsGroundLike", "region" :{"min": [-11, 0, 1], "size": [23, 12, 22]}}
+        ]
+    },
+    /* For debugging purposes it is an item: */
+    "parent" : "engine:iconItem",
+    "DisplayName" : {
+        "name" : "GooZoo"
+    },
+    "Item" : {
+        "icon" : "engine:items#whiteRecipe"
+    },
+    "SpawnStructureAction": {}
+}

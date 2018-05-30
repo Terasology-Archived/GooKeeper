@@ -88,7 +88,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
             for (EntityRef gooeyEntity : entityManager.getEntitiesWith(GooeyComponent.class)) {
                 GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
-                if (gooeyComponent.isCaptured) {
+                if (gooeyComponent == null || gooeyComponent.isCaptured || !gooeyComponent.isStunned) {
                     continue;
                 }
                 boolean capture = tryToCapture(entity, gooeyEntity) > random.nextInt(100);
