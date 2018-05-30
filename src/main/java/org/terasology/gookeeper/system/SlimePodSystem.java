@@ -34,11 +34,15 @@ import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.inventory.InventoryManager;
+import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.physics.HitResult;
+import org.terasology.physics.Physics;
+import org.terasology.physics.StandardCollisionGroup;
 import org.terasology.physics.components.shapes.BoxShapeComponent;
 import org.terasology.physics.events.ImpulseEvent;
 import org.terasology.registry.In;
@@ -69,6 +73,9 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
     @In
     private InventoryManager inventoryManager;
+
+    @In
+    private Physics physics;
 
     private static final Logger logger = LoggerFactory.getLogger(SlimePodSystem.class);
     private Random random = new FastRandom();
@@ -155,7 +162,22 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             entityBuilder.setPersistent(false);
             EntityRef slimePodEntity = entityBuilder.build();
 
+            Vector3f position = localPlayer.getViewPosition();
+            Vector3f direction = localPlayer.getViewDirection();
+
+            Vector3f maxAllowedDistanceInDirection = direction.mul(1.5f);
+            HitResult hitResult = physics.rayTrace(position, direction, 1.5f, StandardCollisionGroup.CHARACTER, StandardCollisionGroup.WORLD);
+            if (hitResult.isHit()) {
+                Vector3f possibleNewPosition = hitResult.getHitPoint();
+                maxAllowedDistanceInDirection = possibleNewPosition.sub(position);
+            }
+
+            Vector3f newPosition = position;
+            newPosition.add(maxAllowedDistanceInDirection.mul(0.9f));
+
+            slimePodEntity.send(new DropItemEvent(newPosition));
             slimePodEntity.send(new ImpulseEvent(dir.mul(200f)));
+
             slimePodItemComponent.slimePods --;
         }
     }
