@@ -103,14 +103,6 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
                     captureGooey(slimePodComponent, gooeyEntity);
                 }
             }
-
-//            LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
-//            float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
-//
-//            if (distanceFromPlayer <= 1f) {
-//                inventoryManager.giveItem(localPlayer.getCharacterEntity(), localPlayer.getCharacterEntity(), entity);
-//                entity.destroy();
-//            }
         }
     }
 
@@ -118,7 +110,12 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     public void onActivate(ActivateEvent event, EntityRef entity) {
 
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
-        Vector3i blockPos = new Vector3i(entity.getComponent(LocationComponent.class).getWorldPosition());
+        Vector3i blockPos;
+        if (entity.getComponent(LocationComponent.class) != null) {
+            blockPos = new Vector3i(entity.getComponent(LocationComponent.class).getWorldPosition());
+        } else {
+            blockPos = new Vector3i(event.getInstigatorLocation().addX(3f));
+        }
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
 
         if (slimePodComponent.capturedEntity != EntityRef.NULL) {
@@ -128,7 +125,10 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             }
             releasedGooey.getComponent(SkeletalMeshComponent.class).mesh = slimePodComponent.capturedGooeyMesh;
             LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
+            GooeyComponent gooeyComponent = releasedGooey.getComponent(GooeyComponent.class);
             locationComponent.setWorldPosition(new Vector3f(blockPos.x, blockPos.y + 1, blockPos.z));
+            gooeyComponent.isCaptured = false;
+            releasedGooey.saveComponent(gooeyComponent);
         }
     }
 
