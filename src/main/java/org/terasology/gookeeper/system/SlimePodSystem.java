@@ -17,6 +17,7 @@ package org.terasology.gookeeper.system;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terasology.assets.management.AssetManager;
 import org.terasology.audio.StaticSound;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -30,6 +31,9 @@ import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.SlimePodComponent;
 import org.terasology.gookeeper.component.SlimePodItemComponent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
+import org.terasology.logic.behavior.BehaviorComponent;
+import org.terasology.logic.behavior.asset.BehaviorTree;
+import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
@@ -40,11 +44,14 @@ import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.network.Client;
+import org.terasology.network.ClientComponent;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
 import org.terasology.physics.StandardCollisionGroup;
 import org.terasology.physics.components.shapes.BoxShapeComponent;
 import org.terasology.physics.events.ImpulseEvent;
+import org.terasology.protobuf.EntityData;
 import org.terasology.registry.In;
 import org.terasology.rendering.logic.MeshComponent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
@@ -77,6 +84,9 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     @In
     private Physics physics;
 
+    @In
+    private AssetManager assetManager;
+
     private static final Logger logger = LoggerFactory.getLogger(SlimePodSystem.class);
     private Random random = new FastRandom();
 
@@ -92,15 +102,18 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     public void update(float delta) {
         for (EntityRef entity : entityManager.getEntitiesWith(SlimePodComponent.class)) {
             SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
+            LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
+            if (locationComponent != null) {
+                for (EntityRef gooeyEntity : entityManager.getEntitiesWith(GooeyComponent.class)) {
+                    GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
 
-            for (EntityRef gooeyEntity : entityManager.getEntitiesWith(GooeyComponent.class)) {
-                GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
-                if (gooeyComponent == null || gooeyComponent.isCaptured || !gooeyComponent.isStunned) {
-                    continue;
-                }
-                boolean capture = tryToCapture(entity, gooeyEntity) > random.nextInt(100);
-                if (capture) {
-                    captureGooey(slimePodComponent, gooeyEntity);
+                    if (gooeyComponent == null || gooeyComponent.isCaptured || !gooeyComponent.isStunned) {
+                        continue;
+                    }
+                    boolean capture = tryToCapture(entity, gooeyEntity) > random.nextInt(100);
+                    if (capture) {
+                        captureGooey(slimePodComponent, gooeyEntity);
+                    }
                 }
             }
         }
@@ -108,6 +121,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
     @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
+        BehaviorTree capturedBT = assetManager.getAsset("GooKeeper:capturedGooey", BehaviorTree.class).get();
 
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
         Vector3i blockPos;
@@ -129,6 +143,17 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             locationComponent.setWorldPosition(new Vector3f(blockPos.x, blockPos.y + 1, blockPos.z));
             gooeyComponent.isCaptured = false;
             releasedGooey.saveComponent(gooeyComponent);
+
+            BehaviorComponent behaviorComponent = releasedGooey.getComponent(BehaviorComponent.class);
+            behaviorComponent.tree = capturedBT;
+            releasedGooey.saveComponent(behaviorComponent);
+
+            entity.destroy();
+
+            ClientComponent clientComponent = event.getInstigator().getComponent(ClientComponent.class);
+            EntityRef player = clientComponent.character;
+            EntityRef heldItem = player.getComponent(CharacterHeldItemComponent.class).selectedItem;
+            heldItem.getComponent(SlimePodItemComponent.class).slimePods ++;
         }
     }
 
