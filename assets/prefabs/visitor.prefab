@@ -1,0 +1,23 @@
+{
+  "skeletalmesh": {
+    "mesh": "femaleHuman",
+    "heightOffset": -2.8,
+    "material": "HumanoidCharacters:verticalColorArray(00ff00;292929;d1c270;e7655c;ffff00;f0472f)", // was femalehumanSkin
+    "animation": "femalehumanRun",
+    "animationPool": ["femalehumanRun"],
+    "loop": true,
+    "scale": [0.32, 0.32, 0.32]
+  },
+  "persisted": false,
+  "location": {},
+  "Stand" :{
+    "animationPool": ["femalehumanStand"]
+  },
+  "Walk" :{
+    // We don't have a component for run animations yet, since player usually runs, play run animation
+    "animationPool": ["femalehumanRun"]
+  },
+  "Behavior": {
+    "tree": "GooKeeper:visitor"
+  }
+}

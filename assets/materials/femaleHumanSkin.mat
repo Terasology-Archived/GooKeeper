@@ -1,0 +1,13 @@
+{
+  "shader": "engine:genericMeshMaterial",
+  "params": {
+     // The following line generates a texture with the same colors like: FemaleHumanLightSkin
+    "diffuse": "HumanoidCharacters:verticalColorArray(e7bd91;292929;d1c270;e7655c;6187d3;f0472f)",
+    "colorOffset": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "textured": true
+  }
+}
