@@ -1,21 +1,51 @@
 {
+  "DisplayName": {
+    "name": "A Visitor"
+  },
   "skeletalmesh": {
     "mesh": "femaleHuman",
-    "heightOffset": -2.8,
-    "material": "HumanoidCharacters:verticalColorArray(00ff00;292929;d1c270;e7655c;ffff00;f0472f)", // was femalehumanSkin
+    "heightOffset": -1.9,
+    "material": "femalehumanSkin",
     "animation": "femalehumanRun",
     "animationPool": ["femalehumanRun"],
     "loop": true,
     "scale": [0.32, 0.32, 0.32]
   },
-  "persisted": false,
   "location": {},
+  "Character": {},
+  "AliveCharacter": {},
+  "CharacterMovement": {
+    "groundFriction": 16,
+    "speedMultiplier": 1.5,
+    "distanceBetweenFootsteps": 1.0,
+    "distanceBetweenSwimStrokes": 2.5,
+    "height": 1.0,
+    "radius": 0.5,
+    "jumpSpeed": 12
+  },
+  "NPCMovement": {},
   "Stand" :{
     "animationPool": ["femalehumanStand"]
   },
   "Walk" :{
     // We don't have a component for run animations yet, since player usually runs, play run animation
     "animationPool": ["femalehumanRun"]
+  },
+  "Network": {},
+  "MinionMove": {},
+  "Health": {},
+  "BoxShape": {
+    "extents": [
+      1.0,
+      1.0,
+      1.0
+    ]
+    },
+  "Trigger": {
+    "detectGroups": [
+      "engine:debris",
+      "engine:sensor"
+    ]
   },
   "Behavior": {
     "tree": "GooKeeper:visitor"
