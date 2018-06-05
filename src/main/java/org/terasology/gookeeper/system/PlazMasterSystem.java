@@ -35,6 +35,7 @@ import org.terasology.gookeeper.component.PlazMasterShotComponent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.gookeeper.input.DecreaseFrequencyButton;
 import org.terasology.gookeeper.input.IncreaseFrequencyButton;
+import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayManager;
@@ -119,6 +120,11 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
         }
     }
 
+    /**
+     * Receives ActivateEvent when the held PlazMaster item is activated, shooting a plasma pulse.
+     *
+     * @param event,entity,plazMasterComponent   The ActivateEvent, the instigator entity and the corresponding PlazMasterComponent of the activated item
+     */
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, PlazMasterComponent plazMasterComponent) {
         if ((time.getGameTime() > lastTime + 1.0f / plazMasterComponent.rateOfFire) && plazMasterComponent.charges > 0f) {
@@ -194,6 +200,11 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
         }
     }
 
+    /**
+     * Receives DelayedActionTriggeredEvent, which deletes the plasma stub entity
+     *
+     * @param event,entity   The DelayedActionTriggeredEvent event, plasma stub entity to be destroyed
+     */
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef entityRef) {
         if (event.getActionId().equals(eventID)) {
@@ -202,15 +213,37 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     }
 
     // TODO: Instead of the current implementation, use itemHeld... and related funcs for multiplayer support.
+    /**
+     * Receives IncreaseFrequencyButton, which increases the plazmasters frequency.
+     *
+     * @param event,entity   The IncreaseFrequencyButton event
+     */
     @ReceiveEvent(components = ClientComponent.class)
     public void onIncreaseFrequency(IncreaseFrequencyButton event, EntityRef entityRef) {
-        _plazMasterComponent.frequency += 10f;
-        logger.info("Increased PlazMaster's Frequency!");
+        ClientComponent clientComponent = entityRef.getComponent(ClientComponent.class);
+        EntityRef player = clientComponent.character;
+        EntityRef heldItem = player.getComponent(CharacterHeldItemComponent.class).selectedItem;
+
+        if (heldItem.hasComponent(PlazMasterComponent.class)) {
+            heldItem.getComponent(PlazMasterComponent.class).frequency += 10f;
+            logger.info("Increased PlazMaster's Frequency!");
+        }
     }
 
+    /**
+     * Receives DecreaseFrequencyButton, which decreases the plazmasters frequency.
+     *
+     * @param event,entity   The DecreaseFrequencyButton event
+     */
     @ReceiveEvent(components = ClientComponent.class)
     public void onDecreaseFrequency(DecreaseFrequencyButton event, EntityRef entityRef) {
-        _plazMasterComponent.frequency -= 10f;
-        logger.info("Decreased PlazMaster's Frequency!");
+        ClientComponent clientComponent = entityRef.getComponent(ClientComponent.class);
+        EntityRef player = clientComponent.character;
+        EntityRef heldItem = player.getComponent(CharacterHeldItemComponent.class).selectedItem;
+
+        if (heldItem.hasComponent(PlazMasterComponent.class)) {
+            heldItem.getComponent(PlazMasterComponent.class).frequency -= 10f;
+            logger.info("Decreased PlazMaster's Frequency!");
+        }
     }
 }

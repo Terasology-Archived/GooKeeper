@@ -40,6 +40,7 @@ import org.terasology.logic.characters.WalkComponent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.math.ChunkMath;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
@@ -98,9 +99,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     private Block airBlock;
 
-    private static final int numOfEntitiesAllowed = 40;
+    private static final int numOfEntitiesAllowed = 100;
     private static int currentNumOfEntities = 0;
-    private static final float maxDistanceFromPlayer = 300f;
+    private static final float maxDistanceFromPlayer = 60f;
 
     private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
 
@@ -135,7 +136,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             }
             //cullDistantGooeys(entity, locationComponent);
         }
-        //spawnNearPlayer();
+        spawnNearPlayer();
     }
 
     /**
@@ -159,16 +160,14 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * Try spawning gooeys based on the player's current world position
      */
     private void spawnNearPlayer () {
-        Vector3i blockPos = new Vector3i(localPlayer.getPosition());
-        if (worldProvider.isBlockRelevant(blockPos)) {
-            for (Optional<Prefab> gooey : gooeyPrefabs) {
-                /* Decreasing the spawn chance since it could lead to spawning MANY gooeys, hence decreasing performance. */
-                boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE/2f > random.nextInt(100);
-                if (!trySpawn) {
-                    return;
-                }
-                tryGooeySpawn(gooey, blockPos);
+        Vector3f pos = localPlayer.getPosition();
+        Vector3i chunkPos = ChunkMath.calcChunkPos((int) pos.x, (int) pos.y, (int) pos.z);
+        for (Optional<Prefab> gooey : gooeyPrefabs) {
+            boolean trySpawn = (gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE/10f) > random.nextInt(400);
+            if (!trySpawn) {
+                return;
             }
+            tryGooeySpawn(gooey, chunkPos);
         }
     }
 
@@ -177,17 +176,17 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      *
      * @param event,worldEntity   The corresponding OnChunkGenerated event and the worldEntity ref
      */
-    @ReceiveEvent
-    public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
-        for (Optional<Prefab> gooey : gooeyPrefabs) {
-            boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE > random.nextInt(100);
-            if (!trySpawn) {
-                return;
-            }
-            Vector3i chunkPos = event.getChunkPos();
-            tryGooeySpawn(gooey, chunkPos);
-        }
-    }
+//    @ReceiveEvent
+//    public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
+//        for (Optional<Prefab> gooey : gooeyPrefabs) {
+//            boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE > random.nextInt(100);
+//            if (!trySpawn) {
+//                return;
+//            }
+//            Vector3i chunkPos = event.getChunkPos();
+//            tryGooeySpawn(gooey, chunkPos);
+//        }
+//    }
 
     /**
      * Attempts to spawn gooey on the specified chunk. The number of gooeys spawned will depend on probability
@@ -212,10 +211,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         for (int i = 0; i < gooeyCount; i++ ) {
             int randomIndex = random.nextInt(foundPositions.size());
             Vector3i randomSpawnPosition = foundPositions.remove(randomIndex);
-            //EntityRef newEntityRef;
-            //delayManager.addDelayedAction(newEntityRef, delayActionID, 1000);
             currentNumOfEntities ++;
-            if (currentNumOfEntities < numOfEntitiesAllowed) {
+            if (currentNumOfEntities <= numOfEntitiesAllowed) {
                 spawnGooey(gooey, randomSpawnPosition);
             } else {
                 currentNumOfEntities = numOfEntitiesAllowed;
@@ -336,6 +333,11 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         return;
     }
 
+    /**
+     * Receives OnStunnedEvent sent to a gooey entity when it gets stunned by PlazMaster.
+     *
+     * @param event,entity   The OnStunnedEvent and the gooey entity to which it is sent
+     */
     @ReceiveEvent
     public void onStunned(OnStunnedEvent event, EntityRef entity) {
         GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
@@ -346,6 +348,11 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         return;
     }
 
+    /**
+     * Receives OnCapturedEvent sent to a gooey entity when it gets captured in a slime pod.
+     *
+     * @param event,entity   The OnCapturedEvent and the gooey entity to which it is sent
+     */
     @ReceiveEvent
     public void onCaptured(OnCapturedEvent event, EntityRef entity) {
         SlimePodComponent slimePodComponent = event.getSlimePodComponent();
