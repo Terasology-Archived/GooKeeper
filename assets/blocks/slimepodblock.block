@@ -2,7 +2,7 @@
     "displayName": "SlimePod",
     "attachmentAllowed" : true,
     "shadowCasting" : false,
-    "rotation" : "horizontal",
+    "family" : "horizontal",
     "categories" : ["SlimePod"],
     "hardness": 15,
     "tiles": "GooKeeper:slimePod",

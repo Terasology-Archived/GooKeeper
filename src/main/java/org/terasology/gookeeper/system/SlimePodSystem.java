@@ -60,6 +60,7 @@ import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
+import org.terasology.world.block.Block;
 
 import java.math.RoundingMode;
 
@@ -119,6 +120,11 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         }
     }
 
+    /**
+     * Receives ActivateEvent when the held slime pod launcher item is activated, shooting out a slime pod.
+     *
+     * @param event,entity   The ActivateEvent, the instigator entity
+     */
     @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
         BehaviorTree capturedBT = assetManager.getAsset("GooKeeper:capturedGooey", BehaviorTree.class).get();
@@ -157,6 +163,11 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         }
     }
 
+    /**
+     * Receives ActivateEvent when the held/targeted slime pod item is activated, releasing the captured gooey.
+     *
+     * @param event,entity   The ActivateEvent, the instigator entity
+     */
     @ReceiveEvent(components = {SlimePodItemComponent.class})
     public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
 
@@ -207,6 +218,13 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         }
     }
 
+    /**
+     * This method is not appropriate for the poke-ball'ish slime pods, instead a different bear-trap
+     * type of slime pod can be introduced.
+     * Receives OnEnterBlockEvent when a gooey entity steps over a slime pod.
+     *
+     * @param event,entity   The OnEnterBlockEvent, the gooey entity
+     */
     @ReceiveEvent
     public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
         LocationComponent loc = entity.getComponent(LocationComponent.class);
@@ -225,6 +243,12 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         }
     }
 
+    /**
+     * This method is computes the probability of capturing a gooey entity within a slime pod, based on its type
+     * and distance from the slime pod.
+     *
+     * @param slimePodEntity,gooeyEntity   slime pod item entity, the gooey entity
+     */
     private float tryToCapture (EntityRef slimePodEntity, EntityRef gooeyEntity) {
         SlimePodComponent slimePodComponent = slimePodEntity.getComponent(SlimePodComponent.class);
         GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
@@ -244,12 +268,16 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         return captureProbability;
     }
 
+    /**
+     * Sends a `OnCapturedEvent` to the gooey entity, and sets the `SlimePodComponent` capturedEntity to the corresponding gooey entity.
+     *
+     * @param slimePodComponent,gooeyEntity   slime pod component, the gooey entity
+     */
     private void captureGooey (SlimePodComponent slimePodComponent, EntityRef gooeyEntity) {
         GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
 
         if (slimePodComponent != null) {
             if (slimePodComponent.isActivated && slimePodComponent.capturedEntity == EntityRef.NULL && gooeyComponent.isStunned) {
-                slimePodComponent.capturedEntity = gooeyEntity;
                 gooeyEntity.send(new OnCapturedEvent(localPlayer.getCharacterEntity(), slimePodComponent));
             }
         }
