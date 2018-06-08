@@ -99,7 +99,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     private Block airBlock;
 
-    private static final int numOfEntitiesAllowed = 40;
+    private static final int numOfEntitiesAllowed = 10;
     private static int currentNumOfEntities = 0;
     private static final float maxDistanceFromPlayer = 60f;
 

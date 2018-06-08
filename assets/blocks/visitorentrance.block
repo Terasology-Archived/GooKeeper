@@ -1,0 +1,15 @@
+{
+    "displayName": "Visitor Entrance",
+    "attachmentAllowed" : true,
+    "shadowCasting" : true,
+    "family" : "horizontal",
+    "categories" : ["visitor"],
+    "hardness": 1,
+    "tiles": "GooKeeper:slimePod",
+    "targetable" : true,
+    "entity" : {
+         "prefab" : "GooKeeper:entrance",
+         "temporary" : false,
+         "keepActive" : true
+    }
+}

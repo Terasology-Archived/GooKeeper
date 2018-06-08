@@ -1,0 +1,12 @@
+{
+    "DisplayName": {
+        "name": "Visitor Entrance"
+    },
+    "Spawner": {
+        "types" : ["visitor"],
+        "period": 5000,
+        "maxMobsPerSpawner" : 50,
+        "rangedSpawning" : true,
+        "range": 3
+    }
+}
