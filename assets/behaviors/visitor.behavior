@@ -1,8 +1,41 @@
 {
   dynamic: [
       {
-        lookup: {
-          tree: "GooKeeper:stray"
+        loop : {
+          child : {
+            sequence : [
+              {
+                set_speed : { speedMultiplier: 0.6 }
+              },
+              {
+              animation : {
+                  play: "engine:Walk.animationPool",
+                  loop: "engine:Walk.animationPool"
+                }
+              },
+              {
+                lookup: { tree: "GooKeeper:doRandomMove" }
+              },
+              {
+                sequence: [
+                  {
+                      set_speed : { speedMultiplier: 0 }
+                  },
+                  {
+                    animation : {
+                      play: "engine:Stand.animationPool",
+                      loop: "engine:Stand.animationPool"
+                    }
+                  }
+                ]
+              },
+              {
+                sleep : {
+                  time : 3
+                }
+              }
+            ]
+          }
         }
       }
   ]
