@@ -38,8 +38,10 @@ import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.characters.StandComponent;
 import org.terasology.logic.characters.WalkComponent;
 import org.terasology.logic.characters.events.HorizontalCollisionEvent;
+import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.location.Location;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.ChunkMath;
@@ -49,6 +51,7 @@ import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.logic.health.OnDamagedEvent;
 import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.physics.engine.CharacterCollider;
 import org.terasology.protobuf.EntityData;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
@@ -400,17 +403,35 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         entity.removeComponent(CharacterMovementComponent.class);
     }
 
-    @ReceiveEvent
+    @ReceiveEvent(components = {GooeyComponent.class})
     public void onBump(HorizontalCollisionEvent event, EntityRef entity, GooeyComponent gooeyComponent) {
-        if (entity.hasComponent(GooeyComponent.class)) {
-            EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(event.getLocation(), RoundingMode.HALF_UP));
-            CharacterMovementComponent moveComp = entity
-                    .getComponent(CharacterMovementComponent.class);
-            if (moveComp != null) {
-                moveComp.jump = false;
-                if (blockEntity.hasComponent(PenBlockComponent.class)) {
-                    //TODO: Add non-jumping conditions here
-                }
+        LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
+        Vector3f collisionPosition = event.getLocation();
+
+        EntityRef blockEntity = EntityRef.NULL;
+
+        for (EntityRef entityRef : entityManager.getEntitiesWith(PenBlockComponent.class)) {
+            LocationComponent blockPos = entityRef.getComponent(LocationComponent.class);
+
+            if (blockPos == null) {
+                continue;
+            }
+
+            if (Vector3f.distance(blockPos.getWorldPosition(), locationComponent.getWorldPosition()) <= 3f) {
+                blockEntity = entityRef;
+            }
+        }
+
+        CharacterMovementComponent moveComp = entity.getComponent(CharacterMovementComponent.class);
+        if (moveComp != null && blockEntity.hasComponent(PenBlockComponent.class)) {
+            PenBlockComponent penBlockComponent = blockEntity.getComponent(PenBlockComponent.class);
+            DisplayNameComponent displayNameComponent = entity.getComponent(DisplayNameComponent.class);
+
+            if (penBlockComponent.type.equals(displayNameComponent.name)) {
+                //TODO: Add non-jumping conditions here
+                moveComp.jumpSpeed = 0f;
+            } else {
+                moveComp.jumpSpeed = 12f;
             }
         }
     }

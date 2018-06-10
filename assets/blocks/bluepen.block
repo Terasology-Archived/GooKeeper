@@ -1,0 +1,17 @@
+{
+    "displayName": "Blue Pen Block",
+    "attachmentAllowed" : true,
+    "shadowCasting" : true,
+    "family" : "horizontal",
+    "categories" : ["pen"],
+    "hardness": 1,
+    "tiles": "GooKeeper:slimePod",
+    "targetable" : true,
+    "climbable": false,
+    "penetrable": false,
+    "entity" : {
+         "prefab" : "GooKeeper:bluepen",
+         "temporary" : false,
+         "keepActive" : true
+    }
+}

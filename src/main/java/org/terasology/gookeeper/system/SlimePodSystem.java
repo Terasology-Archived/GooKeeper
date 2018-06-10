@@ -134,7 +134,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         if (entity.getComponent(LocationComponent.class) != null) {
             blockPos = new Vector3i(entity.getComponent(LocationComponent.class).getWorldPosition());
         } else {
-            blockPos = new Vector3i(event.getInstigatorLocation().addX(3f));
+            blockPos = new Vector3i(event.getInstigatorLocation());
         }
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
 
@@ -147,7 +147,6 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
             GooeyComponent gooeyComponent = releasedGooey.getComponent(GooeyComponent.class);
             locationComponent.setWorldPosition(new Vector3f(blockPos.x, blockPos.y + 1, blockPos.z));
-            gooeyComponent.isCaptured = false;
             releasedGooey.saveComponent(gooeyComponent);
 
             BehaviorComponent behaviorComponent = releasedGooey.getComponent(BehaviorComponent.class);
