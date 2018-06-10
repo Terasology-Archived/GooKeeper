@@ -37,6 +37,8 @@ import org.terasology.logic.characters.CharacterComponent;
 import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.characters.StandComponent;
 import org.terasology.logic.characters.WalkComponent;
+import org.terasology.logic.characters.events.HorizontalCollisionEvent;
+import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
@@ -66,6 +68,7 @@ import org.terasology.world.chunks.ChunkConstants;
 import org.terasology.world.chunks.event.OnChunkGenerated;
 import org.terasology.world.chunks.event.OnChunkLoaded;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -136,6 +139,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             }
             //cullDistantGooeys(entity, locationComponent);
         }
+
         spawnNearPlayer();
     }
 
@@ -394,5 +398,20 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         slimePodComponent.capturedGooeyMesh = entity.getComponent(SkeletalMeshComponent.class).mesh;
         entity.getComponent(SkeletalMeshComponent.class).mesh = null;
         entity.removeComponent(CharacterMovementComponent.class);
+    }
+
+    @ReceiveEvent
+    public void onBump(HorizontalCollisionEvent event, EntityRef entity, GooeyComponent gooeyComponent) {
+        if (entity.hasComponent(GooeyComponent.class)) {
+            EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(event.getLocation(), RoundingMode.HALF_UP));
+            CharacterMovementComponent moveComp = entity
+                    .getComponent(CharacterMovementComponent.class);
+            if (moveComp != null) {
+                moveComp.jump = false;
+                if (blockEntity.hasComponent(PenBlockComponent.class)) {
+                    //TODO: Add non-jumping conditions here
+                }
+            }
+        }
     }
 }
