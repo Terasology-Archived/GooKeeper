@@ -417,7 +417,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
                 continue;
             }
 
-            if (Vector3f.distance(blockPos.getWorldPosition(), locationComponent.getWorldPosition()) <= 3f) {
+            if (Vector3f.distance(blockPos.getWorldPosition(), collisionPosition) <= 3f) {
                 blockEntity = entityRef;
             }
         }
@@ -427,12 +427,15 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             PenBlockComponent penBlockComponent = blockEntity.getComponent(PenBlockComponent.class);
             DisplayNameComponent displayNameComponent = entity.getComponent(DisplayNameComponent.class);
 
+            entity.saveComponent(moveComp);
+
             if (penBlockComponent.type.equals(displayNameComponent.name)) {
                 //TODO: Add non-jumping conditions here
                 moveComp.jumpSpeed = 0f;
             } else {
                 moveComp.jumpSpeed = 12f;
             }
+            entity.saveComponent(moveComp);
         }
     }
 }
