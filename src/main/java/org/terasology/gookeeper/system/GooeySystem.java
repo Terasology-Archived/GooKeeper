@@ -406,6 +406,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onBump(HorizontalCollisionEvent event, EntityRef entity, GooeyComponent gooeyComponent) {
         LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
+        GooeyComponent gooeyComponent1 = entity.getComponent(GooeyComponent.class);
         Vector3f collisionPosition = event.getLocation();
 
         EntityRef blockEntity = EntityRef.NULL;
@@ -423,11 +424,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         }
 
         CharacterMovementComponent moveComp = entity.getComponent(CharacterMovementComponent.class);
-        if (moveComp != null && blockEntity.hasComponent(PenBlockComponent.class)) {
+        if (moveComp != null && blockEntity.hasComponent(PenBlockComponent.class) && gooeyComponent1.isCaptured) {
             PenBlockComponent penBlockComponent = blockEntity.getComponent(PenBlockComponent.class);
             DisplayNameComponent displayNameComponent = entity.getComponent(DisplayNameComponent.class);
-
-            entity.saveComponent(moveComp);
 
             if (penBlockComponent.type.equals(displayNameComponent.name)) {
                 //TODO: Add non-jumping conditions here
