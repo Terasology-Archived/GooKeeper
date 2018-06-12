@@ -16,6 +16,9 @@
         "timeToPickUp": 0,
         "timeDropped": 0
     },
-    "RigidBody": {},
+    "RigidBody": {
+        "mass": 30,
+        "friction": 2
+    },
     "SlimePod": {}
 }

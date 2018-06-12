@@ -130,35 +130,30 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         BehaviorTree capturedBT = assetManager.getAsset("GooKeeper:capturedGooey", BehaviorTree.class).get();
 
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
-        Vector3i blockPos;
+        Vector3f blockPos;
         if (entity.getComponent(LocationComponent.class) != null) {
-            blockPos = new Vector3i(entity.getComponent(LocationComponent.class).getWorldPosition());
+            blockPos = new Vector3f(entity.getComponent(LocationComponent.class).getWorldPosition());
         } else {
-            blockPos = new Vector3i(event.getInstigatorLocation());
+            blockPos = new Vector3f(localPlayer.getPosition().add(1f, 0f, 0f));
         }
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
 
         if (slimePodComponent.capturedEntity != EntityRef.NULL) {
             EntityRef releasedGooey = slimePodComponent.capturedEntity;
+            LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
+            locationComponent.setWorldPosition(blockPos);
+            releasedGooey.saveComponent(locationComponent);
+
             for (int i = 0; i < slimePodComponent.disabledComponents.size(); i++) {
                 releasedGooey.addOrSaveComponent(slimePodComponent.disabledComponents.get(i));
             }
             releasedGooey.getComponent(SkeletalMeshComponent.class).mesh = slimePodComponent.capturedGooeyMesh;
-            LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
-            GooeyComponent gooeyComponent = releasedGooey.getComponent(GooeyComponent.class);
-            locationComponent.setWorldPosition(new Vector3f(blockPos.x, blockPos.y + 1, blockPos.z));
-            releasedGooey.saveComponent(gooeyComponent);
 
             BehaviorComponent behaviorComponent = releasedGooey.getComponent(BehaviorComponent.class);
             behaviorComponent.tree = capturedBT;
             releasedGooey.saveComponent(behaviorComponent);
 
             entity.destroy();
-
-            ClientComponent clientComponent = event.getInstigator().getComponent(ClientComponent.class);
-            EntityRef player = clientComponent.character;
-            EntityRef heldItem = player.getComponent(CharacterHeldItemComponent.class).selectedItem;
-            heldItem.getComponent(SlimePodItemComponent.class).slimePods ++;
         }
     }
 

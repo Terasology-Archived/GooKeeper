@@ -154,13 +154,13 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
             EntityRef hitEntity = result.getEntity();
             if (hitEntity.hasComponent(GooeyComponent.class)) {
                 GooeyComponent gooeyComponent = hitEntity.getComponent(GooeyComponent.class);
-                logger.info("Hit Gooey!");
+                hitEntity.send(new DoDamageEvent(plazMasterComponent.damageAmount, plazMasterComponent.damageType, localPlayer.getCharacterEntity()));
+
                 if (TeraMath.fastAbs(gooeyComponent.stunFrequency - plazMasterComponent.frequency) <= 10f && !gooeyComponent.isStunned) {
                     // Begin the gooey wrangling.
                     gooeyComponent.stunChargesReq --;
                     if (gooeyComponent.stunChargesReq == 0) {
                         hitEntity.send(new OnStunnedEvent(localPlayer.getCharacterEntity()));
-                        hitEntity.send(new DoDamageEvent(plazMasterComponent.damageAmount, plazMasterComponent.damageType, localPlayer.getCharacterEntity()));
                         hitEntity.send(new PlaySoundEvent(gooeyHitAudio, 0.8f));
                     }
                 } else {
@@ -220,10 +220,14 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onIncreaseFrequency(IncreaseFrequencyButton event, EntityRef entityRef) {
-        ClientComponent clientComponent = entityRef.getComponent(ClientComponent.class);
-        EntityRef player = clientComponent.character;
-        EntityRef heldItem = player.getComponent(CharacterHeldItemComponent.class).selectedItem;
+        EntityRef character = localPlayer.getCharacterEntity();
+        CharacterHeldItemComponent component = character.getComponent(CharacterHeldItemComponent.class);
 
+        if (component == null) {
+            return;
+        }
+
+        EntityRef heldItem = component.selectedItem;
         if (heldItem.hasComponent(PlazMasterComponent.class)) {
             heldItem.getComponent(PlazMasterComponent.class).frequency += 10f;
             logger.info("Increased PlazMaster's Frequency!");
@@ -237,10 +241,14 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onDecreaseFrequency(DecreaseFrequencyButton event, EntityRef entityRef) {
-        ClientComponent clientComponent = entityRef.getComponent(ClientComponent.class);
-        EntityRef player = clientComponent.character;
-        EntityRef heldItem = player.getComponent(CharacterHeldItemComponent.class).selectedItem;
+        EntityRef character = localPlayer.getCharacterEntity();
+        CharacterHeldItemComponent component = character.getComponent(CharacterHeldItemComponent.class);
 
+        if (component == null) {
+            return;
+        }
+
+        EntityRef heldItem = component.selectedItem;
         if (heldItem.hasComponent(PlazMasterComponent.class)) {
             heldItem.getComponent(PlazMasterComponent.class).frequency -= 10f;
             logger.info("Decreased PlazMaster's Frequency!");
