@@ -51,6 +51,7 @@ import org.terasology.physics.CollisionGroup;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
 import org.terasology.physics.StandardCollisionGroup;
+import org.terasology.protobuf.EntityData;
 import org.terasology.registry.In;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
@@ -58,6 +59,8 @@ import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockComponent;
+import org.terasology.world.block.items.OnBlockItemPlaced;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class VisitorSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
@@ -106,14 +109,47 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             if (visitorComponent.pensToVisit.isEmpty()) {
                 int cutoffRNG = random.nextInt(0, 10);
 
-                for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class)) {
-                    PenBlockComponent penBlockComponent = pen.getComponent(PenBlockComponent.class);
-                    if (penBlockComponent.cutoffFactor <= cutoffRNG) {
-                        visitorComponent.pensToVisit.add(pen);
+                for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class)) {
+                    VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
+                    if (visitBlockComponent.cutoffFactor <= cutoffRNG) {
+                        visitorComponent.pensToVisit.add(visitBlock);
                         visitor.saveComponent(visitorComponent);
                     }
                 }
             }
         }
+    }
+
+    @ReceiveEvent(components = {VisitBlockComponent.class, BlockComponent.class})
+    public void onBlockPlaced(OnBlockItemPlaced event, EntityRef entity) {
+        BlockComponent blockComponent = event.getPlacedBlock().getComponent(BlockComponent.class);
+        if (blockComponent == null) {
+            return;
+        }
+
+        Vector3i targetBlock = blockComponent.getPosition();
+        EntityRef pen = getClosestPen(new Vector3f(targetBlock.x, targetBlock.y, targetBlock.z));
+
+        VisitBlockComponent visitBlockComponent = event.getPlacedBlock().getComponent(VisitBlockComponent.class);
+        visitBlockComponent.type = pen.getComponent(PenBlockComponent.class).type;
+        visitBlockComponent.cutoffFactor = pen.getComponent(PenBlockComponent.class).cutoffFactor;
+
+        event.getPlacedBlock().saveComponent(visitBlockComponent);
+    }
+
+    private EntityRef getClosestPen (Vector3f location) {
+        EntityRef closestPen = EntityRef.NULL;
+        float minDistance = 10f;
+
+        for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class)) {
+            BlockComponent blockComponent = pen.getComponent(BlockComponent.class);
+            Vector3f blockPos = new Vector3f(blockComponent.getPosition().x, blockComponent.getPosition().y, blockComponent.getPosition().z);
+            if (Vector3f.distance(blockPos, location) < minDistance) {
+                minDistance = Vector3f.distance(blockPos, location);
+                closestPen = pen;
+            }
+        }
+
+        return closestPen;
     }
 }

@@ -3,7 +3,8 @@
         "name": "Pen Block"
     },
     "PenBlock": {
-        "type": "Yellow Gooey"
+        "type": "Yellow Gooey",
+        "cutoffFactor": 3
     },
     "ConnectsToFences": {}
 }

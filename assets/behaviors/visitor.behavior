@@ -1,42 +1,33 @@
 {
-  dynamic: [
-      {
-        loop : {
-          child : {
-            sequence : [
-              {
-                set_speed : { speedMultiplier: 0.6 }
-              },
-              {
-              animation : {
-                  play: "engine:Walk.animationPool",
-                  loop: "engine:Walk.animationPool"
-                }
-              },
-              {
-                lookup: { tree: "GooKeeper:doRandomMove" }
-              },
-              {
-                sequence: [
-                  {
-                      set_speed : { speedMultiplier: 0 }
-                  },
-                  {
-                    animation : {
-                      play: "engine:Stand.animationPool",
-                      loop: "engine:Stand.animationPool"
-                    }
-                  }
-                ]
-              },
-              {
-                sleep : {
-                  time : 3
-                }
-              }
-            ]
-          }
-        }
+  sequence:[
+    {
+        set_target_to_visit_block
+    },
+    {
+      animation : {
+        play: "engine:Walk.animationPool",
+        loop: "engine:Walk.animationPool"
       }
+    },
+    {
+      set_speed : {
+        speedMultiplier: 0.6
+      }
+    },
+    {
+      parallel: [
+        {
+          loop: {
+            child: {
+              sequence: [
+                set_target_to_followed_entity,
+                { sleep: {time: 0.2}}
+              ]
+            }
+          }
+        },
+        move_to
+      ]
+    }
   ]
 }

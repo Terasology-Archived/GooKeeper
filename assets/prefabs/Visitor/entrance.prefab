@@ -1,7 +1,4 @@
 {
-    "DisplayName": {
-        "name": "Visitor Entrance"
-    },
     "Spawner": {
         "types" : ["visitor"],
         "period": 5000,

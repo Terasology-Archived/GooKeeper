@@ -21,6 +21,8 @@ import org.terasology.entitySystem.entity.EntityRef;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VisitorComponent implements Component {
-    public List<EntityRef> pensToVisit = new ArrayList<>();
+public class VisitBlockComponent implements Component {
+    public boolean isOccupied = false;
+    public String type = "undefined";
+    public float cutoffFactor;
 }
