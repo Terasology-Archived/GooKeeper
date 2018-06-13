@@ -41,12 +41,14 @@ public class PlayerStartingInventorySystem extends BaseComponentSystem {
     @ReceiveEvent(components = InventoryComponent.class)
     public void onPlayerSpawnedEvent(OnPlayerSpawnedEvent event, EntityRef player) {
         BlockItemFactory blockFactory = new BlockItemFactory(entityManager);
-
+        inventoryManager.giveItem(player, EntityRef.NULL, entityManager.create("StructureTemplates:toolbox"));
         inventoryManager.giveItem(player, EntityRef.NULL, entityManager.create("GooKeeper:plazmaster"));
         inventoryManager.giveItem(player, EntityRef.NULL, entityManager.create("GooKeeper:slimepod"));
         inventoryManager.giveItem(player, EntityRef.NULL, entityManager.create("GooKeeper:GooZoo"));
         inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:yellowpen"), 99));
         inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:redpen"), 99));
         inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:bluepen"), 99));
+        inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:visitorentrance"), 1));
+        inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:visitblock"), 20));
     }
 }

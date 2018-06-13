@@ -29,6 +29,7 @@ import java.util.Random;
 
 @BehaviorAction(name = "set_target_to_visit_block")
 public class SetTargetToVisitBlockAction extends BaseAction {
+
     @In
     private PathfinderSystem pathfinderSystem;
 
@@ -39,8 +40,13 @@ public class SetTargetToVisitBlockAction extends BaseAction {
         MinionMoveComponent moveComponent = actor.getComponent(MinionMoveComponent.class);
         VisitorComponent visitorComponent = actor.getComponent(VisitorComponent.class);
 
+        if (visitorComponent.pensToVisit.size() == 0) {
+            return BehaviorState.FAILURE;
+        }
+
         if (moveComponent.currentBlock != null) {
-            moveComponent.target = visitorComponent.pensToVisit.get(0).getComponent(LocationComponent.class).getWorldPosition();
+            int penIndex = random.nextInt(visitorComponent.pensToVisit.size());
+            moveComponent.target = visitorComponent.pensToVisit.get(penIndex).getComponent(LocationComponent.class).getWorldPosition();
             actor.save(moveComponent);
         } else {
             return BehaviorState.FAILURE;

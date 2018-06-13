@@ -76,6 +76,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
+import org.terasology.world.sun.CelestialSystem;
 
 @RegisterSystem
 public class GooeySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
@@ -96,6 +97,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     @In
     private LocalPlayer localPlayer;
+
+    @In
+    private CelestialSystem celestialSystem;
 
     private static final String delayActionID = "SPAWN_DELAY_ID";
 
@@ -118,6 +122,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         gooeyPrefabs.add(Assets.getPrefab("GooKeeper:redgooey"));
         gooeyPrefabs.add(Assets.getPrefab("GooKeeper:bluegooey"));
         gooeyPrefabs.add(Assets.getPrefab("GooKeeper:yellowgooey"));
+
+        celestialSystem.toggleSunHalting(0.5f);
     }
 
     @Override

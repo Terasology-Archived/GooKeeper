@@ -1,8 +1,6 @@
 {
-  sequence:[
-    {
-        set_target_to_visit_block
-    },
+  sequence : [
+    set_target_to_visit_block,
     {
       animation : {
         play: "engine:Walk.animationPool",
@@ -10,24 +8,15 @@
       }
     },
     {
-      set_speed : {
-        speedMultiplier: 0.6
+      move_to : {
+        distance : 0.6
       }
     },
     {
-      parallel: [
-        {
-          loop: {
-            child: {
-              sequence: [
-                set_target_to_followed_entity,
-                { sleep: {time: 0.2}}
-              ]
-            }
-          }
-        },
-        move_to
-      ]
+      animation : {
+        play: "engine:Stand.animationPool",
+        loop: "engine:Stand.animationPool"
+      }
     }
   ]
 }

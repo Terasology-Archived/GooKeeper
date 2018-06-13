@@ -10,7 +10,7 @@
     "climbable": false,
     "penetrable": false,
     "entity" : {
-         "prefab" : "GooKeeper:pen",
+         "prefab" : "GooKeeper:visit",
          "temporary" : false,
          "keepActive" : true
     }

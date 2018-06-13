@@ -88,10 +88,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     @In
     private LocalPlayer localPlayer;
 
-    private CollisionGroup filter = StandardCollisionGroup.ALL;
     private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
     private Random random = new FastRandom();
-    private static final String eventID = "ARROW_DESTROY_EVENT_ID";
 
     @Override
     public void initialise() {
