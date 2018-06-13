@@ -23,6 +23,7 @@ import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
@@ -152,8 +153,6 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             BehaviorComponent behaviorComponent = releasedGooey.getComponent(BehaviorComponent.class);
             behaviorComponent.tree = capturedBT;
             releasedGooey.saveComponent(behaviorComponent);
-
-            entity.destroy();
         }
     }
 

@@ -3,9 +3,12 @@
     "DisplayName": {
         "name": "Slime Pod"
     },
-    "Item": {},
+    "Item": {
+        "consumedOnUse": true,
+        "usage": "ON_BLOCK"
+    },
     "BoxShape" : {
-        "extents" : [0.5, 0.5, 1]
+        "extents" : [1, 1, 1]
     },
     "Location": {},
     "Mesh" : {
@@ -16,9 +19,6 @@
         "timeToPickUp": 0,
         "timeDropped": 0
     },
-    "RigidBody": {
-        "mass": 30,
-        "friction": 2
-    },
+    "RigidBody": {},
     "SlimePod": {}
 }

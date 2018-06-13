@@ -372,6 +372,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         slimePodComponent.disabledComponents.add(entity.getComponent(WalkComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(StandComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(BehaviorComponent.class));
+        slimePodComponent.disabledComponents.add(entity.getComponent(LocationComponent.class));
 
         if (entity.hasComponent(AggressiveComponent.class)) {
             slimePodComponent.disabledComponents.add(entity.getComponent(AggressiveComponent.class));
@@ -397,20 +398,27 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         entity.removeComponent(BehaviorComponent.class);
         entity.removeComponent(WalkComponent.class);
         entity.removeComponent(StandComponent.class);
+        entity.removeComponent(LocationComponent.class);
 
         slimePodComponent.capturedGooeyMesh = entity.getComponent(SkeletalMeshComponent.class).mesh;
         entity.getComponent(SkeletalMeshComponent.class).mesh = null;
         entity.removeComponent(CharacterMovementComponent.class);
     }
 
+    /**
+     * Receives HorizontalCollisionEvent sent to a gooey entity when it collides with any entity. Here, it is used to detect collisions
+     * with the pen blocks, and if the types match then the gooey is not allowed to jump over the block.
+     *
+     * @param event,entity   The HorizontalCollisionEvent and the gooey entity to which it is sent
+     */
     @ReceiveEvent(components = {GooeyComponent.class})
-    public void onBump(HorizontalCollisionEvent event, EntityRef entity, GooeyComponent gooeyComponent) {
-        LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
-        GooeyComponent gooeyComponent1 = entity.getComponent(GooeyComponent.class);
+    public void onBump(HorizontalCollisionEvent event, EntityRef entity) {
+        GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
         Vector3f collisionPosition = event.getLocation();
 
         EntityRef blockEntity = EntityRef.NULL;
 
+        //TODO: Optimize the block entity retrieval procedure instead of having a proximity based search
         for (EntityRef entityRef : entityManager.getEntitiesWith(PenBlockComponent.class)) {
             LocationComponent blockPos = entityRef.getComponent(LocationComponent.class);
 
@@ -424,12 +432,11 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         }
 
         CharacterMovementComponent moveComp = entity.getComponent(CharacterMovementComponent.class);
-        if (moveComp != null && blockEntity.hasComponent(PenBlockComponent.class) && gooeyComponent1.isCaptured) {
+        if (moveComp != null && blockEntity.hasComponent(PenBlockComponent.class) && gooeyComponent.isCaptured) {
             PenBlockComponent penBlockComponent = blockEntity.getComponent(PenBlockComponent.class);
             DisplayNameComponent displayNameComponent = entity.getComponent(DisplayNameComponent.class);
 
             if (penBlockComponent.type.equals(displayNameComponent.name)) {
-                //TODO: Add non-jumping conditions here
                 moveComp.jumpSpeed = 0f;
             } else {
                 moveComp.jumpSpeed = 12f;

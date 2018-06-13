@@ -16,8 +16,11 @@
 package org.terasology.gookeeper.component;
 
 import org.terasology.entitySystem.Component;
+import org.terasology.entitySystem.entity.EntityRef;
 
-public class PenBlockComponent implements Component {
-    public String type = "undefined";
-    public int cutoffFactor;
+import java.util.ArrayList;
+import java.util.List;
+
+public class VisitorComponent implements Component {
+    public List<EntityRef> pensToVisit = new ArrayList<EntityRef>();
 }

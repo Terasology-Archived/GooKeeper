@@ -41,6 +41,7 @@ import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.health.DoDamageEvent;
+import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.TeraMath;
@@ -78,6 +79,9 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     private DelayManager delayManager;
 
     @In
+    private InventoryManager inventoryManager;
+
+    @In
     private Time time;
 
     @In
@@ -87,7 +91,6 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     private static final Logger logger = LoggerFactory.getLogger(PlazMasterSystem.class);
     private float lastTime = 0f;
     private Random random = new FastRandom();
-    private PlazMasterComponent _plazMasterComponent = null;
     private static final Prefab arrowPrefab = Assets.getPrefab("GooKeeper:arrow").get();
     private StaticSound gunShotAudio = Assets.getSound("GooKeeper:PlasmaShot").get();
     private StaticSound gooeyHitAudio = Assets.getSound("GooKeeper:GooeyHit").get();
@@ -104,13 +107,6 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
 
     @Override
     public void update(float delta) {
-        if (_plazMasterComponent == null) {
-            for (EntityRef entity : entityManager.getEntitiesWith(PlazMasterComponent.class)) {
-                _plazMasterComponent = entity.getComponent(PlazMasterComponent.class);
-                break;
-            }
-        }
-
         for (EntityRef projectile : entityManager.getEntitiesWith(PlazMasterShotComponent.class)) {
             LocationComponent location = projectile.getComponent(LocationComponent.class);
             PlazMasterShotComponent shot = projectile.getComponent(PlazMasterShotComponent.class);
