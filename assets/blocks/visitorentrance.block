@@ -5,7 +5,6 @@
     "family" : "horizontal",
     "categories" : ["visitor"],
     "hardness": 1,
-    "tiles": "GooKeeper:slimePod",
     "targetable" : true,
     "entity" : {
          "prefab" : "GooKeeper:entrance",

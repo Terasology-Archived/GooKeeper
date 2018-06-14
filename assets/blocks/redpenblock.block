@@ -1,15 +1,15 @@
 {
-    "displayName": "Visit Block",
+    "displayName": "Red Gooey Pen Block",
     "attachmentAllowed" : true,
     "shadowCasting" : true,
     "family" : "horizontal",
-    "categories" : ["visitBlock"],
+    "categories" : ["pen"],
     "hardness": 1,
     "targetable" : true,
     "climbable": false,
     "penetrable": false,
     "entity" : {
-         "prefab" : "GooKeeper:visit",
+         "prefab" : "GooKeeper:redpen",
          "temporary" : false,
          "keepActive" : true
     }
