@@ -22,7 +22,6 @@
     "animationPool": ["femalehumanStand"]
   },
   "Walk" :{
-    // We don't have a component for run animations yet, since player usually runs, play run animation
     "animationPool": ["femalehumanRun"]
   },
   "Network": {},

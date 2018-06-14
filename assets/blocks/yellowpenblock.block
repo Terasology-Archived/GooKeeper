@@ -1,13 +1,12 @@
 {
-    "displayName": "Yellow Red Pen",
+    "displayName": "Yellow Pen Block",
     "attachmentAllowed" : true,
     "shadowCasting" : true,
     "family" : "horizontal",
     "categories" : ["pen"],
+ 	"shape" : "engine:Block",
     "hardness": 1,
     "targetable" : true,
-    "climbable": false,
-    "penetrable": false,
     "entity" : {
          "prefab" : "GooKeeper:yellowpen",
          "temporary" : false,

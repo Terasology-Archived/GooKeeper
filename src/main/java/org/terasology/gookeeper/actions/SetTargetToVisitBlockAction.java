@@ -46,8 +46,10 @@ public class SetTargetToVisitBlockAction extends BaseAction {
 
         if (moveComponent.currentBlock != null) {
             int penIndex = random.nextInt(visitorComponent.pensToVisit.size());
-            moveComponent.target = visitorComponent.pensToVisit.get(penIndex).getComponent(LocationComponent.class).getWorldPosition();
-            actor.save(moveComponent);
+            if (visitorComponent.pensToVisit.get(penIndex).hasComponent(LocationComponent.class)) {
+                moveComponent.target = visitorComponent.pensToVisit.get(penIndex).getComponent(LocationComponent.class).getWorldPosition();
+                actor.save(moveComponent);
+            }
         } else {
             return BehaviorState.FAILURE;
         }

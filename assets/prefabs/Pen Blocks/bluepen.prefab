@@ -1,7 +1,4 @@
 {
-    "DisplayName": {
-        "name": "Pen Block"
-    },
     "PenBlock": {
         "type": "Blue Gooey",
         "cutoffFactor": 6

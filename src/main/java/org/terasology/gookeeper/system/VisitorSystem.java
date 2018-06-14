@@ -17,48 +17,27 @@ package org.terasology.gookeeper.system;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.audio.StaticSound;
-import org.terasology.audio.events.PlaySoundEvent;
 import org.terasology.engine.Time;
-import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.*;
-import org.terasology.gookeeper.event.OnStunnedEvent;
-import org.terasology.gookeeper.input.DecreaseFrequencyButton;
-import org.terasology.gookeeper.input.IncreaseFrequencyButton;
-import org.terasology.logic.characters.CharacterHeldItemComponent;
-import org.terasology.logic.characters.GazeMountPointComponent;
-import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.delay.DelayedActionTriggeredEvent;
-import org.terasology.logic.health.DoDamageEvent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.network.ClientComponent;
-import org.terasology.physics.CollisionGroup;
-import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
-import org.terasology.physics.StandardCollisionGroup;
-import org.terasology.protobuf.EntityData;
 import org.terasology.registry.In;
-import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.items.OnBlockItemPlaced;
 
@@ -107,8 +86,9 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             if (visitorComponent.pensToVisit.isEmpty()) {
                 int cutoffRNG = random.nextInt(0, 10);
 
-                for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class)) {
+                for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class, LocationComponent.class)) {
                     VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
+
                     if (visitBlockComponent.cutoffFactor <= cutoffRNG) {
                         visitorComponent.pensToVisit.add(visitBlock);
                         visitor.saveComponent(visitorComponent);
@@ -118,29 +98,33 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         }
     }
 
-    @ReceiveEvent(components = {VisitBlockComponent.class, BlockComponent.class})
+    @ReceiveEvent
     public void onBlockPlaced(OnBlockItemPlaced event, EntityRef entity) {
         BlockComponent blockComponent = event.getPlacedBlock().getComponent(BlockComponent.class);
-        if (blockComponent == null) {
-            return;
-        }
-
-        Vector3i targetBlock = blockComponent.getPosition();
-        EntityRef pen = getClosestPen(new Vector3f(targetBlock.x, targetBlock.y, targetBlock.z));
-
         VisitBlockComponent visitBlockComponent = event.getPlacedBlock().getComponent(VisitBlockComponent.class);
-        visitBlockComponent.type = pen.getComponent(PenBlockComponent.class).type;
-        visitBlockComponent.cutoffFactor = pen.getComponent(PenBlockComponent.class).cutoffFactor;
 
-        event.getPlacedBlock().saveComponent(visitBlockComponent);
+        if (blockComponent != null && visitBlockComponent != null) {
+            Vector3i targetBlock = blockComponent.getPosition();
+            EntityRef pen = getClosestPen(new Vector3f(targetBlock.x, targetBlock.y, targetBlock.z));
+
+            if (pen != EntityRef.NULL) {
+                visitBlockComponent.type = pen.getComponent(PenBlockComponent.class).type;
+                visitBlockComponent.cutoffFactor = pen.getComponent(PenBlockComponent.class).cutoffFactor;
+
+                logger.info("Type: " + visitBlockComponent.type);
+                logger.info("Cutoff: " + visitBlockComponent.cutoffFactor);
+                event.getPlacedBlock().saveComponent(visitBlockComponent);
+            }
+        }
     }
 
     private EntityRef getClosestPen (Vector3f location) {
         EntityRef closestPen = EntityRef.NULL;
-        float minDistance = 10f;
+        float minDistance = 100f;
 
-        for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class)) {
+        for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class, LocationComponent.class)) {
             BlockComponent blockComponent = pen.getComponent(BlockComponent.class);
+
             Vector3f blockPos = new Vector3f(blockComponent.getPosition().x, blockComponent.getPosition().y, blockComponent.getPosition().z);
             if (Vector3f.distance(blockPos, location) < minDistance) {
                 minDistance = Vector3f.distance(blockPos, location);
