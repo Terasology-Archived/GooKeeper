@@ -94,6 +94,11 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                         visitor.saveComponent(visitorComponent);
                     }
                 }
+
+                for (EntityRef exitBlock : entityManager.getEntitiesWith(VisitorExitComponent.class, LocationComponent.class)) {
+                    visitorComponent.pensToVisit.add(exitBlock);
+                    visitor.saveComponent(visitorComponent);
+                }
             }
         }
     }
@@ -111,8 +116,6 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                 visitBlockComponent.type = pen.getComponent(PenBlockComponent.class).type;
                 visitBlockComponent.cutoffFactor = pen.getComponent(PenBlockComponent.class).cutoffFactor;
 
-                logger.info("Type: " + visitBlockComponent.type);
-                logger.info("Cutoff: " + visitBlockComponent.cutoffFactor);
                 event.getPlacedBlock().saveComponent(visitBlockComponent);
             }
         }

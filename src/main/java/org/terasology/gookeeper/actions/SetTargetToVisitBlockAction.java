@@ -40,16 +40,10 @@ public class SetTargetToVisitBlockAction extends BaseAction {
         MinionMoveComponent moveComponent = actor.getComponent(MinionMoveComponent.class);
         VisitorComponent visitorComponent = actor.getComponent(VisitorComponent.class);
 
-        if (visitorComponent.pensToVisit.size() == 0) {
-            return BehaviorState.FAILURE;
-        }
-
-        if (moveComponent.currentBlock != null) {
+        if (moveComponent.currentBlock != null && visitorComponent.pensToVisit.size() > 0) {
             int penIndex = random.nextInt(visitorComponent.pensToVisit.size());
-            if (visitorComponent.pensToVisit.get(penIndex).hasComponent(LocationComponent.class)) {
-                moveComponent.target = visitorComponent.pensToVisit.get(penIndex).getComponent(LocationComponent.class).getWorldPosition();
-                actor.save(moveComponent);
-            }
+            moveComponent.target = visitorComponent.pensToVisit.get(penIndex).getComponent(LocationComponent.class).getWorldPosition();
+            actor.save(moveComponent);
         } else {
             return BehaviorState.FAILURE;
         }

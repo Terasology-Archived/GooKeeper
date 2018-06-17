@@ -1,0 +1,14 @@
+{
+    "displayName": "Visitor Exit",
+    "attachmentAllowed" : true,
+    "shadowCasting" : true,
+    "family" : "horizontal",
+    "categories" : ["visitor"],
+    "hardness": 1,
+    "targetable" : true,
+    "entity" : {
+         "prefab" : "GooKeeper:exit",
+         "temporary" : false,
+         "keepActive" : true
+    }
+}

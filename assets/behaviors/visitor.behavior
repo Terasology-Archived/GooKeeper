@@ -1,6 +1,7 @@
 {
   sequence : [
     set_target_to_visit_block,
+    ensure_target_present,
     {
       animation : {
         play: "engine:Walk.animationPool",
@@ -12,6 +13,7 @@
         distance : 0.6
       }
     },
+    stop_moving,
     {
       animation : {
         play: "engine:Stand.animationPool",
