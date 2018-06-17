@@ -219,7 +219,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      *
      * @param event,entity   The OnEnterBlockEvent, the gooey entity
      */
-    @ReceiveEvent
+    @ReceiveEvent(components = {GooeyComponent.class})
     public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
         LocationComponent loc = entity.getComponent(LocationComponent.class);
         Vector3f pos = loc.getWorldPosition();

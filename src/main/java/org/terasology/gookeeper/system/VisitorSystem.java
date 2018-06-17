@@ -26,7 +26,10 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.*;
+import org.terasology.logic.characters.events.HorizontalCollisionEvent;
+import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.health.DestroyEvent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
@@ -40,6 +43,8 @@ import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.items.OnBlockItemPlaced;
+
+import java.math.RoundingMode;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class VisitorSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
@@ -103,6 +108,12 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         }
     }
 
+    /**
+     * Receives OnBlockItemPlaced event that is sent when a visit block is placed and hence updates the attribute value
+     * of the corresponding VisitorBlockComponent
+     *
+     * @param event,entity   The OnBlockItemPlaced event
+     */
     @ReceiveEvent
     public void onBlockPlaced(OnBlockItemPlaced event, EntityRef entity) {
         BlockComponent blockComponent = event.getPlacedBlock().getComponent(BlockComponent.class);
@@ -136,5 +147,24 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         }
 
         return closestPen;
+    }
+
+    /**
+     * Receives OnEnterBlockEvent sent to a visitor entity when it steps over a block. Here, it is used to detect collisions
+     * with the exit blocks.
+     *
+     * @param event,entity   The OnEnterBlockEvent event and the visitor entity to which it is sent
+     */
+    @ReceiveEvent(components = {VisitorComponent.class})
+    public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
+        LocationComponent loc = entity.getComponent(LocationComponent.class);
+        Vector3f pos = loc.getWorldPosition();
+        pos.setY(pos.getY() - 1);
+
+        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(pos, RoundingMode.HALF_UP));
+
+        if (blockEntity.hasComponent(VisitorExitComponent.class) && entity.hasComponent(VisitorComponent.class)) {
+            entity.destroy();
+        }
     }
 }
