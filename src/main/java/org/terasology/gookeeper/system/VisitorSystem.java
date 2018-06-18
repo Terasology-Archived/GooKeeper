@@ -29,7 +29,6 @@ import org.terasology.gookeeper.component.*;
 import org.terasology.logic.characters.events.HorizontalCollisionEvent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.health.DestroyEvent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
@@ -96,14 +95,14 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
                     if (visitBlockComponent.cutoffFactor <= cutoffRNG) {
                         visitorComponent.pensToVisit.add(visitBlock);
-                        visitor.saveComponent(visitorComponent);
                     }
                 }
 
                 for (EntityRef exitBlock : entityManager.getEntitiesWith(VisitorExitComponent.class, LocationComponent.class)) {
                     visitorComponent.pensToVisit.add(exitBlock);
-                    visitor.saveComponent(visitorComponent);
                 }
+
+                visitor.saveComponent(visitorComponent);
             }
         }
     }
@@ -151,7 +150,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
     /**
      * Receives OnEnterBlockEvent sent to a visitor entity when it steps over a block. Here, it is used to detect collisions
-     * with the exit blocks.
+     * with the exit blocks and also removing the visit blocks from pensToVisit list.
      *
      * @param event,entity   The OnEnterBlockEvent event and the visitor entity to which it is sent
      */
@@ -165,6 +164,14 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
         if (blockEntity.hasComponent(VisitorExitComponent.class) && entity.hasComponent(VisitorComponent.class)) {
             entity.destroy();
+        } else if (blockEntity.hasComponent(VisitBlockComponent.class) && entity.hasComponent(VisitorComponent.class)) {
+            VisitorComponent visitorComponent = entity.getComponent(VisitorComponent.class);
+            if (visitorComponent.pensToVisit.contains(blockEntity)) {
+                logger.info("Removing visited block from the list.");
+                visitorComponent.pensToVisit.remove(blockEntity);
+            }
+
+            entity.saveComponent(visitorComponent);
         }
     }
 }

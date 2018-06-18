@@ -382,19 +382,19 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
         if (entity.hasComponent(AggressiveComponent.class)) {
             slimePodComponent.disabledComponents.add(entity.getComponent(AggressiveComponent.class));
-            slimePodComponent.disabledComponents.add(entity.getComponent(FindNearbyPlayersComponent.class));
+//            slimePodComponent.disabledComponents.add(entity.getComponent(FindNearbyPlayersComponent.class));
 
             entity.removeComponent(AggressiveComponent.class);
             entity.removeComponent(FindNearbyPlayersComponent.class);
         } else if (entity.hasComponent(NeutralComponent.class)) {
             slimePodComponent.disabledComponents.add(entity.getComponent(NeutralComponent.class));
-            slimePodComponent.disabledComponents.add(entity.getComponent(AttackOnHitComponent.class));
+//            slimePodComponent.disabledComponents.add(entity.getComponent(AttackOnHitComponent.class));
 
             entity.removeComponent(NeutralComponent.class);
             entity.removeComponent(AttackOnHitComponent.class);
         } else {
             slimePodComponent.disabledComponents.add(entity.getComponent(FriendlyComponent.class));
-            slimePodComponent.disabledComponents.add(entity.getComponent(FindNearbyPlayersComponent.class));
+//            slimePodComponent.disabledComponents.add(entity.getComponent(FindNearbyPlayersComponent.class));
 
             entity.removeComponent(FriendlyComponent.class);
             entity.removeComponent(FindNearbyPlayersComponent.class);

@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.gookeeper.system;
+package org.terasology.gookeeper.component;
 
-import org.terasology.entitySystem.event.AbstractConsumableEvent;
+import org.terasology.entitySystem.Component;
 
-/**
- * This event is sent whenever an entity requires a change in it's behavior tree.
- * Using this event several behavior trees can be chained together to facilitate
- * an event driven behavior tree org.terasology.gookeeper.system.
- */
-public class UpdateBehaviorEvent extends AbstractConsumableEvent {
-
+public class EconomyComponent implements Component {
+    public float playerWalletCredit;
 }

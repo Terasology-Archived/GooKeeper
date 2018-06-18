@@ -1,0 +1,14 @@
+{
+    "displayName": "Player Wallet Block",
+    "attachmentAllowed" : true,
+    "shadowCasting" : false,
+    "family" : "horizontal",
+    "categories" : ["economy"],
+    "hardness": 1,
+    "targetable" : true,
+    "entity" : {
+         "prefab" : "GooKeeper:playerwallet",
+         "temporary" : false,
+         "keepActive" : true
+    }
+}

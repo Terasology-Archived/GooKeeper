@@ -2,7 +2,7 @@
     "Spawner": {
         "types" : ["visitor"],
         "period": 7000,
-        "maxMobsPerSpawner" : 5,
+        "maxMobsPerSpawner" : 10,
         "rangedSpawning" : true,
         "range": 3
     }
