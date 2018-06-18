@@ -11,26 +11,29 @@
     "loop": true,
     "scale": [0.32, 0.32, 0.32]
   },
-  "location": {},
-  "Character": {},
-  "AliveCharacter": {},
-  "CharacterMovement": {
-    "faceMovementDirection" : true,
-    "groundFriction": 16,
-    "speedMultiplier": 0.6,
-    "distanceBetweenFootsteps": 0.4,
-    "distanceBetweenSwimStrokes": 2.5,
-    "height": 1.9,
-    "radius": 0.5,
-    "jumpSpeed": 12
+  "Behavior": {
+    "tree": "GooKeeper:visitor"
   },
-  "NPCMovement": {},
   "Stand" :{
     "animationPool": ["femalehumanStand"]
   },
   "Walk" :{
     "animationPool": ["femalehumanRun"]
   },
+  "location": {},
+  "Character": {},
+  "AliveCharacter": {},
+  "CharacterMovement": {
+    "faceMovementDirection": true,
+    "groundFriction": 16,
+    "speedMultiplier": 0.6,
+    "distanceBetweenFootsteps": 0.4,
+    "distanceBetweenSwimStrokes": 2.5,
+    "height": 1.0,
+    "radius": 0.5,
+    "jumpSpeed": 12
+  },
+  "NPCMovement": {},
   "Network": {},
   "MinionMove": {},
   "Health": {},
@@ -46,9 +49,6 @@
       "engine:debris",
       "engine:sensor"
     ]
-  },
-  "Behavior": {
-    "tree": "GooKeeper:visitor"
   },
   "Spawnable": {
     "tags": ["visitor"]

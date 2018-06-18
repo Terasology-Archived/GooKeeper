@@ -71,6 +71,9 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     @In
     private LocalPlayer localPlayer;
 
+    @In
+    private EconomySystem economySystem;
+
     private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
     private Random random = new FastRandom();
 
@@ -88,6 +91,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
 
             if (visitorComponent.pensToVisit.isEmpty()) {
+                economySystem.payEntranceFee(visitor);
+
                 int cutoffRNG = random.nextInt(0, 10);
 
                 for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class, LocationComponent.class)) {
@@ -154,7 +159,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
      *
      * @param event,entity   The OnEnterBlockEvent event and the visitor entity to which it is sent
      */
-    @ReceiveEvent(components = {VisitorComponent.class})
+    @ReceiveEvent
     public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
         LocationComponent loc = entity.getComponent(LocationComponent.class);
         Vector3f pos = loc.getWorldPosition();
@@ -167,7 +172,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         } else if (blockEntity.hasComponent(VisitBlockComponent.class) && entity.hasComponent(VisitorComponent.class)) {
             VisitorComponent visitorComponent = entity.getComponent(VisitorComponent.class);
             if (visitorComponent.pensToVisit.contains(blockEntity)) {
-                logger.info("Removing visited block from the list.");
+                economySystem.payVisitFee(entity, blockEntity);
                 visitorComponent.pensToVisit.remove(blockEntity);
             }
 
