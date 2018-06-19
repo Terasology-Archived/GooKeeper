@@ -28,12 +28,17 @@ import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.EconomyComponent;
 import org.terasology.gookeeper.component.PenBlockComponent;
 import org.terasology.gookeeper.component.VisitBlockComponent;
+import org.terasology.gookeeper.ui.WalletHud;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.physics.Physics;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
+import org.terasology.rendering.nui.ControlWidget;
+import org.terasology.rendering.nui.NUIManager;
+import org.terasology.rendering.nui.layers.hud.HUDScreenLayer;
+import org.terasology.rendering.nui.widgets.UIText;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
@@ -64,6 +69,9 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     @In
     private AssetManager assetManager;
 
+    @In
+    private NUIManager nuiManager;
+
     private static final Logger logger = LoggerFactory.getLogger(EconomySystem.class);
     private Random random = new FastRandom();
     private static final float baseEntranceFee = 100f;
@@ -71,6 +79,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
 
     @Override
     public void initialise() {
+        nuiManager.getHUD().addHUDElement("WalletHud");
     }
 
     @Override

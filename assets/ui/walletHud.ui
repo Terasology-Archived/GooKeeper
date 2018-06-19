@@ -1,0 +1,18 @@
+{
+    "type": "WalletHud",
+    "contents": {
+        "type": "relativeLayout",
+        "contents": [
+            {
+                "type": "UIText",
+                 "id": "walletBalance",
+                 "text": "",
+                  "layoutInfo": {
+                      "use-content-width": true,
+                      "use-content-height": true,
+                      "width": 200
+                  }
+            }
+        ]
+    }
+}
