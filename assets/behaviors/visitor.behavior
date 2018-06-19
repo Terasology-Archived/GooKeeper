@@ -19,6 +19,7 @@
         play: "engine:Stand.animationPool",
         loop: "engine:Stand.animationPool"
       }
-    }
+    },
+    visitor_exit
   ]
 }

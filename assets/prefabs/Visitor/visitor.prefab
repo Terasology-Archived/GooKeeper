@@ -2,6 +2,7 @@
   "DisplayName": {
     "name": "A Visitor"
   },
+  "persisted": false,
   "skeletalmesh": {
     "mesh": "femaleHuman",
     "heightOffset": -1.9,

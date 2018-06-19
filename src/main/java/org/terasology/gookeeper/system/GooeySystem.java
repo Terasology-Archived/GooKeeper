@@ -22,6 +22,7 @@ import org.terasology.behaviors.components.AttackOnHitComponent;
 import org.terasology.behaviors.components.FindNearbyPlayersComponent;
 import org.terasology.core.world.CoreBiome;
 import org.terasology.entitySystem.entity.EntityBuilder;
+import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.gookeeper.component.*;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -96,6 +97,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     private DelayManager delayManager;
 
     @In
+    private PrefabManager prefabManager;
+
+    @In
     private LocalPlayer localPlayer;
 
     @In
@@ -104,7 +108,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     private static final String delayActionID = "SPAWN_DELAY_ID";
 
     private Random random = new FastRandom();
-    private List<Optional<Prefab>> gooeyPrefabs = new ArrayList();
+    private List<Prefab> gooeyPrefabs = new ArrayList();
     private SkeletalMesh gooeySkeletalMesh = null;
 
     private Block airBlock;
@@ -119,9 +123,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     public void initialise() {
         airBlock = blockManager.getBlock(BlockManager.AIR_ID);
 
-        gooeyPrefabs.add(Assets.getPrefab("GooKeeper:redgooey"));
-        gooeyPrefabs.add(Assets.getPrefab("GooKeeper:bluegooey"));
-        gooeyPrefabs.add(Assets.getPrefab("GooKeeper:yellowgooey"));
+        for (Prefab prefab : prefabManager.listPrefabs(GooeyComponent.class)) {
+            gooeyPrefabs.add(prefab);
+        }
 
         celestialSystem.toggleSunHalting(0.5f);
     }
@@ -175,8 +179,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     private void spawnNearPlayer () {
         Vector3f pos = localPlayer.getPosition();
         Vector3i chunkPos = ChunkMath.calcChunkPos((int) pos.x, (int) pos.y, (int) pos.z);
-        for (Optional<Prefab> gooey : gooeyPrefabs) {
-            boolean trySpawn = (gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE/10f) > random.nextInt(400);
+        for (Prefab gooey : gooeyPrefabs) {
+            boolean trySpawn = (gooey.getComponent(GooeyComponent.class).SPAWN_CHANCE/10f) > random.nextInt(400);
             if (trySpawn) {
                 tryGooeySpawn(gooey, chunkPos);
             }
@@ -206,8 +210,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      *
      * @param gooey,chunkPos   The prefab to be spawned and the chunk which the game will try to spawn gooeys on
      */
-    private void tryGooeySpawn(Optional<Prefab> gooey, Vector3i chunkPos) {
-        GooeyComponent gooeyComponent = gooey.get().getComponent(GooeyComponent.class);
+    private void tryGooeySpawn(Prefab gooey, Vector3i chunkPos) {
+        GooeyComponent gooeyComponent = gooey.getComponent(GooeyComponent.class);
         List<Vector3i> foundPositions = findGooeySpawnPositions(gooeyComponent, chunkPos);
 
         if (foundPositions.size() < 1) {
@@ -255,7 +259,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      *
      * @param gooey,location   Gooey prefab to be spawned and the location where the gooey is to be spawned
      */
-    private void spawnGooey(Optional<Prefab> gooey, Vector3i location) {
+    private void spawnGooey(Prefab gooey, Vector3i location) {
         Vector3f floatVectorLocation = location.toVector3f();
         Vector3f yAxis = new Vector3f(0, 1, 0);
         float randomAngle = (float) (random.nextFloat()*Math.PI*2);
@@ -263,8 +267,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
         float distanceFromPlayer = Vector3f.distance(new Vector3f((float)location.x, (float)location.y, (float)location.z), localPlayer.getPosition());
         if (distanceFromPlayer < maxDistanceFromPlayer) {
-            if (gooey.isPresent() && gooey.get().getComponent(LocationComponent.class) != null) {
-                EntityBuilder entityBuilder = entityManager.newBuilder(gooey.get());
+            if (gooey.exists() && gooey.getComponent(LocationComponent.class) != null) {
+                EntityBuilder entityBuilder = entityManager.newBuilder(gooey);
                 LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
                 locationComponent.setWorldPosition(floatVectorLocation);
                 locationComponent.setWorldRotation(rotation);
@@ -378,7 +382,6 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         slimePodComponent.disabledComponents.add(entity.getComponent(WalkComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(StandComponent.class));
         slimePodComponent.disabledComponents.add(entity.getComponent(BehaviorComponent.class));
-        slimePodComponent.disabledComponents.add(entity.getComponent(LocationComponent.class));
 
         if (entity.hasComponent(AggressiveComponent.class)) {
             slimePodComponent.disabledComponents.add(entity.getComponent(AggressiveComponent.class));
@@ -404,7 +407,6 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         entity.removeComponent(BehaviorComponent.class);
         entity.removeComponent(WalkComponent.class);
         entity.removeComponent(StandComponent.class);
-        entity.removeComponent(LocationComponent.class);
 
         slimePodComponent.capturedGooeyMesh = entity.getComponent(SkeletalMeshComponent.class).mesh;
         entity.getComponent(SkeletalMeshComponent.class).mesh = null;

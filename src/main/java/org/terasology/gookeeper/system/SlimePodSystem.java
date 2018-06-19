@@ -142,12 +142,13 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         if (slimePodComponent.capturedEntity != EntityRef.NULL) {
             EntityRef releasedGooey = slimePodComponent.capturedEntity;
 
-            for (int i = 0; i < slimePodComponent.disabledComponents.size(); i++) {
-                releasedGooey.addOrSaveComponent(slimePodComponent.disabledComponents.get(i));
-            }
             LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
             locationComponent.setWorldPosition(blockPos);
             releasedGooey.saveComponent(locationComponent);
+
+            for (int i = 0; i < slimePodComponent.disabledComponents.size(); i++) {
+                releasedGooey.addOrSaveComponent(slimePodComponent.disabledComponents.get(i));
+            }
 
             releasedGooey.getComponent(SkeletalMeshComponent.class).mesh = slimePodComponent.capturedGooeyMesh;
 
