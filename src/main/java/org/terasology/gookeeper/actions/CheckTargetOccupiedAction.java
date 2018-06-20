@@ -15,23 +15,33 @@
  */
 package org.terasology.gookeeper.actions;
 
+import org.terasology.engine.Time;
+import org.terasology.gookeeper.component.GooeyComponent;
+import org.terasology.gookeeper.component.VisitorComponent;
 import org.terasology.logic.behavior.BehaviorAction;
 import org.terasology.logic.behavior.core.Actor;
 import org.terasology.logic.behavior.core.BaseAction;
 import org.terasology.logic.behavior.core.BehaviorState;
+import org.terasology.logic.characters.CharacterMovementComponent;
+import org.terasology.logic.location.LocationComponent;
 import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.registry.In;
 
-@BehaviorAction(name = "visitor_exit")
-public class DestroyVisitorAction extends BaseAction {
 
-    @Override
-    public BehaviorState modify(Actor actor, BehaviorState state) {
-        MinionMoveComponent minionMoveComponent = actor.getComponent(MinionMoveComponent.class);
-        if (minionMoveComponent.target == null) {
-            actor.getEntity().destroy();
-            return BehaviorState.SUCCESS;
-        } else {
-            return BehaviorState.FAILURE;
-        }
-    }
+@BehaviorAction(name = "check_target_occupied")
+public class CheckTargetOccupiedAction extends BaseAction {
+
+//    @Override
+//    public BehaviorState modify(Actor actor, BehaviorState state) {
+//        MinionMoveComponent moveComponent = actor.getComponent(MinionMoveComponent.class);
+//        VisitorComponent visitorComponent = actor.getComponent(VisitorComponent.class);
+//
+//        if (moveComponent.currentBlock != null) {
+//
+//            actor.save(moveComponent);
+//        } else {
+//            return BehaviorState.FAILURE;
+//        }
+//        return BehaviorState.SUCCESS;
+//    }
 }

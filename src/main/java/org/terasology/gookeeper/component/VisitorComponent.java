@@ -22,5 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VisitorComponent implements Component {
+    /**
+     * The list of visit block entities to be visited
+     */
     public List<EntityRef> pensToVisit = new ArrayList<>();
 }

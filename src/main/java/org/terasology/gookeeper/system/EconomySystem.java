@@ -21,11 +21,14 @@ import org.terasology.assets.management.AssetManager;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.prefab.Prefab;
+import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.EconomyComponent;
+import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.PenBlockComponent;
 import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.ui.WalletHud;
@@ -37,7 +40,7 @@ import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.nui.ControlWidget;
 import org.terasology.rendering.nui.NUIManager;
-import org.terasology.rendering.nui.layers.hud.HUDScreenLayer;
+import org.terasology.rendering.nui.databinding.ReadOnlyBinding;
 import org.terasology.rendering.nui.widgets.UIText;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
@@ -68,6 +71,9 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
 
     @In
     private AssetManager assetManager;
+
+    @In
+    private PrefabManager prefabManager;
 
     @In
     private NUIManager nuiManager;
@@ -127,18 +133,25 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             EconomyComponent economyComponent = wallet.getComponent(EconomyComponent.class);
             VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
 
-            economyComponent.playerWalletCredit += baseVisitFee * (10 - visitBlockComponent.cutoffFactor);
-            wallet.saveComponent(economyComponent);
+            Prefab gooeyPrefab = prefabManager.getPrefab("GooKeeper:"+ visitBlockComponent.type);
+
+            if (gooeyPrefab.hasComponent(GooeyComponent.class)) {
+                float profitPayOff = gooeyPrefab.getComponent(GooeyComponent.class).profitPayOff;
+
+                economyComponent.playerWalletCredit += baseVisitFee * profitPayOff;
+                wallet.saveComponent(economyComponent);
+            }
         }
     }
 
     /**
      * Receives ActivateEvent when the held player wallet block is activated, and printing the current balance in the wallet.
      *
-     * @param event,entity,economyComponent   The ActivateEvent, the instigator entity and the corresponding EconomyComponent of the activated item
+     * @param event,entity   The ActivateEvent event, the wallet entity
      */
-    @ReceiveEvent
-    public void onActivate(ActivateEvent event, EntityRef entity, EconomyComponent economyComponent) {
+    @ReceiveEvent(components = {EconomyComponent.class})
+    public void onActivate(ActivateEvent event, EntityRef entity) {
+        EconomyComponent economyComponent = entity.getComponent(EconomyComponent.class);
         if (economyComponent != null) {
             logger.info("Current Wallet Balance: " + economyComponent.playerWalletCredit);
         }

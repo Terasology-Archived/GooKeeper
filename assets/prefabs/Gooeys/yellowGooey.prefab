@@ -1,7 +1,9 @@
 {
+  "alwaysRelevant": true,
   "DisplayName": {
-    "name": "Yellow Gooey"
+    "name": "yellowGooey"
   },
+  "persisted": true,
   "Color": {
     "color": [
       191,
@@ -13,7 +15,7 @@
   "skeletalmesh": {
     "mesh": "gooey",
     "heightOffset": -2.0,
-    "material": "greenGooeySkin",
+    "material": "yellowGooeySkin",
     "animationPool": [
       "gooeyIdleBreathing",
       "gooeyIdleBreathing",
@@ -111,6 +113,8 @@
       "engine:sensor"
     ]
   },
+  "Flee": {},
+  "FleeOnHit": {},
   "FindNearbyPlayers": {
     "searchRadius": 15
   },

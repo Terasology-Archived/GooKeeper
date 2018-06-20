@@ -1,19 +1,21 @@
 {
+  "alwaysRelevant": true,
   "DisplayName": {
-    "name": "Red Gooey"
+    "name": "blueGooey"
   },
+  "persisted": true,
   "Color": {
     "color": [
+      135,
+      128,
       191,
-      65,
-      65,
       255
     ]
   },
   "skeletalmesh": {
     "mesh": "gooey",
     "heightOffset": -2.0,
-    "material": "redGooeySkin",
+    "material": "blueGooeySkin",
     "animationPool": [
       "gooeyIdleBreathing",
       "gooeyIdleBreathing",
@@ -111,25 +113,19 @@
       "engine:sensor"
     ]
   },
-  "FindNearbyPlayers": {
-    "searchRadius": 10
+  "Follow": {
+    "entityToFollow": EntityRef.NULL
   },
   "AttackOnHit": {
     "maxDistance": 10
   },
-  "Follow": {
-    "entityToFollow": EntityRef.NULL
-  },
   "NPCMovement": {},
   "Gooey": {
-    "profitPayOff": 5,
-    "biome": ["DESERT"],
-    "blockBelow": "core:Sand",
-    "SPAWN_CHANCE": 5,
-    "MAX_GROUP_SIZE": 1
+    "profitPayOff": 1,
+    "biome": ["FOREST", "PLAINS", "MOUNTAINS"],
+    "blockBelow": "core:Grass",
+    "SPAWN_CHANCE": 85,
+    "MAX_GROUP_SIZE": 6
   },
-  "Aggressive": {
-    "aggressivenessFactor": 85
-  }
+  "Neutral": {}
 }
-

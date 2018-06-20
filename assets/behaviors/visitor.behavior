@@ -20,6 +20,11 @@
         loop: "engine:Stand.animationPool"
       }
     },
+    {
+      sleep: {
+        time: 2
+      }
+    },
     visitor_exit
   ]
 }

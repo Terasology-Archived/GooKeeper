@@ -131,6 +131,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                 visitBlockComponent.type = pen.getComponent(PenBlockComponent.class).type;
                 visitBlockComponent.cutoffFactor = pen.getComponent(PenBlockComponent.class).cutoffFactor;
 
+                logger.info("Type: " + visitBlockComponent.type);
+
                 event.getPlacedBlock().saveComponent(visitBlockComponent);
             }
         }
