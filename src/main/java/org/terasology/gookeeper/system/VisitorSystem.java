@@ -21,21 +21,26 @@ import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
+import org.terasology.entitySystem.prefab.Prefab;
+import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.*;
-import org.terasology.logic.characters.events.HorizontalCollisionEvent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.delay.PeriodicActionTriggeredEvent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.math.Direction;
+import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.physics.Physics;
 import org.terasology.registry.In;
+import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
@@ -44,6 +49,7 @@ import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.items.OnBlockItemPlaced;
 
 import java.math.RoundingMode;
+import java.util.Optional;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class VisitorSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
@@ -72,9 +78,14 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     private LocalPlayer localPlayer;
 
     @In
+    private PrefabManager prefabManager;
+
+    @In
     private EconomySystem economySystem;
 
+    private static final String delayEventId = "VISITOR_SPAWN_DELAY";
     private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
+    private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
     private Random random = new FastRandom();
 
     @Override
@@ -122,6 +133,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     public void onBlockPlaced(OnBlockItemPlaced event, EntityRef entity) {
         BlockComponent blockComponent = event.getPlacedBlock().getComponent(BlockComponent.class);
         VisitBlockComponent visitBlockComponent = event.getPlacedBlock().getComponent(VisitBlockComponent.class);
+        VisitorEntranceComponent visitorEntranceComponent = event.getPlacedBlock().getComponent(VisitorEntranceComponent.class);
 
         if (blockComponent != null && visitBlockComponent != null) {
             Vector3i targetBlock = blockComponent.getPosition();
@@ -131,14 +143,14 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                 visitBlockComponent.type = pen.getComponent(PenBlockComponent.class).type;
                 visitBlockComponent.cutoffFactor = pen.getComponent(PenBlockComponent.class).cutoffFactor;
 
-                logger.info("Type: " + visitBlockComponent.type);
-
                 event.getPlacedBlock().saveComponent(visitBlockComponent);
             }
+        } else if (blockComponent != null && visitorEntranceComponent != null) {
+            delayManager.addPeriodicAction(event.getPlacedBlock(), delayEventId, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
         }
     }
 
-    private EntityRef getClosestPen (Vector3f location) {
+    private EntityRef getClosestPen(Vector3f location) {
         EntityRef closestPen = EntityRef.NULL;
         float minDistance = 100f;
 
@@ -179,6 +191,31 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             }
 
             entity.saveComponent(visitorComponent);
+        }
+    }
+
+    /**
+     * Receives PeriodicActionTriggeredEvent sent to a visitor entrance block entity hence triggering the periodic visitor spawning
+     *
+     * @param event,entity   The PeriodicActionTriggeredEvent event and the visitor entrance block entity to which it is sent
+     */
+    @ReceiveEvent(components = {VisitorEntranceComponent.class})
+    public void onPeriodicAction(PeriodicActionTriggeredEvent event, EntityRef entityRef) {
+        LocationComponent locationComponent = entityRef.getComponent(LocationComponent.class);
+        Vector3f blockPos = locationComponent.getWorldPosition().addY(1f);
+
+        Vector3f spawnPos = blockPos;
+        Vector3f dir = new Vector3f(locationComponent.getWorldDirection());
+        dir.y = 0;
+        if (dir.lengthSquared() > 0.001f) {
+            dir.normalize();
+        } else {
+            dir.set(Direction.FORWARD.getVector3f());
+        }
+        Quat4f rotation = Quat4f.shortestArcQuat(Direction.FORWARD.getVector3f(), dir);
+
+        if (visitorPrefab.isPresent() && visitorPrefab.get().getComponent(LocationComponent.class) != null) {
+            entityManager.create(visitorPrefab.get(), spawnPos, rotation);
         }
     }
 }

@@ -51,8 +51,5 @@
       "engine:sensor"
     ]
   },
-  "Spawnable": {
-    "tags": ["visitor"]
-  },
   "Visitor": {}
 }

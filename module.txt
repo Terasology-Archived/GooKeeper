@@ -8,8 +8,7 @@
         {"id": "Core", "minVersion": "2.0.0"},
         {"id": "Behaviors", "minVersion": "0.2.0"},
         {"id": "Fences", "minVersion": "0.1.0"},
-        {"id": "StructureTemplates", "minVersion": "0.2.0"},
-        {"id": "Spawning", "minVersion": "0.1.0"}
+        {"id": "StructureTemplates", "minVersion": "0.2.0"}
     ],
     "serverSideOnly" : false
 }
