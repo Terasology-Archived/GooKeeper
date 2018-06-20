@@ -187,7 +187,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
             GazeMountPointComponent gaze = localPlayer.getCharacterEntity().getComponent(GazeMountPointComponent.class);
             if (gaze != null) {
-                locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(0.3f)));
+                locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(2f)));
             }
 
             entityBuilder.setPersistent(false);
@@ -207,7 +207,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             newPosition.add(maxAllowedDistanceInDirection.mul(0.9f));
 
             slimePodEntity.send(new DropItemEvent(newPosition));
-            slimePodEntity.send(new ImpulseEvent(dir.mul(200f)));
+            slimePodEntity.send(new ImpulseEvent(dir.mul(125f)));
 
             slimePodItemComponent.slimePods --;
         }

@@ -18,6 +18,13 @@ package org.terasology.gookeeper.component;
 import org.terasology.entitySystem.Component;
 
 public class VisitorEntranceComponent implements Component {
+    /**
+     * The initial delay before the spawning begins
+     */
     public long initialDelay = 2000;
+
+    /**
+     * The frequency of spawning the visitor NPCs
+     */
     public long visitorSpawnRate = 7000;
 }

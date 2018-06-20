@@ -117,7 +117,7 @@
     "entityToFollow": EntityRef.NULL
   },
   "AttackOnHit": {
-    "maxDistance": 10
+    "maxDistance": 15
   },
   "NPCMovement": {},
   "Gooey": {
