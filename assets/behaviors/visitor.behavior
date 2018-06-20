@@ -13,7 +13,7 @@
         distance : 0.6
       }
     },
-    stop_moving,
+    observe_gooey,
     {
       animation : {
         play: "engine:Stand.animationPool",
