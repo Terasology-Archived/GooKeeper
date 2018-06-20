@@ -19,13 +19,19 @@ import org.terasology.logic.behavior.BehaviorAction;
 import org.terasology.logic.behavior.core.Actor;
 import org.terasology.logic.behavior.core.BaseAction;
 import org.terasology.logic.behavior.core.BehaviorState;
+import org.terasology.minion.move.MinionMoveComponent;
 
 @BehaviorAction(name = "visitor_exit")
 public class DestroyVisitorAction extends BaseAction {
 
     @Override
     public BehaviorState modify(Actor actor, BehaviorState state) {
-        actor.getEntity().destroy();
-        return BehaviorState.SUCCESS;
+        MinionMoveComponent minionMoveComponent = actor.getComponent(MinionMoveComponent.class);
+        if (minionMoveComponent.target == null) {
+            actor.getEntity().destroy();
+            return BehaviorState.SUCCESS;
+        } else {
+            return BehaviorState.FAILURE;
+        }
     }
 }

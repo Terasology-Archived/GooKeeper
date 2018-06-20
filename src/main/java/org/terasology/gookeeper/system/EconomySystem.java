@@ -76,10 +76,10 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     private Random random = new FastRandom();
     private static final float baseEntranceFee = 100f;
     private static final float baseVisitFee = 10f;
+    private static boolean setHud = false;
 
     @Override
     public void initialise() {
-        nuiManager.getHUD().addHUDElement("WalletHud");
     }
 
     @Override
@@ -88,6 +88,16 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
 
     @Override
     public void update(float delta) {
+        // Have to add the wallet hud this way since adding in within initialise() results in the economy component to be null
+        if (!setHud) {
+            for (EntityRef wallet : entityManager.getEntitiesWith(EconomyComponent.class)) {
+                EconomyComponent economyComponent = wallet.getComponent(EconomyComponent.class);
+                if (economyComponent != null) {
+                    nuiManager.getHUD().addHUDElement("WalletHud");
+                    setHud = true;
+                }
+            }
+        }
     }
 
     /**
