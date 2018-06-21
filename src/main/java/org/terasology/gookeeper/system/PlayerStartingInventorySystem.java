@@ -50,6 +50,6 @@ public class PlayerStartingInventorySystem extends BaseComponentSystem {
         inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:visitorentrance"), 1));
         inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:visitorexit"), 1));
         inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:visitblock"), 20));
-        inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:playerwalletblock"), 1));
+//        inventoryManager.giveItem(player, EntityRef.NULL, blockFactory.newInstance(blockManager.getBlockFamily("GooKeeper:playerwalletblock"), 1));
     }
 }

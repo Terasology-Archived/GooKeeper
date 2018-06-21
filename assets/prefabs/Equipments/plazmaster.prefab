@@ -4,7 +4,7 @@
     "name": "PlazMaster 3000"
   },
   "Item": {
-    "icon": "engine:items#crossbow",
+    "icon": "GooKeeper:plazmaster",
     "usage": "IN_DIRECTION"
   },
   "PlazMaster": {
