@@ -31,25 +31,22 @@ import org.terasology.gookeeper.component.EconomyComponent;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.PenBlockComponent;
 import org.terasology.gookeeper.component.VisitBlockComponent;
-import org.terasology.gookeeper.ui.WalletHud;
+import org.terasology.gookeeper.interfaces.EconomyManager;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.physics.Physics;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
-import org.terasology.rendering.nui.ControlWidget;
 import org.terasology.rendering.nui.NUIManager;
-import org.terasology.rendering.nui.databinding.ReadOnlyBinding;
-import org.terasology.rendering.nui.widgets.UIText;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 
-@Share(EconomySystem.class)
 @RegisterSystem(RegisterMode.AUTHORITY)
-public class EconomySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+@Share(value = EconomyManager.class)
+public class EconomySystem extends BaseComponentSystem implements UpdateSubscriberSystem, EconomyManager {
 
     @In
     private WorldProvider worldProvider;
@@ -112,6 +109,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
      *
      * @param visitor The visitor entity
      */
+    @Override
     public void payEntranceFee (EntityRef visitor) {
         for (EntityRef wallet : entityManager.getEntitiesWith(EconomyComponent.class)) {
             EconomyComponent economyComponent = wallet.getComponent(EconomyComponent.class);
@@ -128,6 +126,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
      */
 
     //TODO: add the credits based on the gooey's profit payoff factor, and also consider the number of gooeys in pen
+    @Override
     public void payVisitFee (EntityRef visitor, EntityRef visitBlock) {
         for (EntityRef wallet : entityManager.getEntitiesWith(EconomyComponent.class)) {
             EconomyComponent economyComponent = wallet.getComponent(EconomyComponent.class);

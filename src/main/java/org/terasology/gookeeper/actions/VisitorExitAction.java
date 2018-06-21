@@ -16,7 +16,10 @@
 package org.terasology.gookeeper.actions;
 
 import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
+import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
+import org.terasology.gookeeper.interfaces.EconomyManager;
 import org.terasology.logic.behavior.BehaviorAction;
 import org.terasology.logic.behavior.core.Actor;
 import org.terasology.logic.behavior.core.BaseAction;
@@ -24,6 +27,7 @@ import org.terasology.logic.behavior.core.BehaviorState;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.registry.In;
 
 @BehaviorAction(name = "visitor_exit")
 public class VisitorExitAction extends BaseAction {
@@ -40,7 +44,13 @@ public class VisitorExitAction extends BaseAction {
             actor.getEntity().destroy();
             return BehaviorState.SUCCESS;
         } else {
-            return BehaviorState.FAILURE;
+            for (EntityRef pen : visitorComponent.pensToVisit) {
+                if (Vector3f.distance(minionMoveComponent.target, pen.getComponent(LocationComponent.class).getWorldPosition()) <= 1f) {
+                    actor.getEntity().send(new LeaveVisitBlockEvent(actor.getEntity(), pen));
+                    break;
+                }
+            }
+            return BehaviorState.SUCCESS;
         }
     }
 }

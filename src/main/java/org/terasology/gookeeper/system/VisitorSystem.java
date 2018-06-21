@@ -28,6 +28,8 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.*;
+import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
+import org.terasology.gookeeper.interfaces.EconomyManager;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.delay.PeriodicActionTriggeredEvent;
@@ -38,6 +40,7 @@ import org.terasology.math.Direction;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.minion.move.MinionMoveComponent;
 import org.terasology.physics.Physics;
 import org.terasology.registry.In;
 import org.terasology.utilities.Assets;
@@ -81,7 +84,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     private PrefabManager prefabManager;
 
     @In
-    private EconomySystem economySystem;
+    private EconomyManager economySystem;
 
     private static final String delayEventId = "VISITOR_SPAWN_DELAY";
     private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
@@ -168,29 +171,28 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     }
 
     /**
-     * Receives OnEnterBlockEvent sent to a visitor entity when it steps over a block. Here, it is used to detect collisions
-     * with the exit blocks and also removing the visit blocks from pensToVisit list.
+     * Receives LeaveVisitBlockEvent sent to a visitor entity when it leaves a visit block, and moves towards the next.
+     * This is used to add credits to the players wallet depending on the type of gooeys associated with this visit block,
+     * hence rarer the gooey, more would be the pay off.
      *
-     * @param event,entity   The OnEnterBlockEvent event and the visitor entity to which it is sent
+     * @param event,entity   The LeaveVisitBlockEvent event and the visitor entity to which it is sent
      */
     @ReceiveEvent
-    public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
-        LocationComponent loc = entity.getComponent(LocationComponent.class);
-        Vector3f pos = loc.getWorldPosition();
-        pos.setY(pos.getY() - 1);
+    public void onLeaveVisitBlock(LeaveVisitBlockEvent event, EntityRef entityRef) {
+        EntityRef blockEntity = event.getVisitBlock();
+        EntityRef visitor = event.getVisitor();
 
-        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(pos, RoundingMode.HALF_UP));
+        MinionMoveComponent minionMoveComponent = event.getVisitor().getComponent(MinionMoveComponent.class);
 
-        if (blockEntity.hasComponent(VisitorExitComponent.class) && entity.hasComponent(VisitorComponent.class)) {
-            entity.destroy();
-        } else if (blockEntity.hasComponent(VisitBlockComponent.class) && entity.hasComponent(VisitorComponent.class)) {
-            VisitorComponent visitorComponent = entity.getComponent(VisitorComponent.class);
-            if (visitorComponent.pensToVisit.contains(blockEntity)) {
-                economySystem.payVisitFee(entity, blockEntity);
+        if (blockEntity.hasComponent(VisitBlockComponent.class) && visitor.hasComponent(VisitorComponent.class) && minionMoveComponent != null) {
+            VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
+            Vector3f blockPos = blockEntity.getComponent(LocationComponent.class).getWorldPosition();
+            if (visitorComponent.pensToVisit.contains(blockEntity) && Vector3f.distance(minionMoveComponent.target, blockPos) <= 1f) {
+                economySystem.payVisitFee(visitor, blockEntity);
                 visitorComponent.pensToVisit.remove(blockEntity);
             }
 
-            entity.saveComponent(visitorComponent);
+            visitor.saveComponent(visitorComponent);
         }
     }
 
