@@ -48,10 +48,13 @@ import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
+import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.items.OnBlockItemPlaced;
 
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
@@ -169,6 +172,12 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
         return closestPen;
     }
+
+//    private List<EntityRef> getPenBlocks(EntityRef penBlock) {
+//        List<EntityRef> neighbours = new ArrayList<>();
+//
+//
+//    }
 
     /**
      * Receives LeaveVisitBlockEvent sent to a visitor entity when it leaves a visit block, and moves towards the next.

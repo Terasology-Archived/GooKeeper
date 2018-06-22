@@ -96,7 +96,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             for (EntityRef wallet : entityManager.getEntitiesWith(EconomyComponent.class)) {
                 EconomyComponent economyComponent = wallet.getComponent(EconomyComponent.class);
                 if (economyComponent != null) {
-                    nuiManager.getHUD().addHUDElement("WalletHud");
+                    nuiManager.getHUD().addHUDElement("PlayerHud");
                     setHud = true;
                 }
             }

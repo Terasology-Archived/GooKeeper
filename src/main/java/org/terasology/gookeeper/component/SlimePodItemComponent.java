@@ -27,5 +27,5 @@ public class SlimePodItemComponent implements Component {
     /**
      * The number of slime pods available in the launcher
      */
-    public int slimePods = 3;
+    public int slimePods = 5;
 }

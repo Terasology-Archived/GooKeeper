@@ -27,4 +27,9 @@ public class PenBlockComponent implements Component {
      * The likelihood factor of visitors "visiting" this pen. Depends upon the rarity of gooeys housed within
      */
     public int cutoffFactor;
+
+    /**
+     * ID of the pen constructed using this block
+     */
+    public int penNumber;
 }

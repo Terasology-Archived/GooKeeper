@@ -29,6 +29,7 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.component.GooeyComponent;
+import org.terasology.gookeeper.component.PenBlockComponent;
 import org.terasology.gookeeper.component.SlimePodComponent;
 import org.terasology.gookeeper.component.SlimePodItemComponent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
@@ -129,13 +130,14 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
         BehaviorTree capturedBT = assetManager.getAsset("GooKeeper:capturedGooey", BehaviorTree.class).get();
+        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(event.getTargetLocation(), RoundingMode.HALF_UP));
 
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
         Vector3f blockPos;
-        if (entity.getComponent(LocationComponent.class) != null) {
-            blockPos = new Vector3f(entity.getComponent(LocationComponent.class).getWorldPosition());
+        if (blockEntity.hasComponent(PenBlockComponent.class) && blockEntity.hasComponent(LocationComponent.class)) {
+            blockPos = blockEntity.getComponent(LocationComponent.class).getWorldPosition().addY(1f);
         } else {
-            blockPos = new Vector3f(localPlayer.getPosition().add(1f, 0f, 0f));
+            blockPos = new Vector3f(event.getTargetLocation().add(1f, 0f, 0f));
         }
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
 
