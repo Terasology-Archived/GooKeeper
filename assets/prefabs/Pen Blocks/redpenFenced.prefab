@@ -4,5 +4,6 @@
     "PenBlock": {
         "type": "redGooey",
         "cutoffFactor": 1
-    }
+    },
+    "ConnectsToFences": {}
 }

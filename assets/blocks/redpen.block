@@ -1,0 +1,27 @@
+{
+    "shadowCasting": "true",
+    "family": "Fences:fence",
+
+    "entity": {
+        "prefab": "GooKeeper:redpenFenced"
+    },
+
+    "no_connections": {
+        "shape": "Fences:fenceSinglePost"
+    },
+    "one_connection": {
+        "shape": "Fences:fenceEnd"
+    },
+    "line_connection": {
+        "shape": "GooKeeper:fence"
+    },
+    "2d_corner": {
+        "shape": "Fences:fenceCorner"
+    },
+    "2d_t": {
+        "shape": "Fences:fenceTee"
+    },
+    "cross": {
+        "shape": "Fences:fenceCross"
+    }
+}

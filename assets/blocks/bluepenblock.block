@@ -7,9 +7,5 @@
     "targetable" : true,
     "entity" : {
          "prefab" : "GooKeeper:bluepen"
-    },
-    "inventory": {
-        "stackable": true,
-        "directPickup": true
     }
 }
