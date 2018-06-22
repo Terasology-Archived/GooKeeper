@@ -125,7 +125,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
      * @param visitor,visitBlock The visitor entity, the visit block entity
      */
 
-    //TODO: add the credits based on the gooey's profit payoff factor, and also consider the number of gooeys in pen
+    //TODO: add the credits based on the the number of gooeys in pen
     @Override
     public void payVisitFee (EntityRef visitor, EntityRef visitBlock) {
         for (EntityRef wallet : entityManager.getEntitiesWith(EconomyComponent.class)) {
@@ -137,7 +137,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             if (gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
                 float profitPayOff = gooeyPrefab.getComponent(GooeyComponent.class).profitPayOff;
 
-                economyComponent.playerWalletCredit += baseVisitFee * profitPayOff;
+                economyComponent.playerWalletCredit += baseVisitFee * profitPayOff * (visitBlockComponent.gooeyQuantity/3f);
                 wallet.saveComponent(economyComponent);
             }
         }

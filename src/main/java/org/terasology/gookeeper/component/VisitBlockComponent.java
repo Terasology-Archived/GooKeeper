@@ -38,6 +38,11 @@ public class VisitBlockComponent implements Component {
     public float cutoffFactor;
 
     /**
+     * ID of the pen associated with this visit block
+     */
+    public int penNumber;
+
+    /**
      * The number of gooeys housed in the corresponding pen
      */
     public int gooeyQuantity = 0;

@@ -16,7 +16,9 @@
 package org.terasology.gookeeper.component;
 
 import org.terasology.entitySystem.Component;
+import org.terasology.world.block.ForceBlockActive;
 
+@ForceBlockActive
 public class PenBlockComponent implements Component {
     /**
      * Defines the type of gooeys housed in a pen made up of this block

@@ -28,10 +28,7 @@ import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
-import org.terasology.gookeeper.component.GooeyComponent;
-import org.terasology.gookeeper.component.PenBlockComponent;
-import org.terasology.gookeeper.component.SlimePodComponent;
-import org.terasology.gookeeper.component.SlimePodItemComponent;
+import org.terasology.gookeeper.component.*;
 import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.logic.behavior.BehaviorComponent;
 import org.terasology.logic.behavior.asset.BehaviorTree;
@@ -63,6 +60,7 @@ import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockComponent;
 
 import java.math.RoundingMode;
 
@@ -157,6 +155,15 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             BehaviorComponent behaviorComponent = releasedGooey.getComponent(BehaviorComponent.class);
             behaviorComponent.tree = capturedBT;
             releasedGooey.saveComponent(behaviorComponent);
+
+            for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class, BlockComponent.class)) {
+                VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
+                if (visitBlockComponent.penNumber == blockEntity.getComponent(PenBlockComponent.class).penNumber) {
+                    visitBlockComponent.gooeyQuantity ++;
+                    visitBlock.saveComponent(visitBlockComponent);
+                    return;
+                }
+            }
         }
     }
 

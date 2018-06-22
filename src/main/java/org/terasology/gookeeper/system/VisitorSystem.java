@@ -31,12 +31,15 @@ import org.terasology.gookeeper.component.*;
 import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
+import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.delay.PeriodicActionTriggeredEvent;
 import org.terasology.logic.inventory.InventoryManager;
+import org.terasology.logic.location.Location;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.Direction;
+import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
@@ -50,6 +53,7 @@ import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
+import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.items.OnBlockItemPlaced;
 
 import java.math.RoundingMode;
@@ -72,6 +76,9 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     private EntityManager entityManager;
 
     @In
+    private BlockManager blockManager;
+
+    @In
     private DelayManager delayManager;
 
     @In
@@ -91,8 +98,10 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
     private static final String delayEventId = "VISITOR_SPAWN_DELAY";
     private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
+    private static int penIdCounter = 0;
     private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
     private Random random = new FastRandom();
+    private static int numOfPenBlocks = 0;
 
     @Override
     public void initialise() {
@@ -142,14 +151,16 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         VisitorEntranceComponent visitorEntranceComponent = event.getPlacedBlock().getComponent(VisitorEntranceComponent.class);
 
         if (blockComponent != null && visitBlockComponent != null) {
-            Vector3i targetBlock = blockComponent.getPosition();
-            EntityRef pen = getClosestPen(new Vector3f(targetBlock.x, targetBlock.y, targetBlock.z));
+            Vector3f targetBlock = blockComponent.getPosition().toVector3f();
+            EntityRef pen = getClosestPen(targetBlock);
 
             if (pen != EntityRef.NULL) {
                 visitBlockComponent.type = pen.getComponent(PenBlockComponent.class).type;
                 visitBlockComponent.cutoffFactor = pen.getComponent(PenBlockComponent.class).cutoffFactor;
+                visitBlockComponent.penNumber = penIdCounter;
 
                 event.getPlacedBlock().saveComponent(visitBlockComponent);
+                setNeighbouringBlocksID(event.getPlacedBlock());
             }
         } else if (blockComponent != null && visitorEntranceComponent != null) {
             delayManager.addPeriodicAction(event.getPlacedBlock(), delayEventId, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
@@ -160,10 +171,10 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         EntityRef closestPen = EntityRef.NULL;
         float minDistance = 100f;
 
-        for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class, LocationComponent.class)) {
+        for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class, BlockComponent.class)) {
             BlockComponent blockComponent = pen.getComponent(BlockComponent.class);
 
-            Vector3f blockPos = new Vector3f(blockComponent.getPosition().x, blockComponent.getPosition().y, blockComponent.getPosition().z);
+            Vector3f blockPos = blockComponent.getPosition().toVector3f();
             if (Vector3f.distance(blockPos, location) < minDistance) {
                 minDistance = Vector3f.distance(blockPos, location);
                 closestPen = pen;
@@ -173,11 +184,26 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         return closestPen;
     }
 
-//    private List<EntityRef> getPenBlocks(EntityRef penBlock) {
-//        List<EntityRef> neighbours = new ArrayList<>();
-//
-//
-//    }
+    private void setNeighbouringBlocksID(EntityRef visitBlock) {
+        BlockComponent blockComponent = visitBlock.getComponent(BlockComponent.class);
+        VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
+
+        for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class)) {
+            BlockComponent blockComponent1 = pen.getComponent(BlockComponent.class);
+            PenBlockComponent penBlockComponent1 = pen.getComponent(PenBlockComponent.class);
+
+            if (penBlockComponent1.type.equals(visitBlockComponent.type)) {
+                float distance = Vector3f.distance(blockComponent.getPosition().toVector3f(), blockComponent1.getPosition().toVector3f());
+
+                if (distance <= TeraMath.sqrt(33f)) {
+                    penBlockComponent1.penNumber = penIdCounter;
+                    pen.saveComponent(penBlockComponent1);
+                }
+            }
+        }
+
+        penIdCounter ++;
+    }
 
     /**
      * Receives LeaveVisitBlockEvent sent to a visitor entity when it leaves a visit block, and moves towards the next.
@@ -227,6 +253,23 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
         if (visitorPrefab.isPresent() && visitorPrefab.get().getComponent(LocationComponent.class) != null) {
             entityManager.create(visitorPrefab.get(), spawnPos, rotation);
+        }
+    }
+
+    /**
+     * Receives ActivateEvent when the targeted pen block is activated, and prints the ID of the corresponding pen.
+     *
+     * @param event,entity   The ActivateEvent, the instigator entity
+     */
+    @ReceiveEvent
+    public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
+        PenBlockComponent penBlockComponent= event.getTarget().getComponent(PenBlockComponent.class);
+        BlockComponent blockComponent = event.getTarget().getComponent(BlockComponent.class);
+
+        if (penBlockComponent != null) {
+            logger.info("Pen Location: " + blockComponent.getPosition());
+            logger.info("Pen Type: " + penBlockComponent.type);
+            logger.info("Pen ID: " + penBlockComponent.penNumber);
         }
     }
 }
