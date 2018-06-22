@@ -188,7 +188,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         BlockComponent blockComponent = visitBlock.getComponent(BlockComponent.class);
         VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
 
-        for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class)) {
+        for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class, BlockComponent.class)) {
             BlockComponent blockComponent1 = pen.getComponent(BlockComponent.class);
             PenBlockComponent penBlockComponent1 = pen.getComponent(PenBlockComponent.class);
 
