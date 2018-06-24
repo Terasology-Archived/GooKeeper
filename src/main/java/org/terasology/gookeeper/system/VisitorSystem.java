@@ -31,18 +31,15 @@ import org.terasology.fences.ConnectsToFencesComponent;
 import org.terasology.gookeeper.component.*;
 import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
-import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.delay.PeriodicActionTriggeredEvent;
 import org.terasology.logic.inventory.InventoryManager;
-import org.terasology.logic.location.Location;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.Direction;
 import org.terasology.math.Side;
 import org.terasology.math.SideBitFlag;
-import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
@@ -54,16 +51,10 @@ import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
-import org.terasology.world.block.family.BlockFamily;
-import org.terasology.world.block.family.MultiConnectFamily;
 import org.terasology.world.block.items.OnBlockItemPlaced;
 
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
@@ -106,7 +97,6 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     private static int penIdCounter = 1;
     private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
     private Random random = new FastRandom();
-    private static int numOfPenBlocks = 0;
 
     @Override
     public void initialise() {
@@ -195,6 +185,11 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         return closestPen;
     }
 
+    /**
+     * This method is used to set the penNumber ID to all the connected pen block entities of similar type
+     *
+     * @param penBlock
+     */
     private void setNeighbouringBlocksID(EntityRef penBlock) {
         BlockComponent blockComponent = penBlock.getComponent(BlockComponent.class);
         PenBlockComponent penBlockComponent = penBlock.getComponent(PenBlockComponent.class);

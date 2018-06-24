@@ -18,14 +18,11 @@ package org.terasology.gookeeper.system;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.management.AssetManager;
-import org.terasology.audio.StaticSound;
 import org.terasology.engine.Time;
-import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
@@ -39,33 +36,26 @@ import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.inventory.InventoryManager;
-import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.inventory.PickupComponent;
 import org.terasology.logic.inventory.events.DropItemEvent;
-import org.terasology.logic.inventory.events.GiveItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.network.Client;
-import org.terasology.network.ClientComponent;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
 import org.terasology.physics.StandardCollisionGroup;
 import org.terasology.physics.components.shapes.BoxShapeComponent;
 import org.terasology.physics.events.CollideEvent;
 import org.terasology.physics.events.ImpulseEvent;
-import org.terasology.protobuf.EntityData;
 import org.terasology.registry.In;
 import org.terasology.rendering.logic.MeshComponent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
-import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 
 import java.math.RoundingMode;
@@ -228,6 +218,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     /**
      * This method is not appropriate for the poke-ball'ish slime pods, instead a different bear-trap
      * type of slime pod can be introduced.
+     *
      * Receives OnEnterBlockEvent when a gooey entity steps over a slime pod.
      *
      * @param event,entity   The OnEnterBlockEvent, the gooey entity
@@ -290,6 +281,14 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         }
     }
 
+    /**
+     * Whenever a player picks up a slime pod item, then depending upon whether the pod was
+     * containing a captured gooey or not, it adds it back to the launcher
+     *
+     * Receives CollideEvent when a player steps over a slime pod
+     *
+     * @param event,entity,pickupComponent   The CollideEvent, the slime pod item entity, pickupComponent
+     */
     @ReceiveEvent
     public void onBumpGiveItemToEntity(CollideEvent event, EntityRef entity, PickupComponent pickupComponent) {
         if (entity.hasComponent(SlimePodComponent.class)) {
