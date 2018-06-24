@@ -13,17 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.gookeeper.component;
+package org.terasology.gookeeper.event;
 
-import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.Event;
+import org.terasology.gookeeper.component.SlimePodComponent;
+import org.terasology.gookeeper.component.VisitBlockComponent;
 
-import java.util.ArrayList;
-import java.util.List;
+public class LeaveVisitBlockEvent implements Event {
 
-public class VisitorComponent implements Component {
-    /**
-     * The list of visit block entities to be visited
-     */
-    public List<EntityRef> pensToVisit = new ArrayList<>();
+    private EntityRef visitor;
+    private EntityRef visitBlock;
+
+    public LeaveVisitBlockEvent(EntityRef visitor, EntityRef visitBlock) {
+        this.visitor = visitor;
+        this.visitBlock = visitBlock;
+    }
+
+    public EntityRef getVisitor() {
+        return visitor;
+    }
+
+    public EntityRef getVisitBlock() {
+        return visitBlock;
+    }
 }

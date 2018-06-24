@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.gookeeper.component;
+package org.terasology.gookeeper.interfaces;
 
-import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.prefab.Prefab;
+import org.terasology.entitySystem.entity.EntityRef;
 
-public class SlimePodItemComponent implements Component {
-    /**
-     * The prefab that is actually thrown as a projectile
-     */
-    public Prefab launchPrefab;
+public interface EconomyManager {
+    void payEntranceFee(EntityRef visitor);
 
-    /**
-     * The number of slime pods available in the launcher
-     */
-    public int slimePods = 5;
+    void payVisitFee(EntityRef visitor, EntityRef visitBlock);
 }
+

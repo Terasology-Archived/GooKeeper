@@ -13,11 +13,16 @@
         distance : 0.6
       }
     },
-    stop_moving,
+    observe_gooey,
     {
       animation : {
         play: "engine:Stand.animationPool",
         loop: "engine:Stand.animationPool"
+      }
+    },
+    {
+      sleep: {
+        time: 2
       }
     },
     visitor_exit

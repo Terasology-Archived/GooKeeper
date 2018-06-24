@@ -1,6 +1,7 @@
 {
+  "alwaysRelevant": true,
   "DisplayName": {
-    "name": "Yellow Gooey"
+    "name": "yellowGooey"
   },
   "persisted": true,
   "Color": {

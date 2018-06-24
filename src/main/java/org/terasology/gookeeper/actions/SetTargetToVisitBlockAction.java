@@ -15,6 +15,8 @@
  */
 package org.terasology.gookeeper.actions;
 
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
 import org.terasology.logic.behavior.BehaviorAction;
 import org.terasology.logic.behavior.core.Actor;
@@ -41,13 +43,35 @@ public class SetTargetToVisitBlockAction extends BaseAction {
         VisitorComponent visitorComponent = actor.getComponent(VisitorComponent.class);
 
         if (moveComponent.currentBlock != null && visitorComponent.pensToVisit.size() > 0) {
-            int penIndex = random.nextInt(visitorComponent.pensToVisit.size());
-            moveComponent.target = visitorComponent.pensToVisit.get(penIndex).getComponent(LocationComponent.class).getWorldPosition();
+            int penIndex = getRandomPenIndex(visitorComponent);
+            EntityRef penToVisit = visitorComponent.pensToVisit.get(penIndex);
+
+            moveComponent.target = penToVisit.getComponent(LocationComponent.class).getWorldPosition();
             actor.save(moveComponent);
         } else {
             return BehaviorState.FAILURE;
         }
         return BehaviorState.SUCCESS;
+    }
+
+    private int getRandomPenIndex (VisitorComponent visitorComponent) {
+        int penIndex = random.nextInt(visitorComponent.pensToVisit.size());
+
+        EntityRef penToVisit = visitorComponent.pensToVisit.get(penIndex);
+        VisitBlockComponent visitBlockComponent = penToVisit.getComponent(VisitBlockComponent.class);
+
+        if (visitBlockComponent.gooeyQuantity > 0) {
+            return penIndex;
+        } else {
+            if (visitorComponent.pensToVisit.size() > 1) {
+                visitorComponent.pensToVisit.remove(penIndex);
+                getRandomPenIndex(visitorComponent);
+            } else {
+                return 0;
+            }
+        }
+
+        return 0;
     }
 }
 

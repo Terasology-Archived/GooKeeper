@@ -34,48 +34,34 @@ import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.logic.behavior.BehaviorComponent;
-import org.terasology.logic.characters.CharacterComponent;
 import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.characters.StandComponent;
 import org.terasology.logic.characters.WalkComponent;
 import org.terasology.logic.characters.events.HorizontalCollisionEvent;
-import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.location.Location;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.ChunkMath;
-import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.logic.health.OnDamagedEvent;
-import org.terasology.minion.move.MinionMoveComponent;
-import org.terasology.physics.engine.CharacterCollider;
-import org.terasology.protobuf.EntityData;
-import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
 import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
-import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.biomes.Biome;
-import org.terasology.world.biomes.BiomeManager;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
-import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.chunks.ChunkConstants;
-import org.terasology.world.chunks.event.OnChunkGenerated;
-import org.terasology.world.chunks.event.OnChunkLoaded;
 
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.terasology.world.sun.CelestialSystem;
 
@@ -417,6 +403,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * Receives HorizontalCollisionEvent sent to a gooey entity when it collides with any entity. Here, it is used to detect collisions
      * with the pen blocks, and if the types match then the gooey is not allowed to jump over the block.
      *
+     * Also, it adds to the total number of gooeys in a pen, which is stored in the corresponding
+     * VisitBlockComponent
+     *
      * @param event,entity   The HorizontalCollisionEvent and the gooey entity to which it is sent
      */
     @ReceiveEvent(components = {GooeyComponent.class})
@@ -446,6 +435,20 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
             if (penBlockComponent.type.equals(displayNameComponent.name)) {
                 moveComp.jumpSpeed = 0f;
+
+                // Pen number 0 signifies that it hasn't been set
+                if (gooeyComponent.penNumber == 0) {
+                    for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class, BlockComponent.class)) {
+                        VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
+                        if (visitBlockComponent.penNumber == penBlockComponent.penNumber) {
+                            gooeyComponent.penNumber = visitBlockComponent.penNumber;
+                            visitBlockComponent.gooeyQuantity++;
+                            visitBlock.saveComponent(visitBlockComponent);
+                            entity.saveComponent(gooeyComponent);
+                            break;
+                        }
+                    }
+                }
             } else {
                 moveComp.jumpSpeed = 12f;
             }

@@ -3,13 +3,9 @@
     "attachmentAllowed" : true,
     "shadowCasting" : true,
     "family" : "horizontal",
-    "categories" : ["pen"],
-    "shape" : "engine:Block",
     "hardness": 1,
     "targetable" : true,
     "entity" : {
-         "prefab" : "GooKeeper:bluepen",
-         "temporary" : false,
-         "keepActive" : true
+         "prefab" : "GooKeeper:bluepen"
     }
 }

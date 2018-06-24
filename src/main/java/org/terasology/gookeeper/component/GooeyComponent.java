@@ -89,4 +89,9 @@ public class GooeyComponent implements Component {
      */
     public float captureProbabiltyFactor = 15f;
 
+    /**
+     * The pen ID in which the gooey is stored
+     */
+    public int penNumber = 0;
+
 }

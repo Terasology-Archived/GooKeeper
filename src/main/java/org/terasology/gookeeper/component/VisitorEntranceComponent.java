@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.gookeeper.actions;
+package org.terasology.gookeeper.component;
 
-import org.terasology.logic.behavior.BehaviorAction;
-import org.terasology.logic.behavior.core.Actor;
-import org.terasology.logic.behavior.core.BaseAction;
-import org.terasology.logic.behavior.core.BehaviorState;
+import org.terasology.entitySystem.Component;
 
-@BehaviorAction(name = "visitor_exit")
-public class DestroyVisitorAction extends BaseAction {
+public class VisitorEntranceComponent implements Component {
+    /**
+     * The initial delay before the spawning begins
+     */
+    public long initialDelay = 2000;
 
-    @Override
-    public BehaviorState modify(Actor actor, BehaviorState state) {
-        actor.getEntity().destroy();
-        return BehaviorState.SUCCESS;
-    }
+    /**
+     * The frequency of spawning the visitor NPCs
+     */
+    public long visitorSpawnRate = 7000;
 }
