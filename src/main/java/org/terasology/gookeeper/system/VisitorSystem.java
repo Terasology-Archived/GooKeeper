@@ -27,6 +27,7 @@ import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.fences.ConnectsToFencesComponent;
 import org.terasology.gookeeper.component.*;
 import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
@@ -39,6 +40,8 @@ import org.terasology.logic.location.Location;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.Direction;
+import org.terasology.math.Side;
+import org.terasology.math.SideBitFlag;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
@@ -54,6 +57,8 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
+import org.terasology.world.block.family.BlockFamily;
+import org.terasology.world.block.family.MultiConnectFamily;
 import org.terasology.world.block.items.OnBlockItemPlaced;
 
 import java.math.RoundingMode;
@@ -98,7 +103,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
     private static final String delayEventId = "VISITOR_SPAWN_DELAY";
     private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
-    private static int penIdCounter = 0;
+    private static int penIdCounter = 1;
     private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
     private Random random = new FastRandom();
     private static int numOfPenBlocks = 0;
@@ -155,12 +160,18 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             EntityRef pen = getClosestPen(targetBlock);
 
             if (pen != EntityRef.NULL) {
-                visitBlockComponent.type = pen.getComponent(PenBlockComponent.class).type;
-                visitBlockComponent.cutoffFactor = pen.getComponent(PenBlockComponent.class).cutoffFactor;
-                visitBlockComponent.penNumber = penIdCounter;
+                PenBlockComponent penBlockComponent = pen.getComponent(PenBlockComponent.class);
 
+                visitBlockComponent.type = penBlockComponent.type;
+                visitBlockComponent.cutoffFactor = penBlockComponent.cutoffFactor;
+                visitBlockComponent.penNumber = penIdCounter;
+                penBlockComponent.penNumber = penIdCounter;
+
+                pen.saveComponent(penBlockComponent);
                 event.getPlacedBlock().saveComponent(visitBlockComponent);
-                setNeighbouringBlocksID(event.getPlacedBlock());
+                setNeighbouringBlocksID(pen);
+
+                penIdCounter++;
             }
         } else if (blockComponent != null && visitorEntranceComponent != null) {
             delayManager.addPeriodicAction(event.getPlacedBlock(), delayEventId, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
@@ -184,25 +195,34 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         return closestPen;
     }
 
-    private void setNeighbouringBlocksID(EntityRef visitBlock) {
-        BlockComponent blockComponent = visitBlock.getComponent(BlockComponent.class);
-        VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
+    private void setNeighbouringBlocksID(EntityRef penBlock) {
+        BlockComponent blockComponent = penBlock.getComponent(BlockComponent.class);
+        PenBlockComponent penBlockComponent = penBlock.getComponent(PenBlockComponent.class);
 
-        for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class, BlockComponent.class)) {
-            BlockComponent blockComponent1 = pen.getComponent(BlockComponent.class);
-            PenBlockComponent penBlockComponent1 = pen.getComponent(PenBlockComponent.class);
+        if (penBlockComponent != null && !penBlockComponent.penIDSet) {
 
-            if (penBlockComponent1.type.equals(visitBlockComponent.type)) {
-                float distance = Vector3f.distance(blockComponent.getPosition().toVector3f(), blockComponent1.getPosition().toVector3f());
+            Byte sides = SideBitFlag.getSides(Side.LEFT, Side.RIGHT,Side.FRONT,Side.BACK);
 
-                if (distance <= TeraMath.sqrt(33f)) {
-                    penBlockComponent1.penNumber = penIdCounter;
-                    pen.saveComponent(penBlockComponent1);
+            for (Side side : SideBitFlag.getSides(sides)) {
+                Vector3i neighborLocation = new Vector3i(blockComponent.getPosition());
+                neighborLocation.add(side.getVector3i());
+
+                EntityRef neighborEntity = blockEntityRegistry.getEntityAt(neighborLocation);
+                BlockComponent blockComponent1 = neighborEntity.getComponent(BlockComponent.class);
+
+                if (blockComponent1 != null && neighborEntity.hasComponent(ConnectsToFencesComponent.class) && neighborEntity.hasComponent(PenBlockComponent.class)) {
+                    PenBlockComponent penBlockComponent1 = neighborEntity.getComponent(PenBlockComponent.class);
+                    if (penBlockComponent1.type.equals(penBlockComponent.type)) {
+                        penBlockComponent1.penNumber = penIdCounter;
+
+                        neighborEntity.saveComponent(penBlockComponent1);
+                    }
+                    penBlockComponent.penIDSet = true;
+                    penBlock.saveComponent(penBlockComponent);
+                    setNeighbouringBlocksID(neighborEntity);
                 }
             }
         }
-
-        penIdCounter ++;
     }
 
     /**
@@ -264,12 +284,16 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     @ReceiveEvent
     public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
         PenBlockComponent penBlockComponent= event.getTarget().getComponent(PenBlockComponent.class);
+        VisitBlockComponent visitBlockComponent = event.getTarget().getComponent(VisitBlockComponent.class);
         BlockComponent blockComponent = event.getTarget().getComponent(BlockComponent.class);
 
-        if (penBlockComponent != null) {
-            logger.info("Pen Location: " + blockComponent.getPosition());
+        if (blockComponent != null && penBlockComponent != null) {
             logger.info("Pen Type: " + penBlockComponent.type);
             logger.info("Pen ID: " + penBlockComponent.penNumber);
+        } else if (blockComponent != null && visitBlockComponent != null) {
+            logger.info("Visit Block Type: " + visitBlockComponent.type);
+            logger.info("Visit Block ID: " + visitBlockComponent.penNumber);
+            logger.info("Visit Block Gooey Count: " + visitBlockComponent.gooeyQuantity);
         }
     }
 }

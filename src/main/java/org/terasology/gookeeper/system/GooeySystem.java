@@ -66,6 +66,7 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.biomes.Biome;
 import org.terasology.world.biomes.BiomeManager;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.chunks.ChunkConstants;
@@ -446,6 +447,20 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
             if (penBlockComponent.type.equals(displayNameComponent.name)) {
                 moveComp.jumpSpeed = 0f;
+
+                // Pen number 0 signifies that it hasn't been set
+                if (gooeyComponent.penNumber == 0) {
+                    for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class, BlockComponent.class)) {
+                        VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
+                        if (visitBlockComponent.penNumber == penBlockComponent.penNumber) {
+                            gooeyComponent.penNumber = visitBlockComponent.penNumber;
+                            visitBlockComponent.gooeyQuantity++;
+                            visitBlock.saveComponent(visitBlockComponent);
+                            entity.saveComponent(gooeyComponent);
+                            break;
+                        }
+                    }
+                }
             } else {
                 moveComp.jumpSpeed = 12f;
             }

@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.management.AssetManager;
 import org.terasology.audio.StaticSound;
+import org.terasology.engine.Time;
+import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -37,7 +39,10 @@ import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.inventory.InventoryManager;
+import org.terasology.logic.inventory.ItemComponent;
+import org.terasology.logic.inventory.PickupComponent;
 import org.terasology.logic.inventory.events.DropItemEvent;
+import org.terasology.logic.inventory.events.GiveItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.TeraMath;
@@ -49,6 +54,7 @@ import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
 import org.terasology.physics.StandardCollisionGroup;
 import org.terasology.physics.components.shapes.BoxShapeComponent;
+import org.terasology.physics.events.CollideEvent;
 import org.terasology.physics.events.ImpulseEvent;
 import org.terasology.protobuf.EntityData;
 import org.terasology.registry.In;
@@ -87,6 +93,9 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
     @In
     private AssetManager assetManager;
+
+    @In
+    private Time time;
 
     private static final Logger logger = LoggerFactory.getLogger(SlimePodSystem.class);
     private Random random = new FastRandom();
@@ -130,12 +139,13 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         BehaviorTree capturedBT = assetManager.getAsset("GooKeeper:capturedGooey", BehaviorTree.class).get();
         EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(event.getTargetLocation(), RoundingMode.HALF_UP));
 
+        BlockComponent blockComponent = blockEntity.getComponent(BlockComponent.class);
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
         Vector3f blockPos;
-        if (blockEntity.hasComponent(PenBlockComponent.class) && blockEntity.hasComponent(LocationComponent.class)) {
-            blockPos = blockEntity.getComponent(LocationComponent.class).getWorldPosition().addY(1f);
+        if (blockEntity.hasComponent(BlockComponent.class)) {
+            blockPos = blockComponent.getPosition().toVector3f().addY(1f);
         } else {
-            blockPos = new Vector3f(event.getTargetLocation().add(1f, 0f, 0f));
+            return;
         }
         slimePodComponent.isActivated = !slimePodComponent.isActivated;
 
@@ -156,14 +166,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             behaviorComponent.tree = capturedBT;
             releasedGooey.saveComponent(behaviorComponent);
 
-            for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class, BlockComponent.class)) {
-                VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
-                if (visitBlockComponent.penNumber == blockEntity.getComponent(PenBlockComponent.class).penNumber) {
-                    visitBlockComponent.gooeyQuantity ++;
-                    visitBlock.saveComponent(visitBlockComponent);
-                    return;
-                }
-            }
+            entity.destroy();
         }
     }
 
@@ -283,6 +286,21 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         if (slimePodComponent != null) {
             if (slimePodComponent.isActivated && slimePodComponent.capturedEntity == EntityRef.NULL && gooeyComponent.isStunned) {
                 gooeyEntity.send(new OnCapturedEvent(localPlayer.getCharacterEntity(), slimePodComponent));
+            }
+        }
+    }
+
+    @ReceiveEvent
+    public void onBumpGiveItemToEntity(CollideEvent event, EntityRef entity, PickupComponent pickupComponent) {
+        if (entity.hasComponent(SlimePodComponent.class)) {
+            if (entity.getComponent(SlimePodComponent.class).capturedEntity.equals(EntityRef.NULL)) {
+                for (EntityRef slimePodLauncher : entityManager.getEntitiesWith(SlimePodItemComponent.class)) {
+                    SlimePodItemComponent slimePodItemComponent = slimePodLauncher.getComponent(SlimePodItemComponent.class);
+                    slimePodItemComponent.slimePods++;
+                    slimePodLauncher.saveComponent(slimePodItemComponent);
+                    entity.destroy();
+                    break;
+                }
             }
         }
     }

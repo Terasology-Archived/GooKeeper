@@ -33,5 +33,7 @@ public class PenBlockComponent implements Component {
     /**
      * ID of the pen constructed using this block
      */
-    public int penNumber;
+    public int penNumber = 0;
+
+    public boolean penIDSet = false;
 }

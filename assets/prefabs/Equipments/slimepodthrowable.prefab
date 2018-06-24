@@ -4,7 +4,6 @@
         "name": "Slime Pod"
     },
     "Item": {
-        "consumedOnUse": true,
         "usage": "ON_BLOCK"
     },
     "BoxShape" : {

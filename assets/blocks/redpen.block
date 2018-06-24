@@ -16,7 +16,7 @@
         "shape": "GooKeeper:fence"
     },
     "2d_corner": {
-        "shape": "Fences:fenceCorner"
+        "shape": "GooKeeper:fenceCorner"
     },
     "2d_t": {
         "shape": "Fences:fenceTee"
