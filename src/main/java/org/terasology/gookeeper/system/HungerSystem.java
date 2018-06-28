@@ -21,17 +21,18 @@ import org.terasology.assets.management.AssetManager;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
-import org.terasology.gookeeper.component.EconomyComponent;
 import org.terasology.gookeeper.component.GooeyComponent;
-import org.terasology.gookeeper.component.VisitBlockComponent;
-import org.terasology.gookeeper.interfaces.EconomyManager;
+import org.terasology.gookeeper.component.HungerComponent;
+import org.terasology.gookeeper.event.GooeyFedEvent;
+import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.common.DisplayNameComponent;
+import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.physics.Physics;
@@ -87,5 +88,46 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
 
     @Override
     public void update(float delta) {
+    }
+
+    /**
+     * Receives ActivateEvent when the targeted gooey is 'activated' and then is fed the held food block.
+     *
+     * @param event,entity   The ActivateEvent, the gooey entity
+     */
+    @ReceiveEvent(components = {GooeyComponent.class})
+    public void onGooeyActivated(ActivateEvent event, EntityRef entity) {
+        if (event.getTarget().hasComponent(GooeyComponent.class)) {
+            EntityRef gooeyEntity = event.getTarget();
+
+            GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
+            HungerComponent hungerComponent = gooeyEntity.getComponent(HungerComponent.class);
+            CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
+
+            if (characterHeldItemComponent != null && gooeyComponent.isCaptured) {
+                EntityRef item = characterHeldItemComponent.selectedItem;
+                String itemName = item.getComponent(DisplayNameComponent.class).name;
+
+                for (String acceptableFoodBlock : hungerComponent.foodBlockNames) {
+                    if (itemName.equals(acceptableFoodBlock)) {
+                        gooeyEntity.send(new GooeyFedEvent(event.getInstigator(), gooeyEntity, item));
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Receives GooeyFedEvent when the targeted gooey is fed the held food block and hence resets the health to max.
+     *
+     * @param event,entity   The GooeyFedEvent, the gooey entity
+     */
+    @ReceiveEvent(components = {GooeyComponent.class})
+    public void onGooeyFed(GooeyFedEvent event, EntityRef entityRef) {
+        HealthComponent healthComponent = event.getGooey().getComponent(HealthComponent.class);
+        healthComponent.currentHealth = healthComponent.maxHealth;
+
+        event.getGooey().saveComponent(healthComponent);
     }
 }

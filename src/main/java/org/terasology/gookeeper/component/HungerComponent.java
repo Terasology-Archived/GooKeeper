@@ -16,7 +16,6 @@
 package org.terasology.gookeeper.component;
 
 import org.terasology.entitySystem.Component;
-import org.terasology.world.block.Block;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class HungerComponent implements Component {
     /**
      * The block items which are allowed to be consumed by the gooey entity
      */
-    public List<Block> foodBlocks = new ArrayList<>();
+    public List<String> foodBlockNames = new ArrayList<>();
 
     /**
      * The time interval in which the entity's health starts dropping unless fed

@@ -24,9 +24,9 @@ public class GooeyFedEvent implements Event {
 
     private EntityRef instigator;
     private EntityRef gooey;
-    private Block item;
+    private EntityRef item;
 
-    public GooeyFedEvent (EntityRef instigator, EntityRef gooey, Block item) {
+    public GooeyFedEvent (EntityRef instigator, EntityRef gooey, EntityRef item) {
         this.instigator = instigator;
         this.gooey = gooey;
         this.item = item;
@@ -40,7 +40,7 @@ public class GooeyFedEvent implements Event {
         return instigator;
     }
 
-    public Block getItem() {
+    public EntityRef getItem() {
         return item;
     }
 }
