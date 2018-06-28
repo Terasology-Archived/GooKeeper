@@ -86,6 +86,7 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
 
     @Override
     public void initialise() {
+        /* Adds health degradation action for the already captured gooey entities. */
         for (EntityRef gooey : entityManager.getEntitiesWith(GooeyComponent.class)) {
             GooeyComponent gooeyComponent = gooey.getComponent(GooeyComponent.class);
             HungerComponent hungerComponent = gooey.getComponent(HungerComponent.class);
@@ -115,8 +116,6 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
         if (event.getTarget().hasComponent(GooeyComponent.class)) {
             EntityRef gooeyEntity = event.getTarget();
 
-            delayManager.cancelPeriodicAction(gooeyEntity, eventID);
-
             GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
             HungerComponent hungerComponent = gooeyEntity.getComponent(HungerComponent.class);
             CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
@@ -127,6 +126,7 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
 
                 for (String acceptableFoodBlock : hungerComponent.foodBlockNames) {
                     if (itemName.equals(acceptableFoodBlock)) {
+                        delayManager.cancelPeriodicAction(gooeyEntity, eventID);
                         gooeyEntity.send(new GooeyFedEvent(event.getInstigator(), gooeyEntity, item));
                         return;
                     }
@@ -146,7 +146,6 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
         HungerComponent hungerComponent = event.getGooey().getComponent(HungerComponent.class);
 
         healthComponent.currentHealth = healthComponent.maxHealth;
-
         delayManager.addPeriodicAction(event.getGooey(), eventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
 
         event.getGooey().saveComponent(healthComponent);
