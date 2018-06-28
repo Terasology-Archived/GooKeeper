@@ -35,6 +35,7 @@ import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.PickupComponent;
 import org.terasology.logic.inventory.events.DropItemEvent;
@@ -83,6 +84,9 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
     @In
     private AssetManager assetManager;
+
+    @In
+    private DelayManager delayManager;
 
     @In
     private Time time;
@@ -155,6 +159,9 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             BehaviorComponent behaviorComponent = releasedGooey.getComponent(BehaviorComponent.class);
             behaviorComponent.tree = capturedBT;
             releasedGooey.saveComponent(behaviorComponent);
+
+            HungerComponent hungerComponent = releasedGooey.getComponent(HungerComponent.class);
+            delayManager.addPeriodicAction(releasedGooey, "DECREASE_HEALTH_TICK", hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
 
             entity.destroy();
         }

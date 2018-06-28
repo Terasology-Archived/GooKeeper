@@ -27,9 +27,14 @@ public class HungerComponent implements Component {
     public List<String> foodBlockNames = new ArrayList<>();
 
     /**
+     * The time to be elapsed before the entity's health starts dropping
+     */
+    public long timeBeforeHungry = 50000;
+
+    /**
      * The time interval in which the entity's health starts dropping unless fed
      */
-    public float healthDecreaseInterval = 4000f;
+    public long healthDecreaseInterval = 4000;
 
     /**
      * The amount of health lost every 'healthDecreaseInterval'

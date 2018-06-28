@@ -32,6 +32,8 @@ import org.terasology.gookeeper.event.GooeyFedEvent;
 import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.common.DisplayNameComponent;
+import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.delay.PeriodicActionTriggeredEvent;
 import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
@@ -73,13 +75,25 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
     private PrefabManager prefabManager;
 
     @In
+    private DelayManager delayManager;
+
+    @In
     private NUIManager nuiManager;
 
     private static final Logger logger = LoggerFactory.getLogger(HungerSystem.class);
     private Random random = new FastRandom();
+    private static final String eventID = "DECREASE_HEALTH_TICK";
 
     @Override
     public void initialise() {
+        for (EntityRef gooey : entityManager.getEntitiesWith(GooeyComponent.class)) {
+            GooeyComponent gooeyComponent = gooey.getComponent(GooeyComponent.class);
+            HungerComponent hungerComponent = gooey.getComponent(HungerComponent.class);
+
+            if (gooeyComponent.isCaptured) {
+                delayManager.addPeriodicAction(gooey, eventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+            }
+        }
     }
 
     @Override
@@ -88,6 +102,7 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
 
     @Override
     public void update(float delta) {
+
     }
 
     /**
@@ -99,6 +114,8 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
     public void onGooeyActivated(ActivateEvent event, EntityRef entity) {
         if (event.getTarget().hasComponent(GooeyComponent.class)) {
             EntityRef gooeyEntity = event.getTarget();
+
+            delayManager.cancelPeriodicAction(gooeyEntity, eventID);
 
             GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
             HungerComponent hungerComponent = gooeyEntity.getComponent(HungerComponent.class);
@@ -126,8 +143,28 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onGooeyFed(GooeyFedEvent event, EntityRef entityRef) {
         HealthComponent healthComponent = event.getGooey().getComponent(HealthComponent.class);
+        HungerComponent hungerComponent = event.getGooey().getComponent(HungerComponent.class);
+
         healthComponent.currentHealth = healthComponent.maxHealth;
 
+        delayManager.addPeriodicAction(event.getGooey(), eventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+
         event.getGooey().saveComponent(healthComponent);
+    }
+
+    /**
+     * Receives PeriodicActionTriggeredEvent when the gooey entity's health is decreased
+     *
+     * @param event,entity   The PeriodicActionTriggeredEvent, the gooey entity
+     */
+    @ReceiveEvent(components = {GooeyComponent.class})
+    public void onGooeyHealthDecrease(PeriodicActionTriggeredEvent event, EntityRef entity) {
+        if (event.getActionId().equals(eventID)) {
+            HealthComponent healthComponent = entity.getComponent(HealthComponent.class);
+            HungerComponent hungerComponent = entity.getComponent(HungerComponent.class);
+
+            healthComponent.currentHealth -= hungerComponent.healthDecreaseAmount;
+            entity.saveComponent(healthComponent);
+        }
     }
 }
