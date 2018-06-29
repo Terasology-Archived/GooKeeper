@@ -29,6 +29,7 @@ import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.component.PlazMasterShotComponent;
@@ -94,8 +95,6 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     private static final Prefab arrowPrefab = Assets.getPrefab("GooKeeper:arrow").get();
     private StaticSound gunShotAudio = Assets.getSound("GooKeeper:PlasmaShot").get();
     private StaticSound gooeyHitAudio = Assets.getSound("GooKeeper:GooeyHit").get();
-
-    private static final String eventID = "ARROW_DESTROY_EVENT_ID";
 
     @Override
     public void initialise() {
@@ -192,7 +191,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
 
             arrowEntity.send(new PlaySoundEvent(gunShotAudio, 0.4f));
 
-            delayManager.addDelayedAction(arrowEntity, eventID, 3000);
+            delayManager.addDelayedAction(arrowEntity, Constants.destroyArrowEventID, 3000);
         }
     }
 
@@ -203,7 +202,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
      */
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef entityRef) {
-        if (event.getActionId().equals(eventID)) {
+        if (event.getActionId().equals(Constants.destroyArrowEventID)) {
             entityRef.destroy();
         }
     }

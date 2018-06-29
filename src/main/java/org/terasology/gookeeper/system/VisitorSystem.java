@@ -28,6 +28,7 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.fences.ConnectsToFencesComponent;
+import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.*;
 import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
@@ -92,7 +93,6 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     @In
     private EconomyManager economySystem;
 
-    private static final String delayEventId = "VISITOR_SPAWN_DELAY";
     private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
     private static int penIdCounter = 1;
     private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
@@ -164,7 +164,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                 penIdCounter++;
             }
         } else if (blockComponent != null && visitorEntranceComponent != null) {
-            delayManager.addPeriodicAction(event.getPlacedBlock(), delayEventId, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
+            delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.visitorSpawnDelayEventID, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
         }
     }
 
@@ -253,21 +253,23 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
      */
     @ReceiveEvent(components = {VisitorEntranceComponent.class})
     public void onPeriodicAction(PeriodicActionTriggeredEvent event, EntityRef entityRef) {
-        LocationComponent locationComponent = entityRef.getComponent(LocationComponent.class);
-        Vector3f blockPos = locationComponent.getWorldPosition().addY(1f);
+        if (event.getActionId().equals(Constants.visitorSpawnDelayEventID)) {
+            LocationComponent locationComponent = entityRef.getComponent(LocationComponent.class);
+            Vector3f blockPos = locationComponent.getWorldPosition().addY(1f);
 
-        Vector3f spawnPos = blockPos;
-        Vector3f dir = new Vector3f(locationComponent.getWorldDirection());
-        dir.y = 0;
-        if (dir.lengthSquared() > 0.001f) {
-            dir.normalize();
-        } else {
-            dir.set(Direction.FORWARD.getVector3f());
-        }
-        Quat4f rotation = Quat4f.shortestArcQuat(Direction.FORWARD.getVector3f(), dir);
+            Vector3f spawnPos = blockPos;
+            Vector3f dir = new Vector3f(locationComponent.getWorldDirection());
+            dir.y = 0;
+            if (dir.lengthSquared() > 0.001f) {
+                dir.normalize();
+            } else {
+                dir.set(Direction.FORWARD.getVector3f());
+            }
+            Quat4f rotation = Quat4f.shortestArcQuat(Direction.FORWARD.getVector3f(), dir);
 
-        if (visitorPrefab.isPresent() && visitorPrefab.get().getComponent(LocationComponent.class) != null) {
-            entityManager.create(visitorPrefab.get(), spawnPos, rotation);
+            if (visitorPrefab.isPresent() && visitorPrefab.get().getComponent(LocationComponent.class) != null) {
+                entityManager.create(visitorPrefab.get(), spawnPos, rotation);
+            }
         }
     }
 

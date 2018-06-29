@@ -91,8 +91,6 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     @In
     private CelestialSystem celestialSystem;
 
-    private static final String delayActionID = "SPAWN_DELAY_ID";
-
     private Random random = new FastRandom();
     private List<Prefab> gooeyPrefabs = new ArrayList();
     private SkeletalMesh gooeySkeletalMesh = null;
