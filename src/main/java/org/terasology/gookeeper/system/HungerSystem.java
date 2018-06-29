@@ -118,8 +118,11 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
 
             GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
             HungerComponent hungerComponent = gooeyEntity.getComponent(HungerComponent.class);
+            HealthComponent healthComponent = gooeyEntity.getComponent(HealthComponent.class);
+
             CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
 
+            logger.info("Gooey Health: " + healthComponent.currentHealth);
             if (characterHeldItemComponent != null && gooeyComponent.isCaptured) {
                 EntityRef item = characterHeldItemComponent.selectedItem;
                 String itemName = item.getComponent(DisplayNameComponent.class).name;
@@ -148,6 +151,7 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
         healthComponent.currentHealth = healthComponent.maxHealth;
         delayManager.addPeriodicAction(event.getGooey(), eventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
 
+        event.getItem().destroy();
         event.getGooey().saveComponent(healthComponent);
     }
 
@@ -163,6 +167,10 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
             HungerComponent hungerComponent = entity.getComponent(HungerComponent.class);
 
             healthComponent.currentHealth -= hungerComponent.healthDecreaseAmount;
+
+            if (healthComponent.currentHealth <= 0) {
+                entity.destroy();
+            }
             entity.saveComponent(healthComponent);
         }
     }

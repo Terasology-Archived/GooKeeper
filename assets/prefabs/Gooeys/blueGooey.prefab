@@ -127,5 +127,8 @@
     "SPAWN_CHANCE": 85,
     "MAX_GROUP_SIZE": 6
   },
-  "Neutral": {}
+  "Neutral": {},
+  "Hunger": {
+    "foodBlockNames": ["Grass", "Dirt"]
+  }
 }

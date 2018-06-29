@@ -29,15 +29,15 @@ public class HungerComponent implements Component {
     /**
      * The time to be elapsed before the entity's health starts dropping
      */
-    public long timeBeforeHungry = 50000;
+    public long timeBeforeHungry = 70000;
 
     /**
      * The time interval in which the entity's health starts dropping unless fed
      */
-    public long healthDecreaseInterval = 4000;
+    public long healthDecreaseInterval = 20000;
 
     /**
      * The amount of health lost every 'healthDecreaseInterval'
      */
-    public float healthDecreaseAmount = 4f;
+    public float healthDecreaseAmount = 2f;
 }
