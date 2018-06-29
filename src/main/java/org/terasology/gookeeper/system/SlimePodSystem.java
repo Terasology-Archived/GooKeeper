@@ -36,6 +36,7 @@ import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.PickupComponent;
 import org.terasology.logic.inventory.events.DropItemEvent;
@@ -162,6 +163,10 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
             HungerComponent hungerComponent = releasedGooey.getComponent(HungerComponent.class);
 
+            HealthComponent healthComponent = releasedGooey.getComponent(HealthComponent.class);
+            healthComponent.currentHealth = healthComponent.maxHealth;
+            releasedGooey.saveComponent(healthComponent);
+            
             /* This adds the health degradation to the newly captured gooey entities */
             delayManager.addPeriodicAction(releasedGooey, "DECREASE_HEALTH_TICK", hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
 

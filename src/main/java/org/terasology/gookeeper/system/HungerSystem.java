@@ -43,10 +43,15 @@ import org.terasology.physics.Physics;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.nui.NUIManager;
+import org.terasology.rendering.nui.layers.ingame.inventory.GetItemTooltip;
+import org.terasology.rendering.nui.widgets.TooltipLine;
+import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
+import org.terasology.worldlyTooltipAPI.events.GetTooltipIconEvent;
+import org.terasology.worldlyTooltipAPI.events.GetTooltipNameEvent;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 @Share(value = HungerSystem.class)
@@ -133,7 +138,7 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
             for (String acceptableFoodBlock : hungerComponent.foodBlockNames) {
-                if (itemName.equals(acceptableFoodBlock)) {
+                if (!itemName.isEmpty() && itemName.equals(acceptableFoodBlock)) {
                     delayManager.cancelPeriodicAction(gooeyEntity, Constants.healthDecreaseEventID);
                     gooeyEntity.send(new GooeyFedEvent(event.getInstigator(), gooeyEntity, item));
                     return;
@@ -177,5 +182,22 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
                 entity.destroy();
             }
         }
+    }
+
+    @ReceiveEvent(components = {GooeyComponent.class, HungerComponent.class})
+    public void addAttributesToTooltip(GetItemTooltip event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
+        for (String food : hungerComponent.foodBlockNames) {
+            event.getTooltipLines().add(new TooltipLine("Can eat : " + food));
+        }
+    }
+
+    @ReceiveEvent(components = GooeyComponent.class)
+    public void setIcon(GetTooltipIconEvent event, EntityRef entityRef) {
+        event.setIcon(Assets.getTextureRegion("GooKeeper:"+ entityRef.getComponent(DisplayNameComponent.class).name).get());
+    }
+
+    @ReceiveEvent(components = {GooeyComponent.class})
+    public void setName(GetTooltipNameEvent event, EntityRef entityRef) {
+        event.setName(entityRef.getComponent(DisplayNameComponent.class).name);
     }
 }
