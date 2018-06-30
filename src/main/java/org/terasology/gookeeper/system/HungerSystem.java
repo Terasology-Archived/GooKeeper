@@ -193,7 +193,7 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
 
     @ReceiveEvent(components = GooeyComponent.class)
     public void setIcon(GetTooltipIconEvent event, EntityRef entityRef) {
-        event.setIcon(Assets.getTextureRegion("GooKeeper:"+ entityRef.getComponent(DisplayNameComponent.class).name).get());
+        event.setIcon(Assets.getTextureRegion("GooKeeper:"+ entityRef.getComponent(DisplayNameComponent.class).name + "Tooltip").get());
     }
 
     @ReceiveEvent(components = {GooeyComponent.class})

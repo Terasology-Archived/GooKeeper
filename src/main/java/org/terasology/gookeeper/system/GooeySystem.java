@@ -40,6 +40,7 @@ import org.terasology.logic.characters.WalkComponent;
 import org.terasology.logic.characters.events.HorizontalCollisionEvent;
 import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.ChunkMath;
@@ -116,9 +117,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     @Override
     public void update (float delta) {
-
         for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class)) {
-
             if (gooeySkeletalMesh == null) {
                 SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
                 gooeySkeletalMesh = skeleton.mesh;
@@ -134,7 +133,11 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
                     currentNumOfEntities--;
                 }
             }
-            //cullDistantGooeys(entity, locationComponent);
+
+            HealthComponent healthComponent = entity.getComponent(HealthComponent.class);
+            if (healthComponent != null && healthComponent.currentHealth <= 0) {
+                entity.destroy();
+            }
         }
 
         spawnNearPlayer();

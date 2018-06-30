@@ -166,7 +166,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             HealthComponent healthComponent = releasedGooey.getComponent(HealthComponent.class);
             healthComponent.currentHealth = healthComponent.maxHealth;
             releasedGooey.saveComponent(healthComponent);
-            
+
             /* This adds the health degradation to the newly captured gooey entities */
             delayManager.addPeriodicAction(releasedGooey, "DECREASE_HEALTH_TICK", hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
 
