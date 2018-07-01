@@ -55,7 +55,7 @@ import org.terasology.worldlyTooltipAPI.events.GetTooltipNameEvent;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 @Share(value = HungerSystem.class)
-public class HungerSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+public class HungerSystem extends BaseComponentSystem {
 
     @In
     private WorldProvider worldProvider;
@@ -90,27 +90,12 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
     private static final Logger logger = LoggerFactory.getLogger(HungerSystem.class);
     private Random random = new FastRandom();
 
-    @Override
-    public void initialise() {
-    }
-
-    @Override
-    public void shutdown() {
-    }
-
-    @Override
-    public void update(float delta) {
-
-    }
-
     /**
      * Adds health degradation action for the already captured gooey entities.
      *
-     * @param event
-     * @param entity
-     * @param gooeyComponent
-     * @param hungerComponent
+     * @param event,entity,gooeyComponent,hungerComponent
      */
+    @ReceiveEvent
     public void onGooeyActivated(OnAddedComponent event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
         if (gooeyComponent.isCaptured) {
             delayManager.addPeriodicAction(entity, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
@@ -120,13 +105,10 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
     /**
      * Receives ActivateEvent when the targeted gooey is 'activated' and then is fed the held food block.
      *
-     * @param event,entity   The ActivateEvent, the gooey entity
+     * @param event,entity,gooeyComponent   The ActivateEvent, the gooey entity, the GooeyComponent of the corresponding entity
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
-    public void onGooeyActivated(ActivateEvent event, EntityRef entity) {
-        EntityRef gooeyEntity = event.getTarget();
-
-        GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
+    @ReceiveEvent
+    public void onGooeyActivated(ActivateEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
         HungerComponent hungerComponent = gooeyEntity.getComponent(HungerComponent.class);
         HealthComponent healthComponent = gooeyEntity.getComponent(HealthComponent.class);
 
@@ -137,12 +119,9 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
             EntityRef item = characterHeldItemComponent.selectedItem;
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
-            for (String acceptableFoodBlock : hungerComponent.foodBlockNames) {
-                if (!itemName.isEmpty() && itemName.equals(acceptableFoodBlock)) {
-                    delayManager.cancelPeriodicAction(gooeyEntity, Constants.healthDecreaseEventID);
-                    gooeyEntity.send(new GooeyFedEvent(event.getInstigator(), gooeyEntity, item));
-                    return;
-                }
+            if (!itemName.isEmpty() && hungerComponent.foodBlockNames.contains(itemName)) {
+                delayManager.cancelPeriodicAction(gooeyEntity, Constants.healthDecreaseEventID);
+                gooeyEntity.send(new GooeyFedEvent(event.getInstigator(), gooeyEntity, item));
             }
         }
     }
@@ -184,7 +163,7 @@ public class HungerSystem extends BaseComponentSystem implements UpdateSubscribe
         }
     }
 
-    @ReceiveEvent(components = {GooeyComponent.class, HungerComponent.class})
+    @ReceiveEvent
     public void addAttributesToTooltip(GetItemTooltip event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
         for (String food : hungerComponent.foodBlockNames) {
             event.getTooltipLines().add(new TooltipLine("Can eat : " + food));
