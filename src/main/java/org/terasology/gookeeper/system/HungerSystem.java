@@ -148,12 +148,12 @@ public class HungerSystem extends BaseComponentSystem {
     }
 
     /**
-     * Receives DelayedActionTriggeredEvent when the gooey entity's health is decreased
+     * Receives PeriodicActionTriggeredEvent when the gooey entity's health is decreased
      *
-     * @param event,entity   The DelayedActionTriggeredEvent, the gooey entity
+     * @param event,entity   The PeriodicActionTriggeredEvent, the gooey entity
      */
     @ReceiveEvent(components = {GooeyComponent.class})
-    public void onGooeyHealthDecrease(DelayedActionTriggeredEvent event, EntityRef entity) {
+    public void onGooeyHealthDecrease(PeriodicActionTriggeredEvent event, EntityRef entity) {
         if (event.getActionId().equals(Constants.healthDecreaseEventID)) {
             HealthComponent healthComponent = entity.getComponent(HealthComponent.class);
             HungerComponent hungerComponent = entity.getComponent(HungerComponent.class);
@@ -169,12 +169,12 @@ public class HungerSystem extends BaseComponentSystem {
 
 
     /**
-     * Receives PeriodicActionTriggeredEvent when the gooey entity's life span terminates
+     * Receives DelayedActionTriggeredEvent when the gooey entity's life span terminates
      *
-     * @param event,entity   The PeriodicActionTriggeredEvent, the gooey entity
+     * @param event,entity   The DelayedActionTriggeredEvent, the gooey entity
      */
     @ReceiveEvent(components = {GooeyComponent.class})
-    public void onGooeyDestroy(PeriodicActionTriggeredEvent event, EntityRef entity) {
+    public void onGooeyDestroy(DelayedActionTriggeredEvent event, EntityRef entity) {
         if (event.getActionId().equals(Constants.gooeyDeathEventID)) {
             entity.send(new DoDestroyEvent(EntityRef.NULL, EntityRef.NULL, EngineDamageTypes.PHYSICAL.get()));
         }
