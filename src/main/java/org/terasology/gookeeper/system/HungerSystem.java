@@ -26,7 +26,6 @@ import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.HungerComponent;
@@ -35,11 +34,15 @@ import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.delay.PeriodicActionTriggeredEvent;
+import org.terasology.logic.health.DoDestroyEvent;
+import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.physics.Physics;
+import org.terasology.protobuf.EntityData;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.nui.NUIManager;
@@ -99,6 +102,7 @@ public class HungerSystem extends BaseComponentSystem {
     public void onGooeyActivated(OnAddedComponent event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
         if (gooeyComponent.isCaptured) {
             delayManager.addPeriodicAction(entity, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+            delayManager.addDelayedAction(entity, Constants.gooeyDeathEventID, gooeyComponent.lifeTime);
         }
     }
 
@@ -119,7 +123,7 @@ public class HungerSystem extends BaseComponentSystem {
             EntityRef item = characterHeldItemComponent.selectedItem;
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
-            if (!itemName.isEmpty() && hungerComponent.foodBlockNames.contains(itemName)) {
+            if (!itemName.isEmpty() && hungerComponent.foods.contains(itemName)) {
                 delayManager.cancelPeriodicAction(gooeyEntity, Constants.healthDecreaseEventID);
                 gooeyEntity.send(new GooeyFedEvent(event.getInstigator(), gooeyEntity, item));
             }
@@ -144,12 +148,12 @@ public class HungerSystem extends BaseComponentSystem {
     }
 
     /**
-     * Receives PeriodicActionTriggeredEvent when the gooey entity's health is decreased
+     * Receives DelayedActionTriggeredEvent when the gooey entity's health is decreased
      *
-     * @param event,entity   The PeriodicActionTriggeredEvent, the gooey entity
+     * @param event,entity   The DelayedActionTriggeredEvent, the gooey entity
      */
     @ReceiveEvent(components = {GooeyComponent.class})
-    public void onGooeyHealthDecrease(PeriodicActionTriggeredEvent event, EntityRef entity) {
+    public void onGooeyHealthDecrease(DelayedActionTriggeredEvent event, EntityRef entity) {
         if (event.getActionId().equals(Constants.healthDecreaseEventID)) {
             HealthComponent healthComponent = entity.getComponent(HealthComponent.class);
             HungerComponent hungerComponent = entity.getComponent(HungerComponent.class);
@@ -158,14 +162,27 @@ public class HungerSystem extends BaseComponentSystem {
             entity.saveComponent(healthComponent);
 
             if (healthComponent.currentHealth <= 0) {
-                entity.destroy();
+                entity.send(new DoDestroyEvent(EntityRef.NULL, EntityRef.NULL, EngineDamageTypes.PHYSICAL.get()));
             }
+        }
+    }
+
+
+    /**
+     * Receives PeriodicActionTriggeredEvent when the gooey entity's life span terminates
+     *
+     * @param event,entity   The PeriodicActionTriggeredEvent, the gooey entity
+     */
+    @ReceiveEvent(components = {GooeyComponent.class})
+    public void onGooeyDestroy(PeriodicActionTriggeredEvent event, EntityRef entity) {
+        if (event.getActionId().equals(Constants.gooeyDeathEventID)) {
+            entity.send(new DoDestroyEvent(EntityRef.NULL, EntityRef.NULL, EngineDamageTypes.PHYSICAL.get()));
         }
     }
 
     @ReceiveEvent
     public void addAttributesToTooltip(GetItemTooltip event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
-        for (String food : hungerComponent.foodBlockNames) {
+        for (String food : hungerComponent.foods) {
             event.getTooltipLines().add(new TooltipLine("Can eat : " + food));
         }
     }

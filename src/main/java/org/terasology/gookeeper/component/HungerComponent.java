@@ -24,7 +24,7 @@ public class HungerComponent implements Component {
     /**
      * The block items which are allowed to be consumed by the gooey entity
      */
-    public List<String> foodBlockNames = new ArrayList<>();
+    public List<String> foods = new ArrayList<>();
 
     /**
      * The time to be elapsed before the entity's health starts dropping

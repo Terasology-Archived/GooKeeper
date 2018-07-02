@@ -27,6 +27,7 @@ import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.*;
 import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.logic.behavior.BehaviorComponent;
@@ -164,11 +165,14 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             HungerComponent hungerComponent = releasedGooey.getComponent(HungerComponent.class);
 
             HealthComponent healthComponent = releasedGooey.getComponent(HealthComponent.class);
+            GooeyComponent gooeyComponent = releasedGooey.getComponent(GooeyComponent.class);
             healthComponent.currentHealth = healthComponent.maxHealth;
             releasedGooey.saveComponent(healthComponent);
 
             /* This adds the health degradation to the newly captured gooey entities */
-            delayManager.addPeriodicAction(releasedGooey, "DECREASE_HEALTH_TICK", hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+            delayManager.addPeriodicAction(releasedGooey, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+            /* Gives a life time to the entity */
+            delayManager.addDelayedAction(entity, Constants.gooeyDeathEventID, gooeyComponent.lifeTime);
 
             entity.destroy();
         }
