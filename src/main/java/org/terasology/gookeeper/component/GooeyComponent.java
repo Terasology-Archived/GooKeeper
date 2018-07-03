@@ -94,4 +94,9 @@ public class GooeyComponent implements Component {
      */
     public int penNumber = 0;
 
+    /**
+     * Lifetime of the entity
+     */
+    public long lifeTime = 1800000;
+
 }
