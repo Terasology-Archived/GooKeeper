@@ -9,5 +9,6 @@
     },
     "SlimePodItem": {
         "launchPrefab": "GooKeeper:slimepodthrowable"
-    }
+    },
+    "Upgradable": {}
 }

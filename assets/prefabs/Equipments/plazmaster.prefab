@@ -14,5 +14,6 @@
     "shotRecoveryTime": 1,
     "rateOfFire": 2.5,
     "frequency": 100
-  }
+  },
+  "Upgradable": {}
 }
