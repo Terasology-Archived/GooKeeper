@@ -215,17 +215,19 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onIncreaseFrequency(IncreaseFrequencyButton event, EntityRef entityRef) {
-        EntityRef character = localPlayer.getCharacterEntity();
-        CharacterHeldItemComponent component = character.getComponent(CharacterHeldItemComponent.class);
+        EntityRef player = localPlayer.getCharacterEntity();
 
-        if (component == null) {
-            return;
-        }
+        for (int i = 0; i < inventoryManager.getNumSlots(player); i++) {
+            EntityRef itemInSlot = inventoryManager.getItemInSlot(player, i);
 
-        EntityRef heldItem = component.selectedItem;
-        if (heldItem.hasComponent(PlazMasterComponent.class)) {
-            heldItem.getComponent(PlazMasterComponent.class).frequency += 10f;
-            logger.info("Increased PlazMaster's Frequency!");
+            if (itemInSlot != EntityRef.NULL && itemInSlot.hasComponent(PlazMasterComponent.class)) {
+                PlazMasterComponent plazMasterComponent = itemInSlot.getComponent(PlazMasterComponent.class);
+                plazMasterComponent.frequency += 10f;
+                itemInSlot.saveComponent(plazMasterComponent);
+                logger.info("Increased PlazMaster's Frequency!");
+
+                return;
+            }
         }
     }
 
@@ -236,17 +238,19 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onDecreaseFrequency(DecreaseFrequencyButton event, EntityRef entityRef) {
-        EntityRef character = localPlayer.getCharacterEntity();
-        CharacterHeldItemComponent component = character.getComponent(CharacterHeldItemComponent.class);
+        EntityRef player = localPlayer.getCharacterEntity();
 
-        if (component == null) {
-            return;
-        }
+        for (int i = 0; i < inventoryManager.getNumSlots(player); i++) {
+            EntityRef itemInSlot = inventoryManager.getItemInSlot(player, i);
 
-        EntityRef heldItem = component.selectedItem;
-        if (heldItem.hasComponent(PlazMasterComponent.class)) {
-            heldItem.getComponent(PlazMasterComponent.class).frequency -= 10f;
-            logger.info("Decreased PlazMaster's Frequency!");
+            if (itemInSlot != EntityRef.NULL && itemInSlot.hasComponent(PlazMasterComponent.class)) {
+                PlazMasterComponent plazMasterComponent = itemInSlot.getComponent(PlazMasterComponent.class);
+                plazMasterComponent.frequency -= 10f;
+                itemInSlot.saveComponent(plazMasterComponent);
+                logger.info("Decreased PlazMaster's Frequency!");
+
+                return;
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ public class VisitorEntranceComponent implements Component {
     /**
      * The initial delay before the spawning begins
      */
-    public long initialDelay = 2000;
+    public long initialDelay = 7000;
 
     /**
      * The frequency of spawning the visitor NPCs
@@ -32,5 +32,5 @@ public class VisitorEntranceComponent implements Component {
     /**
      * The owner entity of this block
      */
-    public EntityRef owner;
+    public EntityRef owner = EntityRef.NULL;
 }

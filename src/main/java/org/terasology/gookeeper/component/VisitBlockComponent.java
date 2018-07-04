@@ -47,5 +47,5 @@ public class VisitBlockComponent implements Component {
     /**
      * The owner entity of this block
      */
-    public EntityRef owner;
+    public EntityRef owner = EntityRef.NULL;
 }

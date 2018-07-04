@@ -161,7 +161,6 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         VisitorEntranceComponent visitorEntranceComponent = event.getPlacedBlock().getComponent(VisitorEntranceComponent.class);
 
         if (blockComponent != null && visitBlockComponent != null) {
-            visitBlockComponent.owner = entity;
             Vector3f targetBlock = blockComponent.getPosition().toVector3f();
             EntityRef pen = getClosestPen(targetBlock);
 
@@ -180,9 +179,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                 penIdCounter++;
             }
         } else if (blockComponent != null && visitorEntranceComponent != null) {
-            visitorEntranceComponent.owner = entity;
             delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.visitorSpawnDelayEventID, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
-            event.getPlacedBlock().saveComponent(visitorEntranceComponent);
         }
     }
 
@@ -297,21 +294,33 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     /**
      * Receives ActivateEvent when the targeted pen block is activated, and prints the ID of the corresponding pen.
      *
-     * @param event,entity   The ActivateEvent, the instigator entity
+     * @param event,entity   The ActivateEvent
      */
     @ReceiveEvent
-    public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
-        PenBlockComponent penBlockComponent= event.getTarget().getComponent(PenBlockComponent.class);
-        VisitBlockComponent visitBlockComponent = event.getTarget().getComponent(VisitBlockComponent.class);
-        BlockComponent blockComponent = event.getTarget().getComponent(BlockComponent.class);
+    public void onActivate(ActivateEvent event, EntityRef entity) {
+        PenBlockComponent penBlockComponent = entity.getComponent(PenBlockComponent.class);
+        VisitBlockComponent visitBlockComponent = entity.getComponent(VisitBlockComponent.class);
+        VisitorEntranceComponent visitorEntranceComponent = entity.getComponent(VisitorEntranceComponent.class);
+        BlockComponent blockComponent = entity.getComponent(BlockComponent.class);
 
         if (blockComponent != null && penBlockComponent != null) {
             logger.info("Pen Type: " + penBlockComponent.type);
             logger.info("Pen ID: " + penBlockComponent.penNumber);
-        } else if (blockComponent != null && visitBlockComponent != null) {
+        } else if (visitBlockComponent != null) {
+            if (visitBlockComponent.owner == EntityRef.NULL) {
+                visitBlockComponent.owner = event.getInstigator();
+            }
+
             logger.info("Visit Block Type: " + visitBlockComponent.type);
             logger.info("Visit Block ID: " + visitBlockComponent.penNumber);
             logger.info("Visit Block Gooey Count: " + visitBlockComponent.gooeyQuantity);
+
+            entity.saveComponent(visitBlockComponent);
+        } else if (visitorEntranceComponent != null) {
+            if (visitorEntranceComponent.owner == EntityRef.NULL) {
+                visitorEntranceComponent.owner = event.getInstigator();
+            }
+            entity.saveComponent(visitorEntranceComponent);
         }
     }
 }

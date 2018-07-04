@@ -20,6 +20,8 @@ import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.gookeeper.component.EconomyComponent;
 import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.component.SlimePodItemComponent;
+import org.terasology.logic.inventory.InventoryManager;
+import org.terasology.logic.players.LocalPlayer;
 import org.terasology.registry.In;
 import org.terasology.rendering.nui.databinding.ReadOnlyBinding;
 import org.terasology.rendering.nui.layers.hud.CoreHudWidget;
@@ -29,22 +31,28 @@ public class PlayerHud extends CoreHudWidget {
     @In
     private EntityManager entityManager;
 
+    @In
+    private LocalPlayer localPlayer;
+
+    @In
+    private InventoryManager inventoryManager;
 
     @Override
     public void initialise() {
-        for (EntityRef entity : entityManager.getEntitiesWith(EconomyComponent.class)) {
-            EconomyComponent economyComponent = entity.getComponent(EconomyComponent.class);
-            bindWalletText(economyComponent);
-        }
+        EntityRef player = localPlayer.getCharacterEntity();
+        EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
+        bindWalletText(economyComponent);
 
-        for (EntityRef entity : entityManager.getEntitiesWith(SlimePodItemComponent.class)) {
-            SlimePodItemComponent slimePodItemComponent = entity.getComponent(SlimePodItemComponent.class);
-            bindSlimePodText(slimePodItemComponent);
-        }
+        for (int i = 0; i < inventoryManager.getNumSlots(player); i++) {
+            EntityRef itemInSlot = inventoryManager.getItemInSlot(player, i);
 
-        for (EntityRef entity : entityManager.getEntitiesWith(PlazMasterComponent.class)) {
-            PlazMasterComponent plazMasterComponent = entity.getComponent(PlazMasterComponent.class);
-            bindPlazmasterText(plazMasterComponent);
+            if (itemInSlot != EntityRef.NULL && itemInSlot.hasComponent(SlimePodItemComponent.class)) {
+                SlimePodItemComponent slimePodItemComponent = itemInSlot.getComponent(SlimePodItemComponent.class);
+                bindSlimePodText(slimePodItemComponent);
+            } else if (itemInSlot != EntityRef.NULL && itemInSlot.hasComponent(PlazMasterComponent.class)) {
+                PlazMasterComponent plazMasterComponent = itemInSlot.getComponent(PlazMasterComponent.class);
+                bindPlazmasterText(plazMasterComponent);
+            }
         }
     }
 
