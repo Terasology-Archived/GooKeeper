@@ -93,7 +93,6 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     private Random random = new FastRandom();
     private static final float baseEntranceFee = 100f;
     private static final float baseVisitFee = 10f;
-    private static boolean setHud = false;
 
     @Override
     public void initialise() {
@@ -173,11 +172,6 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
      */
     @Override
     public void payEntranceFee (EntityRef visitor) {
-//        for (EntityRef wallet : entityManager.getEntitiesWith(EconomyComponent.class)) {
-//            EconomyComponent economyComponent = wallet.getComponent(EconomyComponent.class);
-//            economyComponent.playerWalletCredit += baseEntranceFee;
-//            wallet.saveComponent(economyComponent);
-//        }
         VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
         VisitorEntranceComponent visitorEntranceComponent = visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
         EntityRef player = visitorEntranceComponent.owner;
@@ -186,8 +180,6 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
         if (economyComponent != null) {
             economyComponent.playerWalletCredit += baseEntranceFee;
             player.saveComponent(economyComponent);
-
-            logger.info("Successfully paid the visiting fee.");
         }
     }
 
@@ -198,23 +190,8 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
      * @param visitor,visitBlock The visitor entity, the visit block entity
      */
 
-    //TODO: add the credits based on the the number of gooeys in pen
     @Override
     public void payVisitFee (EntityRef visitor, EntityRef visitBlock) {
-//        for (EntityRef wallet : entityManager.getEntitiesWith(EconomyComponent.class)) {
-//            EconomyComponent economyComponent = wallet.getComponent(EconomyComponent.class);
-//            VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
-//
-//            Prefab gooeyPrefab = prefabManager.getPrefab("GooKeeper:"+ visitBlockComponent.type);
-//
-//            if (gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
-//                float profitPayOff = gooeyPrefab.getComponent(GooeyComponent.class).profitPayOff;
-//
-//                economyComponent.playerWalletCredit += baseVisitFee * profitPayOff * (visitBlockComponent.gooeyQuantity/3f);
-//                wallet.saveComponent(economyComponent);
-//            }
-//        }
-
         VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
         VisitorEntranceComponent visitorEntranceComponent = visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
         EntityRef player = visitorEntranceComponent.owner;

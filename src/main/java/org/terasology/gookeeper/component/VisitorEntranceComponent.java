@@ -22,7 +22,7 @@ public class VisitorEntranceComponent implements Component {
     /**
      * The initial delay before the spawning begins
      */
-    public long initialDelay = 7000;
+    public long initialDelay = 2000;
 
     /**
      * The frequency of spawning the visitor NPCs

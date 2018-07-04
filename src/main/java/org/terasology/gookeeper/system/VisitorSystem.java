@@ -165,6 +165,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             EntityRef pen = getClosestPen(targetBlock);
 
             if (pen != EntityRef.NULL) {
+                visitBlockComponent.owner = event.getInstigator();
                 PenBlockComponent penBlockComponent = pen.getComponent(PenBlockComponent.class);
 
                 visitBlockComponent.type = penBlockComponent.type;
@@ -179,6 +180,9 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                 penIdCounter++;
             }
         } else if (blockComponent != null && visitorEntranceComponent != null) {
+            visitorEntranceComponent.owner = event.getInstigator();
+            event.getPlacedBlock().saveComponent(visitorEntranceComponent);
+
             delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.visitorSpawnDelayEventID, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
         }
     }
@@ -300,27 +304,15 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     public void onActivate(ActivateEvent event, EntityRef entity) {
         PenBlockComponent penBlockComponent = entity.getComponent(PenBlockComponent.class);
         VisitBlockComponent visitBlockComponent = entity.getComponent(VisitBlockComponent.class);
-        VisitorEntranceComponent visitorEntranceComponent = entity.getComponent(VisitorEntranceComponent.class);
         BlockComponent blockComponent = entity.getComponent(BlockComponent.class);
 
         if (blockComponent != null && penBlockComponent != null) {
             logger.info("Pen Type: " + penBlockComponent.type);
             logger.info("Pen ID: " + penBlockComponent.penNumber);
-        } else if (visitBlockComponent != null) {
-            if (visitBlockComponent.owner == EntityRef.NULL) {
-                visitBlockComponent.owner = event.getInstigator();
-            }
-
+        } else if (blockComponent != null && visitBlockComponent != null) {
             logger.info("Visit Block Type: " + visitBlockComponent.type);
             logger.info("Visit Block ID: " + visitBlockComponent.penNumber);
             logger.info("Visit Block Gooey Count: " + visitBlockComponent.gooeyQuantity);
-
-            entity.saveComponent(visitBlockComponent);
-        } else if (visitorEntranceComponent != null) {
-            if (visitorEntranceComponent.owner == EntityRef.NULL) {
-                visitorEntranceComponent.owner = event.getInstigator();
-            }
-            entity.saveComponent(visitorEntranceComponent);
         }
     }
 }
