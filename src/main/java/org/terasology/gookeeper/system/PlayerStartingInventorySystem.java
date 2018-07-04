@@ -24,6 +24,7 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.inventory.InventoryComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.ItemComponent;
+import org.terasology.logic.inventory.action.RemoveItemAction;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.registry.In;
 import org.terasology.world.block.BlockManager;
@@ -41,6 +42,16 @@ public class PlayerStartingInventorySystem extends BaseComponentSystem {
     @ReceiveEvent(components = InventoryComponent.class)
     public void onPlayerSpawnedEvent(OnPlayerSpawnedEvent event, EntityRef player) {
         BlockItemFactory blockFactory = new BlockItemFactory(entityManager);
+
+        // Remove the already existing, unnecessary items
+        for (int i = 0; i < inventoryManager.getNumSlots(player); i++) {
+            EntityRef itemInSlot = inventoryManager.getItemInSlot(player, i);
+
+            if (itemInSlot != EntityRef.NULL) {
+                player.send(new RemoveItemAction(player, itemInSlot, true));
+            }
+        }
+
         inventoryManager.giveItem(player, EntityRef.NULL, entityManager.create("StructureTemplates:toolbox"));
         inventoryManager.giveItem(player, EntityRef.NULL, entityManager.create("GooKeeper:plazmaster"));
         inventoryManager.giveItem(player, EntityRef.NULL, entityManager.create("GooKeeper:slimepod"));

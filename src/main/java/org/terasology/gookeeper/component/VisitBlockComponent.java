@@ -18,9 +18,6 @@ package org.terasology.gookeeper.component;
 import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityRef;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class VisitBlockComponent implements Component {
     /**
      * Boolean whether the block is currently occupied by a visitor
@@ -46,4 +43,9 @@ public class VisitBlockComponent implements Component {
      * The number of gooeys housed in the corresponding pen
      */
     public int gooeyQuantity = 0;
+
+    /**
+     * The owner entity of this block
+     */
+    public EntityRef owner;
 }

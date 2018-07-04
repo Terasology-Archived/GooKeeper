@@ -17,6 +17,7 @@ package org.terasology.gookeeper.system;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terasology.audio.events.PlaySoundEvent;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -40,8 +41,10 @@ import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.delay.PeriodicActionTriggeredEvent;
 import org.terasology.logic.inventory.InventoryManager;
+import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.math.ChunkMath;
 import org.terasology.math.Direction;
 import org.terasology.math.Side;
 import org.terasology.math.SideBitFlag;
@@ -49,6 +52,7 @@ import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.network.NetworkSystem;
 import org.terasology.physics.Physics;
 import org.terasology.registry.In;
 import org.terasology.utilities.Assets;
@@ -56,8 +60,12 @@ import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
+import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
+import org.terasology.world.block.entity.placement.PlaceBlocks;
+import org.terasology.world.block.family.BlockFamily;
+import org.terasology.world.block.items.BlockItemComponent;
 import org.terasology.world.block.items.OnBlockItemPlaced;
 
 import java.util.Optional;
@@ -96,6 +104,9 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
     @In
     private EconomyManager economySystem;
+
+    @In
+    private NetworkSystem networkSystem;
 
     private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
     private static int penIdCounter = 1;
@@ -150,6 +161,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         VisitorEntranceComponent visitorEntranceComponent = event.getPlacedBlock().getComponent(VisitorEntranceComponent.class);
 
         if (blockComponent != null && visitBlockComponent != null) {
+            visitBlockComponent.owner = entity;
             Vector3f targetBlock = blockComponent.getPosition().toVector3f();
             EntityRef pen = getClosestPen(targetBlock);
 
@@ -168,7 +180,9 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                 penIdCounter++;
             }
         } else if (blockComponent != null && visitorEntranceComponent != null) {
+            visitorEntranceComponent.owner = entity;
             delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.visitorSpawnDelayEventID, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
+            event.getPlacedBlock().saveComponent(visitorEntranceComponent);
         }
     }
 
@@ -272,7 +286,10 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             Quat4f rotation = Quat4f.shortestArcQuat(Direction.FORWARD.getVector3f(), dir);
 
             if (visitorPrefab.isPresent() && visitorPrefab.get().getComponent(LocationComponent.class) != null) {
-                entityManager.create(visitorPrefab.get(), spawnPos, rotation);
+                EntityRef visitor = entityManager.create(visitorPrefab.get(), spawnPos, rotation);
+                VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
+                visitorComponent.visitorEntranceBlock = entityRef;
+                visitor.saveComponent(visitorComponent);
             }
         }
     }

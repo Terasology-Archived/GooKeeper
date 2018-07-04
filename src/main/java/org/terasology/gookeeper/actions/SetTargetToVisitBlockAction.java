@@ -58,19 +58,21 @@ public class SetTargetToVisitBlockAction extends BaseAction {
         int penIndex = random.nextInt(visitorComponent.pensToVisit.size());
 
         EntityRef penToVisit = visitorComponent.pensToVisit.get(penIndex);
-        VisitBlockComponent visitBlockComponent = penToVisit.getComponent(VisitBlockComponent.class);
 
-        if (visitBlockComponent.gooeyQuantity > 0) {
-            return penIndex;
-        } else {
-            if (visitorComponent.pensToVisit.size() > 1) {
-                visitorComponent.pensToVisit.remove(penIndex);
-                getRandomPenIndex(visitorComponent);
+        if (penToVisit != EntityRef.NULL) {
+            VisitBlockComponent visitBlockComponent = penToVisit.getComponent(VisitBlockComponent.class);
+
+            if (visitBlockComponent.gooeyQuantity > 0) {
+                return penIndex;
             } else {
-                return 0;
+                if (visitorComponent.pensToVisit.size() > 1) {
+                    visitorComponent.pensToVisit.remove(penIndex);
+                    getRandomPenIndex(visitorComponent);
+                } else {
+                    return 0;
+                }
             }
         }
-
         return 0;
     }
 }

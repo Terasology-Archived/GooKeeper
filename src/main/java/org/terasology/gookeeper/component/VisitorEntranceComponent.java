@@ -16,6 +16,7 @@
 package org.terasology.gookeeper.component;
 
 import org.terasology.entitySystem.Component;
+import org.terasology.entitySystem.entity.EntityRef;
 
 public class VisitorEntranceComponent implements Component {
     /**
@@ -27,4 +28,9 @@ public class VisitorEntranceComponent implements Component {
      * The frequency of spawning the visitor NPCs
      */
     public long visitorSpawnRate = 7000;
+
+    /**
+     * The owner entity of this block
+     */
+    public EntityRef owner;
 }
