@@ -47,12 +47,19 @@ import org.terasology.physics.Physics;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.nui.NUIManager;
+import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
+import org.terasology.world.block.BlockManager;
+import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.entity.BlockCommands;
+import org.terasology.world.block.family.BlockFamily;
+import org.terasology.world.block.items.BlockItemFactory;
+import org.terasology.world.block.loader.BlockFamilyDefinition;
 
+import java.util.Optional;
 import java.util.Set;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
@@ -89,6 +96,12 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     @In
     private BlockCommands blockCommands;
 
+    @In
+    private BlockManager blockManager;
+
+    @In
+    private BlockFamily blockFamily;
+
     private static final Logger logger = LoggerFactory.getLogger(EconomySystem.class);
     private Random random = new FastRandom();
     private static final float baseEntranceFee = 100f;
@@ -113,55 +126,38 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     public void update(float delta) {
     }
 
+    /**
+     * This command can be used to purchase utility blocks (such as pen blocks, visit blocks, etc.)
+     * 
+     * @param client
+     * @param itemPrefabName
+     * @param amount
+     * @param shapeUriParam
+     * @return
+     */
     @Command(shortDescription = "Purchase utility blocks",
             requiredPermission = PermissionManager.NO_PERMISSION)
     public String purchase(@Sender EntityRef client,
                            @CommandParam("prefabId or blockName") String itemPrefabName,
                            @CommandParam(value = "amount", required = false) Integer amount,
                            @CommandParam(value = "blockShapeName", required = false) String shapeUriParam) {
-        int itemAmount = amount != null ? amount : 1;
-        if (itemAmount < 1) {
-            return "Requested zero (0) items / blocks!";
-        }
+        EntityRef player = client.getComponent(ClientComponent.class).character;
+        EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
 
-        Set<ResourceUrn> matches = assetManager.resolve(itemPrefabName, Prefab.class);
+        int quantityParam = amount != null ? amount : 16;
 
-        if (matches.size() == 1) {
-            Prefab prefab = assetManager.getAsset(matches.iterator().next(), Prefab.class).orElse(null);
-            if (prefab != null && prefab.getComponent(ItemComponent.class) != null) {
-                EntityRef playerEntity = client.getComponent(ClientComponent.class).character;
-
-                for (int quantityLeft = itemAmount; quantityLeft > 0; quantityLeft--) {
-                    EntityRef item = entityManager.create(prefab);
-                    if (!inventoryManager.giveItem(playerEntity, playerEntity, item)) {
-                        item.destroy();
-                        itemAmount -= quantityLeft;
-                        break;
-                    }
-                }
-
-                return "You received "
-                        + (itemAmount > 1 ? itemAmount + " items of " : "an item of ")
-                        + prefab.getName() //TODO Use item display name
-                        + (shapeUriParam != null ? " (Item can not have a shape)" : "");
+        if (economyComponent.playerWalletCredit - (quantityParam * Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class).basePrice) > 0f) {
+            String message = blockCommands.giveBlock(client, itemPrefabName, amount, shapeUriParam);
+            if (message != null) {
+                economyComponent.playerWalletCredit -= quantityParam * Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class).basePrice;
+                player.saveComponent(economyComponent);
+                return "Successfully debitted credits";
+            } else {
+                return "Couldn't find requested block";
             }
-
-        } else if (matches.size() > 1) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("Requested item \"");
-            builder.append(itemPrefabName);
-            builder.append("\": matches ");
-            Joiner.on(" and ").appendTo(builder, matches);
-            builder.append(". Please fully specify one.");
-            return builder.toString();
+        } else {
+            return "You dont have sufficient balance to purchase";
         }
-
-        String message = blockCommands.giveBlock(client, itemPrefabName, amount, shapeUriParam);
-        if (message != null) {
-            return message;
-        }
-
-        return "Could not find an item or block matching \"" + itemPrefabName + "\"";
     }
 
     /**
