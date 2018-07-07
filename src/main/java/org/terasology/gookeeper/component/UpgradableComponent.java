@@ -18,7 +18,8 @@ package org.terasology.gookeeper.component;
 import org.terasology.entitySystem.Component;
 
 public class UpgradableComponent implements Component {
-    public int currentTier = 1;
+    public int currentTier = 0;
     public float baseUpgradePrice = 500f;
-    public float baseQuantityMultiplier = 2f;
+    public int baseQuantityMultiplier = 2;
+    public int baseQuantity = 5;
 }

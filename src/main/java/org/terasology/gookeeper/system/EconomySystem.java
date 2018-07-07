@@ -20,24 +20,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.ResourceUrn;
 import org.terasology.assets.management.AssetManager;
+import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.prefab.PrefabManager;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterMode;
-import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.entitySystem.systems.*;
 import org.terasology.gookeeper.component.*;
 import org.terasology.gookeeper.interfaces.EconomyManager;
 import org.terasology.logic.behavior.core.Visitor;
 import org.terasology.logic.common.ActivateEvent;
+import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.console.commandSystem.annotations.Command;
 import org.terasology.logic.console.commandSystem.annotations.CommandParam;
 import org.terasology.logic.console.commandSystem.annotations.Sender;
 import org.terasology.logic.inventory.InventoryComponent;
 import org.terasology.logic.inventory.InventoryManager;
+import org.terasology.logic.inventory.ItemCommands;
 import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.permission.PermissionManager;
 import org.terasology.logic.players.LocalPlayer;
@@ -97,10 +97,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     private BlockCommands blockCommands;
 
     @In
-    private BlockManager blockManager;
-
-    @In
-    private BlockFamily blockFamily;
+    private ItemCommands itemCommands;
 
     private static final Logger logger = LoggerFactory.getLogger(EconomySystem.class);
     private Random random = new FastRandom();
@@ -128,7 +125,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
 
     /**
      * This command can be used to purchase utility blocks (such as pen blocks, visit blocks, etc.)
-     * 
+     *
      * @param client
      * @param itemPrefabName
      * @param amount
@@ -151,12 +148,64 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             if (message != null) {
                 economyComponent.playerWalletCredit -= quantityParam * Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class).basePrice;
                 player.saveComponent(economyComponent);
-                return "Successfully debitted credits";
+                return "Successfully debitted credits.";
             } else {
-                return "Couldn't find requested block";
+                return "Couldn't find requested block.";
             }
         } else {
-            return "You dont have sufficient balance to purchase";
+            return "You dont have sufficient balance to purchase.";
+        }
+    }
+
+    /**
+     * This command can be used to purchase utility blocks (such as pen blocks, visit blocks, etc.)
+     *
+     * @param client
+     * @param itemPrefabName
+     * @param amount
+     * @param shapeUriParam
+     * @return
+     */
+    @Command(shortDescription = "Purchase utility blocks",
+            requiredPermission = PermissionManager.NO_PERMISSION)
+    public String upgrade(@Sender EntityRef client,
+                           @CommandParam("prefabId or blockName") String itemPrefabName) {
+        EntityRef player = client.getComponent(ClientComponent.class).character;
+        EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
+
+        for (int i = 0; i < inventoryManager.getNumSlots(player); i++) {
+            EntityRef itemInSlot = inventoryManager.getItemInSlot(player, i);
+            DisplayNameComponent displayNameComponent = itemInSlot.getComponent(DisplayNameComponent.class);
+
+            if (displayNameComponent != null && displayNameComponent.name.equals(itemPrefabName)) {
+                UpgradableComponent upgradableComponent = itemInSlot.getComponent(UpgradableComponent.class);
+                if (upgradableComponent != null && (economyComponent.playerWalletCredit - (upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier) > 0f)) {
+                    upgradeByType(itemInSlot, upgradableComponent);
+                    economyComponent.playerWalletCredit -= upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier;
+                    player.saveComponent(economyComponent);
+                    itemInSlot.saveComponent(upgradableComponent);
+                    return "Successfully debitted credits.";
+                } else {
+                    return "You dont have sufficient balance to upgrade the item.";
+                }
+            }
+        }
+
+        return "Couldn't find the requested item to upgrade.";
+    }
+
+    private void upgradeByType (EntityRef item, UpgradableComponent upgradableComponent) {
+        upgradableComponent.currentTier ++;
+
+        if (item.hasComponent(SlimePodItemComponent.class)) {
+            SlimePodItemComponent slimePodItemComponent = item.getComponent(SlimePodItemComponent.class);
+            slimePodItemComponent.slimePods = upgradableComponent.baseQuantity + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier;
+            item.saveComponent(slimePodItemComponent);
+        } else if (item.hasComponent(PlazMasterComponent.class)) {
+            PlazMasterComponent plazMasterComponent = item.getComponent(PlazMasterComponent.class);
+            plazMasterComponent.charges = upgradableComponent.baseQuantity + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier;
+            plazMasterComponent.maxCharges = plazMasterComponent.charges;
+            item.saveComponent(plazMasterComponent);
         }
     }
 

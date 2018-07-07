@@ -1,7 +1,7 @@
 {
   "parent": "engine:iconItem",
   "DisplayName": {
-    "name": "PlazMaster 3000"
+    "name": "plazmaster"
   },
   "Item": {
     "icon": "GooKeeper:plazmaster",
@@ -15,5 +15,7 @@
     "rateOfFire": 2.5,
     "frequency": 100
   },
-  "Upgradable": {}
+  "Upgradable": {
+    "baseQuantity": 300
+  }
 }
