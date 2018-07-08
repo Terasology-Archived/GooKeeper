@@ -109,7 +109,7 @@ public class HungerSystem extends BaseComponentSystem {
     }
 
     /**
-     * Receives ActivateEvent when the targeted gooey is 'activated' and then is fed the held food block.
+     * Receives ActivateEvent when the targeted gooey is 'activated' and then provides an interactive screen to the player.
      *
      * @param event,entity,gooeyComponent   The ActivateEvent, the gooey entity, the GooeyComponent of the corresponding entity
      */
@@ -123,6 +123,13 @@ public class HungerSystem extends BaseComponentSystem {
         }
     }
 
+    /**
+     * Receives FeedGooeyEvent when the "activated" gooey entity is chose to be fed.
+     *
+     * @param event
+     * @param gooeyEntity
+     * @param gooeyComponent
+     */
     @ReceiveEvent
     public void onFeedingGooey(FeedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
         HungerComponent hungerComponent = gooeyEntity.getComponent(HungerComponent.class);
@@ -140,11 +147,20 @@ public class HungerSystem extends BaseComponentSystem {
                 gooeyEntity.send(new AfterGooeyFedEvent(event.getInstigator(), gooeyEntity, item));
             }
         }
+
+        nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
     }
 
+    /**
+     * Receives the BreedGooeyEvent when the "activated" gooey is chosen for breeding.
+     * 
+     * @param event
+     * @param gooeyEntity
+     * @param gooeyComponent
+     */
     @ReceiveEvent
     public void onBreedingGooey(BreedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
-
+        nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
     }
 
     /**
