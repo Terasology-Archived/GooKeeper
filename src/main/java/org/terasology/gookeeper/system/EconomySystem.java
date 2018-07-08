@@ -148,7 +148,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             if (message != null) {
                 economyComponent.playerWalletCredit -= quantityParam * Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class).basePrice;
                 player.saveComponent(economyComponent);
-                return "Successfully debitted credits.";
+                return "Successfully purchased " + itemPrefabName;
             } else {
                 return "Couldn't find requested block.";
             }
@@ -184,7 +184,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
                     economyComponent.playerWalletCredit -= upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier;
                     player.saveComponent(economyComponent);
                     itemInSlot.saveComponent(upgradableComponent);
-                    return "Successfully debitted credits.";
+                    return "Successfully upgraded your " + displayNameComponent.name;
                 } else {
                     return "You dont have sufficient balance to upgrade the item.";
                 }
@@ -199,11 +199,11 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
 
         if (item.hasComponent(SlimePodItemComponent.class)) {
             SlimePodItemComponent slimePodItemComponent = item.getComponent(SlimePodItemComponent.class);
-            slimePodItemComponent.slimePods = upgradableComponent.baseQuantity + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier;
+            slimePodItemComponent.slimePods = upgradableComponent.baseQuantity * (1 + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier);
             item.saveComponent(slimePodItemComponent);
         } else if (item.hasComponent(PlazMasterComponent.class)) {
             PlazMasterComponent plazMasterComponent = item.getComponent(PlazMasterComponent.class);
-            plazMasterComponent.charges = upgradableComponent.baseQuantity + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier;
+            plazMasterComponent.charges = upgradableComponent.baseQuantity * (1 + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier);
             plazMasterComponent.maxCharges = plazMasterComponent.charges;
             item.saveComponent(plazMasterComponent);
         }

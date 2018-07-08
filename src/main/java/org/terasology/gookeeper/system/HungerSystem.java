@@ -29,7 +29,10 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.HungerComponent;
-import org.terasology.gookeeper.event.GooeyFedEvent;
+import org.terasology.gookeeper.event.AfterGooeyFedEvent;
+import org.terasology.gookeeper.event.BreedGooeyEvent;
+import org.terasology.gookeeper.event.FeedGooeyEvent;
+import org.terasology.gookeeper.ui.GooeyActivateScreen;
 import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.common.DisplayNameComponent;
@@ -42,7 +45,6 @@ import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.physics.Physics;
-import org.terasology.protobuf.EntityData;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.nui.NUIManager;
@@ -113,6 +115,16 @@ public class HungerSystem extends BaseComponentSystem {
      */
     @ReceiveEvent
     public void onGooeyActivated(ActivateEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
+        if (!nuiManager.isOpen("GooKeeper:gooeyActivateScreen")) {
+            GooeyActivateScreen gooeyActivateScreen = nuiManager.pushScreen("GooKeeper:gooeyActivateScreen", GooeyActivateScreen.class);
+            gooeyActivateScreen.setGooeyEntity(gooeyEntity);
+        } else {
+            nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
+        }
+    }
+
+    @ReceiveEvent
+    public void onFeedingGooey(FeedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
         HungerComponent hungerComponent = gooeyEntity.getComponent(HungerComponent.class);
         HealthComponent healthComponent = gooeyEntity.getComponent(HealthComponent.class);
 
@@ -125,18 +137,23 @@ public class HungerSystem extends BaseComponentSystem {
 
             if (!itemName.isEmpty() && hungerComponent.foods.contains(itemName)) {
                 delayManager.cancelPeriodicAction(gooeyEntity, Constants.healthDecreaseEventID);
-                gooeyEntity.send(new GooeyFedEvent(event.getInstigator(), gooeyEntity, item));
+                gooeyEntity.send(new AfterGooeyFedEvent(event.getInstigator(), gooeyEntity, item));
             }
         }
     }
 
+    @ReceiveEvent
+    public void onBreedingGooey(BreedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
+
+    }
+
     /**
-     * Receives GooeyFedEvent when the targeted gooey is fed the held food block and hence resets the health to max.
+     * Receives AfterGooeyFedEvent when the targeted gooey is fed the held food block and hence resets the health to max.
      *
-     * @param event,entity   The GooeyFedEvent, the gooey entity
+     * @param event,entity   The AfterGooeyFedEvent, the gooey entity
      */
     @ReceiveEvent(components = {GooeyComponent.class})
-    public void onGooeyFed(GooeyFedEvent event, EntityRef entityRef) {
+    public void onGooeyFed(AfterGooeyFedEvent event, EntityRef entityRef) {
         HealthComponent healthComponent = entityRef.getComponent(HealthComponent.class);
         HungerComponent hungerComponent = entityRef.getComponent(HungerComponent.class);
 

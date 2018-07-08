@@ -64,7 +64,7 @@ public class PlayerHud extends CoreHudWidget {
             walletBalance.bindText(new ReadOnlyBinding<String>() {
                 @Override
                 public String get() {
-                    return "Player Credits: " + String.valueOf(component.playerWalletCredit);
+                    return "Wallet Balance: " + String.valueOf(component.playerWalletCredit);
                 }
             });
         }

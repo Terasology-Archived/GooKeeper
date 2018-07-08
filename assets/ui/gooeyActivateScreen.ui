@@ -1,0 +1,32 @@
+{
+  "type": "GooeyActivateScreen",
+  "skin": "engine:default",
+  "contents": {
+    "type": "RelativeLayout",
+    "contents": [
+      {
+        "type": "ColumnLayout",
+        "columns": 1,
+        "verticalSpacing": 8,
+        "contents": [
+          {
+            "type": "UIButton",
+            "text": "Feed the gooey",
+            "id": "feedButton"
+          },
+          {
+            "type": "UIButton",
+            "text": "Select gooey for breeding",
+            "id": "breedButton"
+          }
+        ],
+        "layoutInfo": {
+          "width": 300,
+          "height": 100,
+          "position-horizontal-center": {},
+          "position-vertical-center": {}
+        }
+      }
+    ]
+  }
+}

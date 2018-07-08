@@ -20,13 +20,13 @@ import org.terasology.entitySystem.event.Event;
 import org.terasology.gookeeper.component.SlimePodComponent;
 import org.terasology.world.block.Block;
 
-public class GooeyFedEvent implements Event {
+public class AfterGooeyFedEvent implements Event {
 
     private EntityRef instigator;
     private EntityRef gooey;
     private EntityRef item;
 
-    public GooeyFedEvent (EntityRef instigator, EntityRef gooey, EntityRef item) {
+    public AfterGooeyFedEvent(EntityRef instigator, EntityRef gooey, EntityRef item) {
         this.instigator = instigator;
         this.gooey = gooey;
         this.item = item;

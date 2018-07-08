@@ -13,10 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.gookeeper.component;
+package org.terasology.gookeeper.event;
 
-import org.terasology.entitySystem.Component;
+import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.Event;
 
-public class EconomyComponent implements Component {
-    public float playerWalletCredit = 0f;
+public class BreedGooeyEvent implements Event {
+
+    private EntityRef instigator;
+    private EntityRef gooey;
+
+    public BreedGooeyEvent(EntityRef instigator, EntityRef gooey) {
+        this.instigator = instigator;
+        this.gooey = gooey;
+    }
+
+    public EntityRef getGooey() {
+        return gooey;
+    }
+
+    public EntityRef getInstigator() {
+        return instigator;
+    }
 }
