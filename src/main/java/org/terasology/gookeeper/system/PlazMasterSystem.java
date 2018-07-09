@@ -222,10 +222,13 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
 
             if (itemInSlot != EntityRef.NULL && itemInSlot.hasComponent(PlazMasterComponent.class)) {
                 PlazMasterComponent plazMasterComponent = itemInSlot.getComponent(PlazMasterComponent.class);
-                plazMasterComponent.frequency += 10f;
-                itemInSlot.saveComponent(plazMasterComponent);
-                logger.info("Increased PlazMaster's Frequency!");
-
+                if (plazMasterComponent.frequency <= (plazMasterComponent.maxFrequency - 10f)) {
+                    plazMasterComponent.frequency += 10f;
+                    itemInSlot.saveComponent(plazMasterComponent);
+                    logger.info("Increased PlazMaster's Frequency!");
+                } else {
+                    logger.info("Already set at the maximum possible frequency!");
+                }
                 return;
             }
         }
@@ -245,10 +248,13 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
 
             if (itemInSlot != EntityRef.NULL && itemInSlot.hasComponent(PlazMasterComponent.class)) {
                 PlazMasterComponent plazMasterComponent = itemInSlot.getComponent(PlazMasterComponent.class);
-                plazMasterComponent.frequency -= 10f;
-                itemInSlot.saveComponent(plazMasterComponent);
-                logger.info("Decreased PlazMaster's Frequency!");
-
+                if (plazMasterComponent.frequency >= 10f) {
+                    plazMasterComponent.frequency -= 10f;
+                    itemInSlot.saveComponent(plazMasterComponent);
+                    logger.info("Decreased PlazMaster's frequency!");
+                } else {
+                    logger.info("Already set at the least possible frequency!");
+                }
                 return;
             }
         }

@@ -64,7 +64,7 @@ import java.util.Set;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 @Share(value = EconomyManager.class)
-public class EconomySystem extends BaseComponentSystem implements UpdateSubscriberSystem, EconomyManager {
+public class EconomySystem extends BaseComponentSystem implements EconomyManager {
 
     @In
     private WorldProvider worldProvider;
@@ -104,10 +104,6 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     private static final float baseEntranceFee = 100f;
     private static final float baseVisitFee = 10f;
 
-    @Override
-    public void initialise() {
-    }
-
     @ReceiveEvent
     public void onPlayerSpawn(OnPlayerSpawnedEvent event, EntityRef player, InventoryComponent inventory) {
         if (player.hasComponent(EconomyComponent.class)) {
@@ -115,22 +111,14 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
         }
     }
 
-    @Override
-    public void shutdown() {
-    }
-
-    @Override
-    public void update(float delta) {
-    }
-
     /**
      * This command can be used to purchase utility blocks (such as pen blocks, visit blocks, etc.)
      *
-     * @param client
-     * @param itemPrefabName
-     * @param amount
-     * @param shapeUriParam
-     * @return
+     * @param client the player entity who sent this command
+     * @param itemPrefabName prefabId or blockName of the item to be purchased
+     * @param amount the quantity to be purchased
+     * @param shapeUriParam blockShapeName
+     * @return appropriate message regarding the status of the transaction
      */
     @Command(shortDescription = "Purchase utility blocks",
             requiredPermission = PermissionManager.NO_PERMISSION)
@@ -140,13 +128,14 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
                            @CommandParam(value = "blockShapeName", required = false) String shapeUriParam) {
         EntityRef player = client.getComponent(ClientComponent.class).character;
         EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
+        PurchasableComponent purchasableComponent = Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class);
 
-        int quantityParam = amount != null ? amount : 16;
+        int quantityParam = amount != null ? amount : purchasableComponent.baseQuantity;
 
-        if (economyComponent.playerWalletCredit - (quantityParam * Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class).basePrice) > 0f) {
+        if (economyComponent.playerWalletCredit - (quantityParam * purchasableComponent.basePrice) > 0f) {
             String message = blockCommands.giveBlock(client, itemPrefabName, amount, shapeUriParam);
             if (message != null) {
-                economyComponent.playerWalletCredit -= quantityParam * Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class).basePrice;
+                economyComponent.playerWalletCredit -= quantityParam * purchasableComponent.basePrice;
                 player.saveComponent(economyComponent);
                 return "Successfully purchased " + itemPrefabName;
             } else {
@@ -160,13 +149,11 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     /**
      * This command can be used to purchase utility blocks (such as pen blocks, visit blocks, etc.)
      *
-     * @param client
-     * @param itemPrefabName
-     * @param amount
-     * @param shapeUriParam
-     * @return
+     * @param client the player entity who sent this command
+     * @param itemPrefabName prefabId of the item to be upgraded
+     * @return appropriate message regarding the status of the transaction
      */
-    @Command(shortDescription = "Purchase utility blocks",
+    @Command(shortDescription = "Upgrade your equipment (PlazMaster and Slime Pod Launcher",
             requiredPermission = PermissionManager.NO_PERMISSION)
     public String upgrade(@Sender EntityRef client,
                            @CommandParam("prefabId or blockName") String itemPrefabName) {

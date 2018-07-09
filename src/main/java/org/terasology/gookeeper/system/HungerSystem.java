@@ -153,7 +153,7 @@ public class HungerSystem extends BaseComponentSystem {
 
     /**
      * Receives the BreedGooeyEvent when the "activated" gooey is chosen for breeding.
-     * 
+     *
      * @param event
      * @param gooeyEntity
      * @param gooeyComponent
