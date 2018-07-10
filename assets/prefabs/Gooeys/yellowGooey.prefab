@@ -119,7 +119,6 @@
     "searchRadius": 15
   },
   "Follow": {
-    "entityToFollow": EntityRef.NULL
   },
   "NPCMovement": {},
   "Gooey": {

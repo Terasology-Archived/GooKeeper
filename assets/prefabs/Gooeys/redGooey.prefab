@@ -120,7 +120,6 @@
     "maxDistance": 20
   },
   "Follow": {
-    "entityToFollow": EntityRef.NULL
   },
   "NPCMovement": {},
   "Gooey": {

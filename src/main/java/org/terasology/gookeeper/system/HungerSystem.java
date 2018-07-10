@@ -152,18 +152,6 @@ public class HungerSystem extends BaseComponentSystem {
     }
 
     /**
-     * Receives the BreedGooeyEvent when the "activated" gooey is chosen for breeding.
-     *
-     * @param event
-     * @param gooeyEntity
-     * @param gooeyComponent
-     */
-    @ReceiveEvent
-    public void onBreedingGooey(BreedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
-        nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
-    }
-
-    /**
      * Receives AfterGooeyFedEvent when the targeted gooey is fed the held food block and hence resets the health to max.
      *
      * @param event,entity   The AfterGooeyFedEvent, the gooey entity

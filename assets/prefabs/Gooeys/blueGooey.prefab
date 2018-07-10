@@ -114,7 +114,6 @@
     ]
   },
   "Follow": {
-    "entityToFollow": EntityRef.NULL
   },
   "AttackOnHit": {
     "maxDistance": 15
