@@ -87,12 +87,21 @@ public class PlayerHud extends CoreHudWidget {
     public void bindPlazmasterText (PlazMasterComponent component) {
         if (component != null) {
             UIText plazmasterCharge;
+            UIText plazmasterFrequency;
 
             plazmasterCharge = find("plazmasterCharges", UIText.class);
             plazmasterCharge.bindText(new ReadOnlyBinding<String>() {
                 @Override
                 public String get() {
                     return "PlazMaster Charges: " + String.valueOf(component.charges);
+                }
+            });
+
+            plazmasterFrequency = find("plazmasterFrequency", UIText.class);
+            plazmasterFrequency.bindText(new ReadOnlyBinding<String>() {
+                @Override
+                public String get() {
+                    return "PlazMaster Frequency: " + String.valueOf(component.frequency);
                 }
             });
         }

@@ -6,6 +6,7 @@
     "contents": [
       {
         "type": "ColumnLayout",
+        "fillVerticalSpace": false,
         "columns": 1,
         "verticalSpacing": 8,
         "contents": [
@@ -21,8 +22,8 @@
           }
         ],
         "layoutInfo": {
-          "width": 300,
-          "height": 100,
+          "width": 200,
+          "use-content-height": true,
           "position-horizontal-center": {},
           "position-vertical-center": {}
         }

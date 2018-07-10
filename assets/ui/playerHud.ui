@@ -31,7 +31,7 @@
                     "width": 200
                 }
             },
-                {
+            {
                 "type": "UIText",
                 "id": "plazmasterCharges",
                 "text": "",
@@ -44,7 +44,21 @@
                     },
                     "width": 200
                 }
-                }
+            },
+            {
+                 "type": "UIText",
+                 "id": "plazmasterFrequency",
+                 "text": "",
+                 "layoutInfo": {
+                     "position-right": {
+                         "offset": 50
+                     },
+                     "position-top": {
+                         "offset": 250
+                     },
+                     "width": 200
+                 }
+            }
         ]
     }
 }
