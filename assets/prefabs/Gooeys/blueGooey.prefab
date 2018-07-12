@@ -128,6 +128,6 @@
   },
   "Neutral": {},
   "Hunger": {
-    "foodBlockNames": ["Grass", "Dirt"]
+    "foods": ["Grass", "Dirt"]
   }
 }

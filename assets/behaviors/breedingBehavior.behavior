@@ -1,0 +1,9 @@
+{
+  dynamic: [
+    {
+      lookup: {
+        tree: "GooKeeper:follow"
+      }
+    }
+  ]
+}

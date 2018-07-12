@@ -1,5 +1,6 @@
 {
   "Behavior": {
     "tree": "GooKeeper:capturedGooey"
-  }
+  },
+  "MatingComponent": {}
 }

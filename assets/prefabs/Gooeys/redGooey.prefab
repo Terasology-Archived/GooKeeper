@@ -133,7 +133,7 @@
     "aggressivenessFactor": 85
   },
   "Hunger": {
-    "foodBlockNames": ["Lava"]
+    "foods": ["Lava"]
   }
 }
 

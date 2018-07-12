@@ -30,10 +30,13 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.HungerComponent;
+import org.terasology.gookeeper.component.MatingComponent;
 import org.terasology.gookeeper.event.AfterGooeyFedEvent;
 import org.terasology.gookeeper.event.BreedGooeyEvent;
 import org.terasology.gookeeper.event.FeedGooeyEvent;
 import org.terasology.gookeeper.ui.GooeyActivateScreen;
+import org.terasology.logic.behavior.BehaviorComponent;
+import org.terasology.logic.behavior.asset.BehaviorTree;
 import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.common.ActivateEvent;
@@ -46,6 +49,7 @@ import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.network.ClientComponent;
 import org.terasology.physics.Physics;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
@@ -105,23 +109,26 @@ public class BreedingSystem extends BaseComponentSystem {
      * @param gooeyComponent
      */
     @ReceiveEvent
-    public void onBreedingGooey(BreedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
-        HungerComponent hungerComponent = gooeyEntity.getComponent(HungerComponent.class);
+    public void onBreedingGooey(BreedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
         CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
 
-        if (characterHeldItemComponent != null && gooeyComponent.isCaptured) {
+        if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem != null && gooeyComponent.isCaptured) {
             EntityRef item = characterHeldItemComponent.selectedItem;
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
             if (!itemName.isEmpty() && hungerComponent.foods.contains(itemName)) {
-                FollowComponent followComponent = new FollowComponent();
+                FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
+                BehaviorComponent behaviorComponent = gooeyEntity.getComponent(BehaviorComponent.class);
+                MatingComponent matingComponent = new MatingComponent();
 
                 followComponent.entityToFollow = event.getInstigator();
-
+                behaviorComponent.tree = assetManager.getAsset("GooKeeper:breedingBehavior", BehaviorTree.class).get();
                 CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
                 characterMovementComponent.jumpSpeed = 12f;
 
-                gooeyEntity.addOrSaveComponent(followComponent);
+                gooeyEntity.saveComponent(followComponent);
+                gooeyEntity.saveComponent(behaviorComponent);
+                gooeyEntity.addOrSaveComponent(matingComponent);
                 gooeyEntity.saveComponent(characterMovementComponent);
             }
         }

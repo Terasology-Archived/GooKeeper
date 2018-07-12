@@ -118,6 +118,7 @@ public class HungerSystem extends BaseComponentSystem {
         if (!nuiManager.isOpen("GooKeeper:gooeyActivateScreen")) {
             GooeyActivateScreen gooeyActivateScreen = nuiManager.pushScreen("GooKeeper:gooeyActivateScreen", GooeyActivateScreen.class);
             gooeyActivateScreen.setGooeyEntity(gooeyEntity);
+            gooeyActivateScreen.setBreederEntity(event.getInstigator());
         } else {
             nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
         }
@@ -131,18 +132,18 @@ public class HungerSystem extends BaseComponentSystem {
      * @param gooeyComponent
      */
     @ReceiveEvent
-    public void onFeedingGooey(FeedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
-        HungerComponent hungerComponent = gooeyEntity.getComponent(HungerComponent.class);
+    public void onFeedingGooey(FeedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
         HealthComponent healthComponent = gooeyEntity.getComponent(HealthComponent.class);
-
         CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
 
-        logger.info("Gooey Health: " + healthComponent.currentHealth);
-        if (characterHeldItemComponent != null && gooeyComponent.isCaptured) {
+        if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem != null && gooeyComponent.isCaptured) {
             EntityRef item = characterHeldItemComponent.selectedItem;
+
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
             if (!itemName.isEmpty() && hungerComponent.foods.contains(itemName)) {
+                logger.info("Gooey Health: " + healthComponent.currentHealth);
+
                 delayManager.cancelPeriodicAction(gooeyEntity, Constants.healthDecreaseEventID);
                 gooeyEntity.send(new AfterGooeyFedEvent(event.getInstigator(), gooeyEntity, item));
             }

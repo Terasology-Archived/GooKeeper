@@ -132,6 +132,6 @@
      "friendlinessFactor": 85
   },
   "Hunger": {
-    "foodBlockNames": ["TallGrass1", "RedFlower", "Dandelion"]
+    "foods": ["TallGrass1", "RedFlower", "Dandelion"]
   }
 }
