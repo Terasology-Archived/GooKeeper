@@ -41,6 +41,7 @@ import org.terasology.logic.inventory.ItemCommands;
 import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.permission.PermissionManager;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.logic.players.event.OnPlayerRespawnedEvent;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.network.ClientComponent;
 import org.terasology.physics.Physics;
@@ -64,7 +65,7 @@ import java.util.Set;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 @Share(value = EconomyManager.class)
-public class EconomySystem extends BaseComponentSystem implements EconomyManager {
+public class EconomySystem extends BaseComponentSystem implements UpdateSubscriberSystem, EconomyManager {
 
     @In
     private WorldProvider worldProvider;
@@ -103,11 +104,13 @@ public class EconomySystem extends BaseComponentSystem implements EconomyManager
     private Random random = new FastRandom();
     private static final float baseEntranceFee = 100f;
     private static final float baseVisitFee = 10f;
+    private static boolean setHud = false;
 
-    @ReceiveEvent
-    public void onPlayerSpawn(OnPlayerSpawnedEvent event, EntityRef player, InventoryComponent inventory) {
-        if (player.hasComponent(EconomyComponent.class)) {
+    @Override
+    public void update(float delta) {
+        if (!setHud && localPlayer.getCharacterEntity().hasComponent(EconomyComponent.class)) {
             nuiManager.getHUD().addHUDElement("PlayerHud");
+            setHud = true;
         }
     }
 
@@ -128,11 +131,11 @@ public class EconomySystem extends BaseComponentSystem implements EconomyManager
                            @CommandParam(value = "blockShapeName", required = false) String shapeUriParam) {
         EntityRef player = client.getComponent(ClientComponent.class).character;
         EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
-        PurchasableComponent purchasableComponent = Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class);
 
+        PurchasableComponent purchasableComponent = Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class);
         int quantityParam = amount != null ? amount : purchasableComponent.baseQuantity;
 
-        if (economyComponent.playerWalletCredit - (quantityParam * purchasableComponent.basePrice) > 0f) {
+        if (economyComponent != null && economyComponent.playerWalletCredit - (quantityParam * purchasableComponent.basePrice) > 0f) {
             String message = blockCommands.giveBlock(client, itemPrefabName, amount, shapeUriParam);
             if (message != null) {
                 economyComponent.playerWalletCredit -= quantityParam * purchasableComponent.basePrice;
@@ -166,7 +169,7 @@ public class EconomySystem extends BaseComponentSystem implements EconomyManager
 
             if (displayNameComponent != null && displayNameComponent.name.equals(itemPrefabName)) {
                 UpgradableComponent upgradableComponent = itemInSlot.getComponent(UpgradableComponent.class);
-                if (upgradableComponent != null && (economyComponent.playerWalletCredit - (upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier) > 0f)) {
+                if (economyComponent != null && upgradableComponent != null && (economyComponent.playerWalletCredit - (upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier) > 0f)) {
                     upgradeByType(itemInSlot, upgradableComponent);
                     economyComponent.playerWalletCredit -= upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier;
                     player.saveComponent(economyComponent);
@@ -207,7 +210,15 @@ public class EconomySystem extends BaseComponentSystem implements EconomyManager
         VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
         VisitorEntranceComponent visitorEntranceComponent = visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
         EntityRef player = visitorEntranceComponent.owner;
-        EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
+        EconomyComponent economyComponent = null;
+
+        for (int i = 0; i < inventoryManager.getNumSlots(player); i++) {
+            EntityRef itemInSlot = inventoryManager.getItemInSlot(player, i);
+            if (itemInSlot.hasComponent(EconomyComponent.class)) {
+                economyComponent = itemInSlot.getComponent(EconomyComponent.class);
+                break;
+            }
+        }
 
         if (economyComponent != null) {
             economyComponent.playerWalletCredit += baseEntranceFee;
@@ -227,12 +238,20 @@ public class EconomySystem extends BaseComponentSystem implements EconomyManager
         VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
         VisitorEntranceComponent visitorEntranceComponent = visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
         EntityRef player = visitorEntranceComponent.owner;
-        EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
+        EconomyComponent economyComponent = null;
+
+        for (int i = 0; i < inventoryManager.getNumSlots(player); i++) {
+            EntityRef itemInSlot = inventoryManager.getItemInSlot(player, i);
+            if (itemInSlot.hasComponent(EconomyComponent.class)) {
+                economyComponent = itemInSlot.getComponent(EconomyComponent.class);
+                break;
+            }
+        }
         VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
 
         Prefab gooeyPrefab = prefabManager.getPrefab("GooKeeper:"+ visitBlockComponent.type);
 
-        if (gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
+        if (economyComponent != null && gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
             float profitPayOff = gooeyPrefab.getComponent(GooeyComponent.class).profitPayOff;
 
             economyComponent.playerWalletCredit += baseVisitFee * profitPayOff * (visitBlockComponent.gooeyQuantity/3f);
