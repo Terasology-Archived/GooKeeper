@@ -210,15 +210,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
         VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
         VisitorEntranceComponent visitorEntranceComponent = visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
         EntityRef player = visitorEntranceComponent.owner;
-        EconomyComponent economyComponent = null;
-
-        for (int i = 0; i < inventoryManager.getNumSlots(player); i++) {
-            EntityRef itemInSlot = inventoryManager.getItemInSlot(player, i);
-            if (itemInSlot.hasComponent(EconomyComponent.class)) {
-                economyComponent = itemInSlot.getComponent(EconomyComponent.class);
-                break;
-            }
-        }
+        EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
 
         if (economyComponent != null) {
             economyComponent.playerWalletCredit += baseEntranceFee;
@@ -238,15 +230,8 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
         VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
         VisitorEntranceComponent visitorEntranceComponent = visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
         EntityRef player = visitorEntranceComponent.owner;
-        EconomyComponent economyComponent = null;
+        EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
 
-        for (int i = 0; i < inventoryManager.getNumSlots(player); i++) {
-            EntityRef itemInSlot = inventoryManager.getItemInSlot(player, i);
-            if (itemInSlot.hasComponent(EconomyComponent.class)) {
-                economyComponent = itemInSlot.getComponent(EconomyComponent.class);
-                break;
-            }
-        }
         VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
 
         Prefab gooeyPrefab = prefabManager.getPrefab("GooKeeper:"+ visitBlockComponent.type);
