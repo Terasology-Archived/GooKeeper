@@ -115,7 +115,7 @@ public class HungerSystem extends BaseComponentSystem {
      */
     @ReceiveEvent
     public void onGooeyActivated(ActivateEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
-        if (!nuiManager.isOpen("GooKeeper:gooeyActivateScreen")) {
+        if (!nuiManager.isOpen("GooKeeper:gooeyActivateScreen") && gooeyComponent.isCaptured) {
             GooeyActivateScreen gooeyActivateScreen = nuiManager.pushScreen("GooKeeper:gooeyActivateScreen", GooeyActivateScreen.class);
             gooeyActivateScreen.setGooeyEntity(gooeyEntity);
             gooeyActivateScreen.setBreederEntity(event.getInstigator());
@@ -136,9 +136,8 @@ public class HungerSystem extends BaseComponentSystem {
         HealthComponent healthComponent = gooeyEntity.getComponent(HealthComponent.class);
         CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
 
-        if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem != null && gooeyComponent.isCaptured) {
+        if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem.getComponent(DisplayNameComponent.class) != null) {
             EntityRef item = characterHeldItemComponent.selectedItem;
-
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
             if (!itemName.isEmpty() && hungerComponent.foods.contains(itemName)) {

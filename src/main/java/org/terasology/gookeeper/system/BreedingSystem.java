@@ -112,11 +112,12 @@ public class BreedingSystem extends BaseComponentSystem {
     public void onBreedingGooey(BreedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
         CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
 
-        if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem != null && gooeyComponent.isCaptured) {
+        if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem.getComponent(DisplayNameComponent.class) != null) {
             EntityRef item = characterHeldItemComponent.selectedItem;
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
             if (!itemName.isEmpty() && hungerComponent.foods.contains(itemName)) {
+                logger.info("Selected for breeding ...");
                 FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
                 BehaviorComponent behaviorComponent = gooeyEntity.getComponent(BehaviorComponent.class);
                 MatingComponent matingComponent = new MatingComponent();
