@@ -132,6 +132,6 @@
      "friendlinessFactor": 85
   },
   "Hunger": {
-    "foods": ["TallGrass1", "RedFlower", "Dandelion"]
+    "food": ["TallGrass1", "RedFlower", "Dandelion"]
   }
 }

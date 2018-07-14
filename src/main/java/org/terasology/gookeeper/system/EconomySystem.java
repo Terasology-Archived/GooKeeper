@@ -15,34 +15,35 @@
  */
 package org.terasology.gookeeper.system;
 
-import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.assets.ResourceUrn;
 import org.terasology.assets.management.AssetManager;
-import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.prefab.PrefabManager;
-import org.terasology.entitySystem.systems.*;
-import org.terasology.gookeeper.component.*;
+import org.terasology.entitySystem.systems.BaseComponentSystem;
+import org.terasology.entitySystem.systems.RegisterMode;
+import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.gookeeper.component.GooeyComponent;
+import org.terasology.gookeeper.component.EconomyComponent;
+import org.terasology.gookeeper.component.UpgradableComponent;
+import org.terasology.gookeeper.component.SlimePodItemComponent;
+import org.terasology.gookeeper.component.PlazMasterComponent;
+import org.terasology.gookeeper.component.PurchasableComponent;
+import org.terasology.gookeeper.component.VisitorEntranceComponent;
+import org.terasology.gookeeper.component.VisitorComponent;
+import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
-import org.terasology.logic.behavior.core.Visitor;
-import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.console.commandSystem.annotations.Command;
 import org.terasology.logic.console.commandSystem.annotations.CommandParam;
 import org.terasology.logic.console.commandSystem.annotations.Sender;
-import org.terasology.logic.inventory.InventoryComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.ItemCommands;
-import org.terasology.logic.inventory.ItemComponent;
 import org.terasology.logic.permission.PermissionManager;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.logic.players.event.OnPlayerRespawnedEvent;
-import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.network.ClientComponent;
 import org.terasology.physics.Physics;
 import org.terasology.registry.In;
@@ -53,15 +54,7 @@ import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
-import org.terasology.world.block.BlockManager;
-import org.terasology.world.block.BlockUri;
 import org.terasology.world.block.entity.BlockCommands;
-import org.terasology.world.block.family.BlockFamily;
-import org.terasology.world.block.items.BlockItemFactory;
-import org.terasology.world.block.loader.BlockFamilyDefinition;
-
-import java.util.Optional;
-import java.util.Set;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 @Share(value = EconomyManager.class)

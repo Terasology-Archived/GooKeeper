@@ -46,7 +46,7 @@ public class PlazMasterComponent implements Component {
     public float rateOfFire;
 
     /**
-     *  The maximumum frequency at which the cannon can be set to.
+     *  The maximum frequency at which the cannon can be set to.
      */
     public float maxFrequency = 1000f;
 

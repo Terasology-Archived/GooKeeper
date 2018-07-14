@@ -128,6 +128,6 @@
   },
   "Neutral": {},
   "Hunger": {
-    "foods": ["Grass", "Dirt"]
+    "food": ["Grass", "Dirt"]
   }
 }

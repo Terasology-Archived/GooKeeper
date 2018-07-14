@@ -152,7 +152,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
      * Receives OnBlockItemPlaced event that is sent when a visit block is placed and hence updates the attribute value
      * of the corresponding VisitorBlockComponent
      *
-     * @param event,entity   The OnBlockItemPlaced event
+     * @param event The OnBlockItemPlaced event
+     * @param entity The corresponding block entity
      */
     @ReceiveEvent
     public void onBlockPlaced(OnBlockItemPlaced event, EntityRef entity) {
@@ -244,7 +245,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
      * This is used to add credits to the players wallet depending on the type of gooeys associated with this visit block,
      * hence rarer the gooey, more would be the pay off.
      *
-     * @param event,entity   The LeaveVisitBlockEvent event and the visitor entity to which it is sent
+     * @param event the LeaveVisitBlockEvent event
+     * @param entityRef the visitor entity to which it is sent
      */
     @ReceiveEvent
     public void onLeaveVisitBlock(LeaveVisitBlockEvent event, EntityRef entityRef) {
@@ -268,7 +270,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     /**
      * Receives PeriodicActionTriggeredEvent sent to a visitor entrance block entity hence triggering the periodic visitor spawning
      *
-     * @param event,entity   The PeriodicActionTriggeredEvent event and the visitor entrance block entity to which it is sent
+     * @param event the PeriodicActionTriggeredEvent event
+     * @param entity the visitor entrance block entity to which it is sent
      */
     @ReceiveEvent(components = {VisitorEntranceComponent.class})
     public void onPeriodicAction(PeriodicActionTriggeredEvent event, EntityRef entityRef) {
@@ -298,7 +301,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     /**
      * Receives ActivateEvent when the targeted pen block is activated, and prints the ID of the corresponding pen.
      *
-     * @param event,entity   The ActivateEvent
+     * @param event
+     * @param entity 
      */
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity) {

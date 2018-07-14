@@ -44,7 +44,6 @@ import org.terasology.logic.health.EngineDamageTypes;
 import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.physics.Physics;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.nui.NUIManager;
@@ -53,8 +52,6 @@ import org.terasology.rendering.nui.widgets.TooltipLine;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
-import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.WorldProvider;
 import org.terasology.worldlyTooltipAPI.events.GetTooltipIconEvent;
 import org.terasology.worldlyTooltipAPI.events.GetTooltipNameEvent;
 
@@ -63,22 +60,13 @@ import org.terasology.worldlyTooltipAPI.events.GetTooltipNameEvent;
 public class HungerSystem extends BaseComponentSystem {
 
     @In
-    private WorldProvider worldProvider;
-
-    @In
     private EntityManager entityManager;
-
-    @In
-    private BlockEntityRegistry blockEntityRegistry;
 
     @In
     private LocalPlayer localPlayer;
 
     @In
     private InventoryManager inventoryManager;
-
-    @In
-    private Physics physics;
 
     @In
     private AssetManager assetManager;
@@ -93,7 +81,6 @@ public class HungerSystem extends BaseComponentSystem {
     private NUIManager nuiManager;
 
     private static final Logger logger = LoggerFactory.getLogger(HungerSystem.class);
-    private Random random = new FastRandom();
 
     /**
      * Adds health degradation action for the already captured gooey entities.
@@ -140,7 +127,7 @@ public class HungerSystem extends BaseComponentSystem {
             EntityRef item = characterHeldItemComponent.selectedItem;
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
-            if (!itemName.isEmpty() && hungerComponent.foods.contains(itemName)) {
+            if (!itemName.isEmpty() && hungerComponent.food.contains(itemName)) {
                 logger.info("Gooey Health: " + healthComponent.currentHealth);
 
                 delayManager.cancelPeriodicAction(gooeyEntity, Constants.healthDecreaseEventID);
@@ -203,7 +190,7 @@ public class HungerSystem extends BaseComponentSystem {
 
     @ReceiveEvent
     public void addAttributesToTooltip(GetItemTooltip event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
-        for (String food : hungerComponent.foods) {
+        for (String food : hungerComponent.food) {
             event.getTooltipLines().add(new TooltipLine("Can eat : " + food));
         }
     }

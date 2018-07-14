@@ -133,7 +133,7 @@
     "aggressivenessFactor": 85
   },
   "Hunger": {
-    "foods": ["Lava"]
+    "food": ["Lava"]
   }
 }
 

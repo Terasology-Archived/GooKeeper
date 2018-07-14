@@ -69,31 +69,10 @@ import org.terasology.worldlyTooltipAPI.events.GetTooltipNameEvent;
 public class BreedingSystem extends BaseComponentSystem {
 
     @In
-    private WorldProvider worldProvider;
-
-    @In
-    private EntityManager entityManager;
-
-    @In
-    private BlockEntityRegistry blockEntityRegistry;
-
-    @In
     private LocalPlayer localPlayer;
 
     @In
-    private InventoryManager inventoryManager;
-
-    @In
-    private Physics physics;
-
-    @In
     private AssetManager assetManager;
-
-    @In
-    private PrefabManager prefabManager;
-
-    @In
-    private DelayManager delayManager;
 
     @In
     private NUIManager nuiManager;
@@ -116,7 +95,7 @@ public class BreedingSystem extends BaseComponentSystem {
             EntityRef item = characterHeldItemComponent.selectedItem;
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
-            if (!itemName.isEmpty() && hungerComponent.foods.contains(itemName)) {
+            if (!itemName.isEmpty() && hungerComponent.food.contains(itemName)) {
                 logger.info("Selected for breeding ...");
                 FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
                 BehaviorComponent behaviorComponent = gooeyEntity.getComponent(BehaviorComponent.class);
