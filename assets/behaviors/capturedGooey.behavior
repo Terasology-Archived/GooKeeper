@@ -1,9 +1,0 @@
-{
-  dynamic: [
-      {
-        lookup: {
-          tree: "GooKeeper:stray"
-        }
-      }
-  ]
-}

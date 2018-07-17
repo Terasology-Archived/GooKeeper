@@ -132,7 +132,6 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      */
     @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
-        BehaviorTree capturedBT = assetManager.getAsset("GooKeeper:capturedGooey", BehaviorTree.class).get();
         EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(event.getTargetLocation(), RoundingMode.HALF_UP));
 
         BlockComponent blockComponent = blockEntity.getComponent(BlockComponent.class);
@@ -157,10 +156,6 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             }
 
             releasedGooey.getComponent(SkeletalMeshComponent.class).mesh = slimePodComponent.capturedGooeyMesh;
-
-            BehaviorComponent behaviorComponent = releasedGooey.getComponent(BehaviorComponent.class);
-            behaviorComponent.tree = capturedBT;
-            releasedGooey.saveComponent(behaviorComponent);
 
             HungerComponent hungerComponent = releasedGooey.getComponent(HungerComponent.class);
 

@@ -96,13 +96,17 @@ public class BreedingSystem extends BaseComponentSystem {
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
             if (!itemName.isEmpty() && hungerComponent.food.contains(itemName)) {
-                logger.info("Selected for breeding ...");
+                logger.info("Selected for breeding...");
                 FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
                 BehaviorComponent behaviorComponent = gooeyEntity.getComponent(BehaviorComponent.class);
                 MatingComponent matingComponent = new MatingComponent();
 
                 followComponent.entityToFollow = event.getInstigator();
-                behaviorComponent.tree = assetManager.getAsset("GooKeeper:breedingBehavior", BehaviorTree.class).get();
+                if (!matingComponent.selectedForMating) {
+                    matingComponent.selectedForMating = true;
+                } else {
+                    matingComponent.selectedForMating = false;
+                }
                 CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
                 characterMovementComponent.jumpSpeed = 12f;
 
