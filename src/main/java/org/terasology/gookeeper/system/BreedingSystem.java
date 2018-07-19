@@ -18,51 +18,20 @@ package org.terasology.gookeeper.system;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.management.AssetManager;
-import org.terasology.behaviors.components.FollowComponent;
-import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.entity.lifecycleEvents.OnAddedComponent;
 import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.GooeyComponent;
-import org.terasology.gookeeper.component.HungerComponent;
 import org.terasology.gookeeper.component.MatingComponent;
-import org.terasology.gookeeper.event.AfterGooeyFedEvent;
 import org.terasology.gookeeper.event.BreedGooeyEvent;
-import org.terasology.gookeeper.event.FeedGooeyEvent;
-import org.terasology.gookeeper.ui.GooeyActivateScreen;
-import org.terasology.logic.behavior.BehaviorComponent;
-import org.terasology.logic.behavior.asset.BehaviorTree;
-import org.terasology.logic.characters.CharacterHeldItemComponent;
-import org.terasology.logic.characters.CharacterMovementComponent;
-import org.terasology.logic.common.ActivateEvent;
-import org.terasology.logic.common.DisplayNameComponent;
-import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.delay.DelayedActionTriggeredEvent;
-import org.terasology.logic.delay.PeriodicActionTriggeredEvent;
-import org.terasology.logic.health.DoDestroyEvent;
-import org.terasology.logic.health.EngineDamageTypes;
-import org.terasology.logic.health.HealthComponent;
-import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.network.ClientComponent;
-import org.terasology.physics.Physics;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.nui.NUIManager;
-import org.terasology.rendering.nui.layers.ingame.inventory.GetItemTooltip;
-import org.terasology.rendering.nui.widgets.TooltipLine;
-import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
-import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.WorldProvider;
-import org.terasology.worldlyTooltipAPI.events.GetTooltipIconEvent;
-import org.terasology.worldlyTooltipAPI.events.GetTooltipNameEvent;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 @Share(value = BreedingSystem.class)
@@ -92,11 +61,7 @@ public class BreedingSystem extends BaseComponentSystem {
         logger.info("Selected for breeding...");
         MatingComponent matingComponent = new MatingComponent();
 
-        if (!matingComponent.selectedForMating) {
-            matingComponent.selectedForMating = true;
-        } else {
-            matingComponent.selectedForMating = false;
-        }
+        matingComponent.selectedForMating = !matingComponent.selectedForMating;
 
         gooeyEntity.addOrSaveComponent(matingComponent);
     }

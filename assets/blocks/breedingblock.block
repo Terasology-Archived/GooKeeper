@@ -1,0 +1,9 @@
+{
+    "displayName": "Breeding Block",
+    "attachmentAllowed" : true,
+    "shadowCasting" : true,
+    "family" : "horizontal",
+    "categories" : ["breeding"],
+    "hardness": 1,
+    "targetable" : true
+}

@@ -8,6 +8,8 @@
             { "blockType": "Core:BrickWhitewashed", "region": { "min": [-3, 1, 1], "size": [1, 2, 5]}},
             { "blockType": "Core:BrickWhitewashed", "region": { "min": [4, 1, 1], "size": [1, 2, 5]}},
             { "blockType": "Core:BrickWhitewashed", "region": { "min": [-3, 1, 6], "size": [8, 2, 1]}},
+            { "blockType": "GooKeeper:breedingblock.LEFT", "region": { "min": [2, 0, 3], "size": [1, 1, 1]}},
+            { "blockType": "GooKeeper:breedingblock.RIGHT", "region": { "min": [-1, 0, 3], "size": [1, 1, 1]}},
             { "blockType": "Valentines:ValentinesCanvasGooeyKiss.BACK", "region": { "min": [-3, 2, 7], "size": [1, 1, 1]}},
             { "blockType": "Valentines:ValentinesCanvasGooeyKiss.BACK", "region": { "min": [-2, 1, 7], "size": [1, 1, 1]}},
             { "blockType": "Valentines:ValentinesCanvasGooeyKiss.BACK", "region": { "min": [-1, 2, 7], "size": [1, 1, 1]}},
@@ -65,7 +67,8 @@
             { "blockType": "Valentines:ValentinesCanvasLeft.RIGHT", "region": { "min": [5, 2, 3], "size": [1, 1, 1]}},
             { "blockType": "Valentines:ValentinesCanvasLeft.RIGHT", "region": { "min": [5, 1, 4], "size": [1, 1, 1]}},
             { "blockType": "Valentines:ValentinesCanvasLeft.RIGHT", "region": { "min": [5, 2, 5], "size": [1, 1, 1]}},
-            { "blockType": "Valentines:ValentinesCanvasLeft.RIGHT", "region": { "min": [5, 1, 6], "size": [1, 1, 1]}}
+            { "blockType": "Valentines:ValentinesCanvasLeft.RIGHT", "region": { "min": [5, 1, 6], "size": [1, 1, 1]}},
+            { "blockType": "engine:air", "region": { "min": [0, 1, 2], "size": [1, 1, 1]}}
         ]
     }
 }
