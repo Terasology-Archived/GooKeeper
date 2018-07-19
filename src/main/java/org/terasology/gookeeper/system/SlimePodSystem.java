@@ -18,6 +18,7 @@ package org.terasology.gookeeper.system;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.management.AssetManager;
+import org.terasology.behaviors.components.FollowComponent;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -158,11 +159,15 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             releasedGooey.getComponent(SkeletalMeshComponent.class).mesh = slimePodComponent.capturedGooeyMesh;
 
             HungerComponent hungerComponent = releasedGooey.getComponent(HungerComponent.class);
+            FollowComponent followComponent = releasedGooey.getComponent(FollowComponent.class);
+
+            followComponent.entityToFollow = EntityRef.NULL;
 
             HealthComponent healthComponent = releasedGooey.getComponent(HealthComponent.class);
             GooeyComponent gooeyComponent = releasedGooey.getComponent(GooeyComponent.class);
             healthComponent.currentHealth = healthComponent.maxHealth;
             releasedGooey.saveComponent(healthComponent);
+            releasedGooey.saveComponent(followComponent);
 
             /* This adds the health degradation to the newly captured gooey entities */
             delayManager.addPeriodicAction(releasedGooey, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);

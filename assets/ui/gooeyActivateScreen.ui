@@ -17,8 +17,8 @@
           },
           {
             "type": "UIButton",
-            "text": "Select gooey for breeding",
-            "id": "breedButton"
+            "text": "Lure the gooey to follow",
+            "id": "followButton"
           }
         ],
         "layoutInfo": {

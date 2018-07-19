@@ -18,6 +18,7 @@ package org.terasology.gookeeper.ui;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.gookeeper.event.BreedGooeyEvent;
 import org.terasology.gookeeper.event.FeedGooeyEvent;
+import org.terasology.gookeeper.event.FollowGooeyEvent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.network.ClientComponent;
 import org.terasology.registry.In;
@@ -30,20 +31,20 @@ public class GooeyActivateScreen extends CoreScreenLayer {
     private LocalPlayer localPlayer;
 
     private UIButton feedButton;
-    private UIButton breedButton;
+    private UIButton followButton;
     private EntityRef gooeyEntity;
-    private EntityRef breederEntity;
+    private EntityRef ownerEntity;
 
     @Override
     public void initialise() {
         feedButton = find("feedButton", UIButton.class);
         feedButton.subscribe(button -> {
-            gooeyEntity.send(new FeedGooeyEvent(breederEntity, gooeyEntity));
+            gooeyEntity.send(new FeedGooeyEvent(ownerEntity, gooeyEntity));
         });
 
-        breedButton = find("breedButton", UIButton.class);
-        breedButton.subscribe(button -> {
-            gooeyEntity.send(new BreedGooeyEvent(breederEntity, gooeyEntity));
+        followButton = find("followButton", UIButton.class);
+        followButton.subscribe(button -> {
+            gooeyEntity.send(new FollowGooeyEvent(ownerEntity, gooeyEntity));
         });
     }
 
@@ -52,7 +53,7 @@ public class GooeyActivateScreen extends CoreScreenLayer {
     }
 
     public void setBreederEntity(EntityRef entityRef) {
-        breederEntity = entityRef;
+        ownerEntity = entityRef;
     }
 
 }

@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import org.slf4j.LoggerFactory;
 import org.terasology.behaviors.components.AttackOnHitComponent;
 import org.terasology.behaviors.components.FindNearbyPlayersComponent;
+import org.terasology.behaviors.components.FollowComponent;
 import org.terasology.core.world.CoreBiome;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.prefab.PrefabManager;
@@ -31,9 +32,11 @@ import org.terasology.entitySystem.prefab.Prefab;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.gookeeper.event.FollowGooeyEvent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.logic.behavior.BehaviorComponent;
+import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.characters.StandComponent;
 import org.terasology.logic.characters.WalkComponent;
@@ -51,6 +54,7 @@ import org.terasology.logic.health.OnDamagedEvent;
 import org.terasology.registry.In;
 import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
+import org.terasology.rendering.nui.NUIManager;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
@@ -91,6 +95,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     @In
     private CelestialSystem celestialSystem;
+
+    @In
+    private NUIManager nuiManager;
 
     private Random random = new FastRandom();
     private List<Prefab> gooeyPrefabs = new ArrayList();
@@ -455,5 +462,37 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             }
             entity.saveComponent(moveComp);
         }
+    }
+
+    /**
+     * Receives the FollowGooeyEvent when the "activated" gooey is to be made to follow the player character
+     * when the player is holding a food item of the gooey's liking
+     *
+     * @param event
+     * @param gooeyEntity
+     * @param gooeyComponent
+     * @param hungerComponent
+     */
+    @ReceiveEvent
+    public void onGooeyFollowPlayer(FollowGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
+        CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
+
+        if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem.getComponent(DisplayNameComponent.class) != null) {
+            EntityRef item = characterHeldItemComponent.selectedItem;
+            String itemName = item.getComponent(DisplayNameComponent.class).name;
+
+            if (!itemName.isEmpty() && hungerComponent.food.contains(itemName)) {
+                FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
+
+                followComponent.entityToFollow = event.getInstigator();
+                CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
+                characterMovementComponent.jumpSpeed = 12f;
+
+                gooeyEntity.saveComponent(characterMovementComponent);
+                gooeyEntity.saveComponent(followComponent);
+            }
+        }
+
+        nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
     }
 }

@@ -88,34 +88,16 @@ public class BreedingSystem extends BaseComponentSystem {
      * @param gooeyComponent
      */
     @ReceiveEvent
-    public void onBreedingGooey(BreedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
-        CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
+    public void onBreedingGooey(BreedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
+        logger.info("Selected for breeding...");
+        MatingComponent matingComponent = new MatingComponent();
 
-        if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem.getComponent(DisplayNameComponent.class) != null) {
-            EntityRef item = characterHeldItemComponent.selectedItem;
-            String itemName = item.getComponent(DisplayNameComponent.class).name;
-
-            if (!itemName.isEmpty() && hungerComponent.food.contains(itemName)) {
-                logger.info("Selected for breeding...");
-                FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
-                BehaviorComponent behaviorComponent = gooeyEntity.getComponent(BehaviorComponent.class);
-                MatingComponent matingComponent = new MatingComponent();
-
-                followComponent.entityToFollow = event.getInstigator();
-                if (!matingComponent.selectedForMating) {
-                    matingComponent.selectedForMating = true;
-                } else {
-                    matingComponent.selectedForMating = false;
-                }
-                CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
-                characterMovementComponent.jumpSpeed = 12f;
-
-                gooeyEntity.saveComponent(followComponent);
-                gooeyEntity.saveComponent(behaviorComponent);
-                gooeyEntity.addOrSaveComponent(matingComponent);
-                gooeyEntity.saveComponent(characterMovementComponent);
-            }
+        if (!matingComponent.selectedForMating) {
+            matingComponent.selectedForMating = true;
+        } else {
+            matingComponent.selectedForMating = false;
         }
-        nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
+
+        gooeyEntity.addOrSaveComponent(matingComponent);
     }
 }
