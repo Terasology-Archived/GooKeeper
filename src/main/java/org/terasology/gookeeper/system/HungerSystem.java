@@ -193,6 +193,7 @@ public class HungerSystem extends BaseComponentSystem {
         for (String food : hungerComponent.food) {
             event.getTooltipLines().add(new TooltipLine("Can eat : " + food));
         }
+        event.getTooltipLines().add(new TooltipLine("PlazMaster frequency required: " + gooeyComponent.stunFrequency));
     }
 
     @ReceiveEvent(components = GooeyComponent.class)
