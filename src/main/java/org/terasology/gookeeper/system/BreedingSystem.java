@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.management.AssetManager;
 import org.terasology.behaviors.components.FollowComponent;
+import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
@@ -58,6 +59,9 @@ public class BreedingSystem extends BaseComponentSystem {
 
     @In
     private NUIManager nuiManager;
+
+    @In
+    private EntityManager entityManager;
 
     private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
     private Random random = new FastRandom();
@@ -104,6 +108,17 @@ public class BreedingSystem extends BaseComponentSystem {
         MatingComponent matingComponent = new MatingComponent();
 
         matingComponent.selectedForMating = !matingComponent.selectedForMating;
+
+        for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
+            if (breedingBlock.getOwner().equals(event.getInstigator())) {
+                BreedingBlockComponent breedingBlockComponent = breedingBlock.getComponent(BreedingBlockComponent.class);
+
+                if (!breedingBlockComponent.parentGooey.equals(gooeyEntity)) {
+                    matingComponent.matingWithEntity = breedingBlockComponent.parentGooey;
+                    break;
+                }
+            }
+        }
 
         gooeyEntity.addOrSaveComponent(matingComponent);
     }

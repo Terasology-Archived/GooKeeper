@@ -5,5 +5,10 @@
     "family" : "horizontal",
     "categories" : ["breeding"],
     "hardness": 1,
-    "targetable" : true
+    "targetable" : true,
+    "entity" : {
+       "prefab" : "GooKeeper:breeding",
+       "temporary" : false,
+       "keepActive" : true
+    }
 }
