@@ -8,7 +8,7 @@
         {"id": "Core", "minVersion": "2.0.0"},
         {"id": "Behaviors", "minVersion": "0.2.0"},
         {"id": "Fences", "minVersion": "0.1.0"},
-        {"id": "StructureTemplates", "minVersion": "0.2.0"},
+        {"id": "StructureTemplates", "minVersion": "0.3.0"},
         {"id" : "WorldlyTooltip", "minVersion" : "1.1.1"}
     ],
     "serverSideOnly" : false,
