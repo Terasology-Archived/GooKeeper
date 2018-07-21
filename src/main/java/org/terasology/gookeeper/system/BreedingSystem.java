@@ -102,7 +102,14 @@ public class BreedingSystem extends BaseComponentSystem {
     @ReceiveEvent
     public void onBreedingGooey(BreedGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
         logger.info("Selected for breeding...");
-        MatingComponent matingComponent = new MatingComponent();
+
+        MatingComponent matingComponent;
+
+        if (!gooeyEntity.hasComponent(MatingComponent.class)) {
+            matingComponent = new MatingComponent();
+        } else {
+            matingComponent = gooeyEntity.getComponent(MatingComponent.class);
+        }
 
         matingComponent.selectedForMating = !matingComponent.selectedForMating;
 
@@ -113,7 +120,21 @@ public class BreedingSystem extends BaseComponentSystem {
                     BreedingBlockComponent breedingBlockComponent = breedingBlock.getComponent(BreedingBlockComponent.class);
 
                     if (breedingBlockComponent.parentGooey != EntityRef.NULL && !breedingBlockComponent.parentGooey.equals(gooeyEntity)) {
-                        matingComponent.matingWithEntity = breedingBlockComponent.parentGooey;
+                        EntityRef matingWithGooey = breedingBlockComponent.parentGooey;
+                        MatingComponent matingComponent1;
+
+                        matingComponent.matingWithEntity = matingWithGooey;
+
+                        if (!matingWithGooey.hasComponent(MatingComponent.class)) {
+                            matingComponent1 = new MatingComponent();
+                        } else {
+                            matingComponent1 = matingWithGooey.getComponent(MatingComponent.class);
+                        }
+
+                        matingComponent1.selectedForMating = !matingComponent1.selectedForMating;
+                        matingComponent1.matingWithEntity = gooeyEntity;
+
+                        matingWithGooey.addOrSaveComponent(matingComponent1);
                         break;
                     }
                 }
