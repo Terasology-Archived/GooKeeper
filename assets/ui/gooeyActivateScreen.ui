@@ -17,7 +17,7 @@
           },
           {
             "type": "UIButton",
-            "text": "Lure the gooey to follow",
+            "text": "Lure",
             "id": "followButton"
           }
         ],

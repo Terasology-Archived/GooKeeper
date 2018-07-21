@@ -20,7 +20,9 @@ import org.terasology.logic.behavior.BehaviorAction;
 import org.terasology.logic.behavior.core.Actor;
 import org.terasology.logic.behavior.core.BaseAction;
 import org.terasology.logic.behavior.core.BehaviorState;
+import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.minion.move.MinionMoveComponent;
 import org.terasology.registry.In;
 
 
@@ -35,6 +37,10 @@ public class BeginBreedingAction extends BaseAction {
 
     @Override
     public BehaviorState modify(Actor actor, BehaviorState state) {
+        CharacterMovementComponent characterMovementComponent = actor.getComponent(CharacterMovementComponent.class);
+        characterMovementComponent.speedMultiplier = 0f;
+
+        actor.save(characterMovementComponent);
         return BehaviorState.SUCCESS;
     }
 

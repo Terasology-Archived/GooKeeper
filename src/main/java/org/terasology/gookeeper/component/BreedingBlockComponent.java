@@ -20,8 +20,7 @@ import org.terasology.entitySystem.entity.EntityRef;
 
 public class BreedingBlockComponent implements Component {
     /**
-     * The gooey entity which is currently standing on the breeding block
-     * and which is to be involved in the mating process.
+     * The gooey entity which is to be involved in mating
      */
     public EntityRef parentGooey = EntityRef.NULL;
 }

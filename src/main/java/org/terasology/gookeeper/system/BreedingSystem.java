@@ -67,10 +67,7 @@ public class BreedingSystem extends BaseComponentSystem {
     private Random random = new FastRandom();
 
     /**
-     * This method is called upon when a gooey that is following the player is brought to
-     * the love shack and it steps over a breeding block.
-     *
-     * Receives OnEnterBlockEvent when a gooey entity steps over a breeding block.
+     * This method is called when a gooey steps on a breeding block
      *
      * @param event     The OnEnterBlockEvent
      * @param entity    the gooey entity
@@ -109,17 +106,19 @@ public class BreedingSystem extends BaseComponentSystem {
 
         matingComponent.selectedForMating = !matingComponent.selectedForMating;
 
-        for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
-            if (breedingBlock.getOwner().equals(event.getInstigator())) {
-                BreedingBlockComponent breedingBlockComponent = breedingBlock.getComponent(BreedingBlockComponent.class);
+        if (matingComponent.selectedForMating) {
+            for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
+                if (breedingBlock.getOwner().equals(event.getInstigator())) {
+                    logger.info("Block with the same owner");
+                    BreedingBlockComponent breedingBlockComponent = breedingBlock.getComponent(BreedingBlockComponent.class);
 
-                if (!breedingBlockComponent.parentGooey.equals(gooeyEntity)) {
-                    matingComponent.matingWithEntity = breedingBlockComponent.parentGooey;
-                    break;
+                    if (breedingBlockComponent.parentGooey != EntityRef.NULL && !breedingBlockComponent.parentGooey.equals(gooeyEntity)) {
+                        matingComponent.matingWithEntity = breedingBlockComponent.parentGooey;
+                        break;
+                    }
                 }
             }
         }
-
         gooeyEntity.addOrSaveComponent(matingComponent);
     }
 }
