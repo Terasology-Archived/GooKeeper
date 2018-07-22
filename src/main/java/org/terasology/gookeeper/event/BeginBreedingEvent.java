@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 MovingBlocks
+ * Copyright 2017 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@ package org.terasology.gookeeper.event;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.Event;
 
-public class BreedGooeyEvent implements Event {
+public class BeginBreedingEvent implements Event {
 
     private EntityRef instigator;
     private EntityRef gooey;
+    public EntityRef matingWithEntity;
 
-    public BreedGooeyEvent(EntityRef instigator, EntityRef gooey) {
+    public BeginBreedingEvent(EntityRef instigator, EntityRef gooey, EntityRef matingWithEntity) {
         this.instigator = instigator;
         this.gooey = gooey;
     }
@@ -34,5 +35,9 @@ public class BreedGooeyEvent implements Event {
 
     public EntityRef getInstigator() {
         return instigator;
+    }
+
+    public EntityRef getMatingWithEntity() {
+        return matingWithEntity;
     }
 }

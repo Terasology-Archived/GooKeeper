@@ -30,7 +30,6 @@ import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.HungerComponent;
 import org.terasology.gookeeper.event.AfterGooeyFedEvent;
-import org.terasology.gookeeper.event.BreedGooeyEvent;
 import org.terasology.gookeeper.event.FeedGooeyEvent;
 import org.terasology.gookeeper.ui.GooeyActivateScreen;
 import org.terasology.logic.characters.CharacterHeldItemComponent;
@@ -50,8 +49,6 @@ import org.terasology.rendering.nui.NUIManager;
 import org.terasology.rendering.nui.layers.ingame.inventory.GetItemTooltip;
 import org.terasology.rendering.nui.widgets.TooltipLine;
 import org.terasology.utilities.Assets;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
 import org.terasology.worldlyTooltipAPI.events.GetTooltipIconEvent;
 import org.terasology.worldlyTooltipAPI.events.GetTooltipNameEvent;
 

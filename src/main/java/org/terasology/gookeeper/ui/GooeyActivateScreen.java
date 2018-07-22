@@ -16,11 +16,9 @@
 package org.terasology.gookeeper.ui;
 
 import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.gookeeper.event.BreedGooeyEvent;
 import org.terasology.gookeeper.event.FeedGooeyEvent;
 import org.terasology.gookeeper.event.FollowGooeyEvent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.network.ClientComponent;
 import org.terasology.registry.In;
 import org.terasology.rendering.nui.CoreScreenLayer;
 import org.terasology.rendering.nui.widgets.UIButton;

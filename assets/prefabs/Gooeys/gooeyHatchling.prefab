@@ -1,0 +1,50 @@
+{
+  "alwaysRelevant": true,
+  "DisplayName": {
+    "name": "Gooey Hatchling"
+  },
+  "persisted": true,
+  "Color": {
+    "color": [
+      191,
+      65,
+      65,
+      255
+    ]
+  },
+  "Mesh": {
+    "mesh" : "GooKeeper:ball",
+    "material" : "GooKeeper:slimePodMat"
+   },
+  "location": {},
+  "Character": {},
+  "AliveCharacter": {},
+  "CharacterMovement": {
+    "groundFriction": 16,
+    "speedMultiplier": 0.3,
+    "distanceBetweenFootsteps": 0.2,
+    "distanceBetweenSwimStrokes": 2.5,
+    "height": 1.0,
+    "radius": 0.5,
+    "jumpSpeed": 12
+  },
+  "Network": {},
+  "MinionMove": {},
+  "Health": {},
+  "BoxShape": {
+    "extents": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "Trigger": {
+    "detectGroups": [
+      "engine:debris",
+      "engine:sensor"
+    ]
+  },
+  "Follow": {
+  },
+  "NPCMovement": {}
+}
