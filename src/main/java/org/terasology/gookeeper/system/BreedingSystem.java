@@ -15,10 +15,12 @@
  */
 package org.terasology.gookeeper.system;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.management.AssetManager;
 import org.terasology.behaviors.components.FollowComponent;
+import org.terasology.entitySystem.Component;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
@@ -28,17 +30,19 @@ import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.gookeeper.component.BreedingBlockComponent;
-import org.terasology.gookeeper.component.GooeyComponent;
-import org.terasology.gookeeper.component.MatingComponent;
+import org.terasology.gookeeper.Constants;
+import org.terasology.gookeeper.component.*;
 import org.terasology.gookeeper.event.BeginBreedingEvent;
 import org.terasology.gookeeper.event.SelectForBreedingEvent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
+import org.terasology.logic.delay.DelayManager;
+import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.physics.components.RigidBodyComponent;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.nui.NUIManager;
@@ -70,6 +74,9 @@ public class BreedingSystem extends BaseComponentSystem {
 
     @In
     private PrefabManager prefabManager;
+
+    @In
+    private DelayManager delayManager;
 
     private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
     private Random random = new FastRandom();
@@ -165,11 +172,82 @@ public class BreedingSystem extends BaseComponentSystem {
      */
     @ReceiveEvent
     public void onBeginBreedingProcess(BeginBreedingEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
-        Prefab hatchlingPrefab = prefabManager.getPrefab("GooKeeper:gooeyHatchling");
-        EntityBuilder entityBuilder = entityManager.newBuilder(hatchlingPrefab);
-        LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
-        LocationComponent gooeyLocation = gooeyEntity.getComponent(LocationComponent.class);
-        locationComponent.setWorldPosition(gooeyLocation.getWorldPosition().add(new Vector3f(2f, 1f, 2f)));
-        entityBuilder.build();
+        delayManager.addDelayedAction(gooeyEntity, Constants.spawnGooeyEggEventID, random.nextLong(4000, 7000));
+        AggressiveComponent aggressiveComponent = new AggressiveComponent();
+        FriendlyComponent friendlyComponent = new FriendlyComponent();
+        NeutralComponent neutralComponent = new NeutralComponent();
+
+        MatingComponent matingComponent = gooeyEntity.getComponent(MatingComponent.class);
+
+        AggressiveComponent parent1Aggressive = gooeyEntity.getComponent(AggressiveComponent.class);
+        AggressiveComponent parent2Aggressive = matingComponent.matingWithEntity.getComponent(AggressiveComponent.class);
+
+        if (parent1Aggressive != null) {
+            aggressiveComponent.aggressivenessFactor += parent1Aggressive.aggressivenessFactor;
+        }
+
+        if (parent2Aggressive != null) {
+            aggressiveComponent.aggressivenessFactor += parent2Aggressive.aggressivenessFactor;
+        }
+
+        aggressiveComponent.aggressivenessFactor /= 2f;
+
+        NeutralComponent parent1Neutral = gooeyEntity.getComponent(NeutralComponent.class);
+        NeutralComponent parent2Neutral = matingComponent.matingWithEntity.getComponent(NeutralComponent.class);
+
+        if (parent1Neutral != null) {
+            neutralComponent.neutralityFactor += parent1Neutral.neutralityFactor;
+        }
+
+        if (parent2Neutral != null) {
+            neutralComponent.neutralityFactor += parent2Neutral.neutralityFactor;
+        }
+
+        neutralComponent.neutralityFactor /= 2f;
+
+        FriendlyComponent parent1Friendly = gooeyEntity.getComponent(FriendlyComponent.class);
+        FriendlyComponent parent2Friendly = matingComponent.matingWithEntity.getComponent(FriendlyComponent.class);
+
+        if (parent1Friendly != null) {
+            friendlyComponent.friendlinessFactor += parent1Friendly.friendlinessFactor;
+        }
+
+        if (parent2Friendly != null) {
+            friendlyComponent.friendlinessFactor += parent2Friendly.friendlinessFactor;
+        }
+
+        friendlyComponent.friendlinessFactor /= 2f;
+
+        Component dominantComponent = getDominantComponent(aggressiveComponent, neutralComponent, friendlyComponent);
+
+    }
+
+    /**
+     * Receives DelayedActionTriggeredEvent, which spawns the gooey egg
+     *
+     * @param event     The DelayedActionTriggeredEvent event
+     * @param gooeyEntity    The entity to which the event is sent
+     */
+    @ReceiveEvent
+    public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef gooeyEntity) {
+        if (event.getActionId().equals(Constants.spawnGooeyEggEventID)) {
+            Prefab hatchlingPrefab = prefabManager.getPrefab("GooKeeper:gooeyHatchling");
+            EntityBuilder entityBuilder = entityManager.newBuilder(hatchlingPrefab);
+            LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
+            LocationComponent gooeyLocation = gooeyEntity.getComponent(LocationComponent.class);
+            locationComponent.setWorldPosition(gooeyLocation.getWorldPosition().add(new Vector3f(2f, 1f, 2f)));
+            locationComponent.setWorldScale(0.3f);
+            entityBuilder.build();
+        }
+    }
+
+    private Component getDominantComponent(AggressiveComponent aggressiveComponent, NeutralComponent neutralComponent, FriendlyComponent friendlyComponent) {
+        if (aggressiveComponent.aggressivenessFactor >= neutralComponent.neutralityFactor && aggressiveComponent.aggressivenessFactor >= friendlyComponent.friendlinessFactor) {
+            return aggressiveComponent;
+        } else if (neutralComponent.neutralityFactor >= aggressiveComponent.aggressivenessFactor && neutralComponent.neutralityFactor >= friendlyComponent.friendlinessFactor) {
+            return neutralComponent;
+        } else {
+            return friendlyComponent;
+        }
     }
 }
