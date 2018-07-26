@@ -37,9 +37,13 @@ import org.terasology.gookeeper.component.AggressiveComponent;
 import org.terasology.gookeeper.component.NeutralComponent;
 import org.terasology.gookeeper.component.FriendlyComponent;
 import org.terasology.gookeeper.component.FactorComponent;
+import org.terasology.gookeeper.component.HungerComponent;
+import org.terasology.gookeeper.event.AfterGooeyBreedingEvent;
 import org.terasology.gookeeper.event.BeginBreedingEvent;
 import org.terasology.gookeeper.event.SelectForBreedingEvent;
 import org.terasology.logic.behavior.BehaviorComponent;
+import org.terasology.logic.behavior.asset.BehaviorTree;
+import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.characters.StandComponent;
 import org.terasology.logic.characters.WalkComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
@@ -54,6 +58,7 @@ import org.terasology.physics.components.RigidBodyComponent;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.assets.material.Material;
+import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.rendering.assets.texture.Texture;
 import org.terasology.rendering.logic.MeshComponent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
@@ -188,6 +193,30 @@ public class BreedingSystem extends BaseComponentSystem {
     }
 
     /**
+     * Receives the AfterGooeyBreedingEvent when the breeding process is to be ended
+     *
+     * @param event
+     * @param gooeyEntity
+     * @param gooeyComponent
+     * @param matingComponent
+     */
+    @ReceiveEvent
+    public void onBreedingProcessEnd(AfterGooeyBreedingEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, MatingComponent matingComponent) {
+        MatingComponent matingComponent1 = matingComponent.matingWithEntity.getComponent(MatingComponent.class);
+
+        matingComponent.selectedForMating = false;
+        matingComponent1.selectedForMating = false;
+
+        CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
+        CharacterMovementComponent characterMovementComponent1 = matingComponent.matingWithEntity.getComponent(CharacterMovementComponent.class);
+        characterMovementComponent.speedMultiplier = 1f;
+        characterMovementComponent1.speedMultiplier = 1f;
+
+        gooeyEntity.saveComponent(characterMovementComponent);
+        matingComponent.matingWithEntity.saveComponent(characterMovementComponent1);
+    }
+
+    /**
      * Receives DelayedActionTriggeredEvent, which spawns the gooey egg
      *
      * @param event     The DelayedActionTriggeredEvent event
@@ -199,9 +228,12 @@ public class BreedingSystem extends BaseComponentSystem {
             Prefab hatchlingPrefab = prefabManager.getPrefab("GooKeeper:gooeyHatchling");
             EntityBuilder entityBuilder = entityManager.newBuilder(hatchlingPrefab);
             LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
-            LocationComponent gooeyLocation = gooeyEntity.getComponent(LocationComponent.class);
-            locationComponent.setWorldPosition(gooeyLocation.getWorldPosition().add(new Vector3f(2f, 1f, 2f)));
-            locationComponent.setWorldScale(0.3f);
+            Vector3f parent1Location = gooeyEntity.getComponent(LocationComponent.class).getWorldPosition();
+            Vector3f parent2Location = gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class).getWorldPosition();
+
+            Vector3f middleLocation = new Vector3f((parent1Location.x + parent2Location.x)/2f, parent1Location.y + 1f, (parent2Location.z + parent2Location.z)/2f);
+            locationComponent.setWorldPosition(middleLocation);
+            locationComponent.setWorldScale(0.5f);
 
             AggressiveComponent aggressiveComponent = new AggressiveComponent();
             FriendlyComponent friendlyComponent = new FriendlyComponent();
@@ -216,15 +248,30 @@ public class BreedingSystem extends BaseComponentSystem {
             Component dominantComponent = getDominantComponent(aggressiveComponent, neutralComponent, friendlyComponent);
 
             entityBuilder.addComponent(dominantComponent);
-//            entityBuilder.addComponent(gooeyEntity.getComponent(BehaviorComponent.class));
-//            entityBuilder.removeComponent(MeshComponent.class);
-//            entityBuilder.addComponent(gooeyEntity.getComponent(SkeletalMeshComponent.class));
-//            entityBuilder.addComponent(gooeyEntity.getComponent(WalkComponent.class));
-//            entityBuilder.addComponent(gooeyEntity.getComponent(StandComponent.class));
-//            entityBuilder.addComponent(gooeyEntity.getComponent(HungerComponent.class));
-//            entityBuilder.addComponent(gooeyEntity.getComponent(GooeyComponent.class));
+            entityBuilder.addComponent(gooeyEntity.getComponent(WalkComponent.class));
+            entityBuilder.addComponent(gooeyEntity.getComponent(StandComponent.class));
+            entityBuilder.addComponent(gooeyEntity.getComponent(HungerComponent.class));
+            GooeyComponent offspringGooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
+            offspringGooeyComponent.isCaptured = false;
+            entityBuilder.addComponent(offspringGooeyComponent);
 
-            entityBuilder.build();
+            EntityRef offspringGooey = entityBuilder.build();
+            gooeyEntity.send(new AfterGooeyBreedingEvent(gooeyEntity, matingComponent.matingWithEntity, offspringGooey));
+
+            delayManager.addDelayedAction(offspringGooey, Constants.hatchEggEventID, random.nextLong(2000, 6000));
+        } else if (event.getActionId().equals(Constants.hatchEggEventID)) {
+            /*
+                During this event, the gooeyEntity attribute is the newly generated gooey offspring,
+                This is where we "hatch" the egg to give the entity the necessary components.
+             */
+            BehaviorComponent behaviorComponent = new BehaviorComponent();
+            behaviorComponent.tree = Assets.get("GooKeeper:gooey", BehaviorTree.class).get();
+            gooeyEntity.addComponent(behaviorComponent);
+            gooeyEntity.removeComponent(MeshComponent.class);
+            SkeletalMeshComponent skeletalMeshComponent = prefabManager.getPrefab("GooKeeper:blueGooey").getComponent(SkeletalMeshComponent.class);
+            gooeyEntity.addComponent(skeletalMeshComponent);
+            LocationComponent locationComponent = gooeyEntity.getComponent(LocationComponent.class);
+            locationComponent.setWorldScale(1f);
         }
     }
 

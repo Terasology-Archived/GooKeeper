@@ -21,4 +21,5 @@ public class Constants {
     public static final String healthDecreaseEventID = "DECREASE_HEALTH_TICK";
     public static final String gooeyDeathEventID = "DESTROY_GOOEY_ENTITY";
     public static final String spawnGooeyEggEventID = "SPAWN_GOOEY_EGG";
+    public static final String hatchEggEventID = "HATCH_GOOEY_EGG";
 }
