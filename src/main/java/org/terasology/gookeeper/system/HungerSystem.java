@@ -45,6 +45,7 @@ import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
+import org.terasology.rendering.assets.texture.TextureRegion;
 import org.terasology.rendering.nui.NUIManager;
 import org.terasology.rendering.nui.layers.ingame.inventory.GetItemTooltip;
 import org.terasology.rendering.nui.widgets.TooltipLine;
@@ -195,7 +196,10 @@ public class HungerSystem extends BaseComponentSystem {
 
     @ReceiveEvent(components = GooeyComponent.class)
     public void setIcon(GetTooltipIconEvent event, EntityRef entityRef) {
-        event.setIcon(Assets.getTextureRegion("GooKeeper:"+ entityRef.getComponent(DisplayNameComponent.class).name + "Tooltip").get());
+        TextureRegion textureRegion = Assets.getTextureRegion("GooKeeper:"+ entityRef.getComponent(DisplayNameComponent.class).name + "Tooltip").get();
+        if (textureRegion != null) {
+            event.setIcon(textureRegion);
+        }
     }
 
     @ReceiveEvent(components = {GooeyComponent.class})
