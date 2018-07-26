@@ -15,9 +15,6 @@
  */
 package org.terasology.gookeeper.component;
 
-import org.terasology.entitySystem.Component;
-import org.terasology.world.block.ForceBlockActive;
+public class NeutralComponent extends FactorComponent {
 
-public class NeutralComponent implements Component {
-    public float neutralityFactor;
 }

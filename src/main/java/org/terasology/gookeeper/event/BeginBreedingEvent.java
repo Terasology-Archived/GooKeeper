@@ -22,7 +22,7 @@ public class BeginBreedingEvent implements Event {
 
     private EntityRef instigator;
     private EntityRef gooey;
-    public EntityRef matingWithEntity;
+    private EntityRef matingWithEntity;
 
     public BeginBreedingEvent(EntityRef instigator, EntityRef gooey, EntityRef matingWithEntity) {
         this.instigator = instigator;
@@ -37,7 +37,5 @@ public class BeginBreedingEvent implements Event {
         return instigator;
     }
 
-    public EntityRef getMatingWithEntity() {
-        return matingWithEntity;
-    }
+    public EntityRef getMatingWithEntity() { return matingWithEntity; }
 }

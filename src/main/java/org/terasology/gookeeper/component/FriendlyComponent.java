@@ -18,6 +18,5 @@ package org.terasology.gookeeper.component;
 import org.terasology.entitySystem.Component;
 import org.terasology.world.block.ForceBlockActive;
 
-public class FriendlyComponent implements Component {
-    public float friendlinessFactor;
+public class FriendlyComponent extends FactorComponent {
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 MovingBlocks
+ * Copyright 2017 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package org.terasology.gookeeper.component;
 
 import org.terasology.entitySystem.Component;
-import org.terasology.world.block.ForceBlockActive;
 
-public class AggressiveComponent extends FactorComponent {
+abstract public class FactorComponent implements Component {
+    public float magnitude;
 }

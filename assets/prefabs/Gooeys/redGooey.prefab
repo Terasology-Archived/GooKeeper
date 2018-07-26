@@ -130,7 +130,7 @@
     "MAX_GROUP_SIZE": 1
   },
   "Aggressive": {
-    "aggressivenessFactor": 85
+    "magnitude": 85
   },
   "Hunger": {
     "food": ["Lava"]

@@ -126,7 +126,9 @@
     "SPAWN_CHANCE": 85,
     "MAX_GROUP_SIZE": 6
   },
-  "Neutral": {},
+  "Neutral": {
+    "magnitude": 50
+  },
   "Hunger": {
     "food": ["Grass", "Dirt"]
   }

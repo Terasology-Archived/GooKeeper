@@ -129,7 +129,7 @@
     "MAX_GROUP_SIZE": 4
   },
   "Friendly": {
-     "friendlinessFactor": 85
+     "magnitude": 85
   },
   "Hunger": {
     "food": ["TallGrass1", "RedFlower", "Dandelion"]
