@@ -1,7 +1,7 @@
 {
     "shader" : "engine:genericMeshMaterial",
     "params" : {
-        "diffuse" : "blueGooey",
+        "diffuse" : "1b",
         "colorOffset" : [1.0, 1.0, 1.0],
         "textured" : true
     }

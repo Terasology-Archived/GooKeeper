@@ -29,12 +29,6 @@ import org.terasology.registry.In;
 @BehaviorAction(name = "BeginBreeding")
 public class BeginBreedingAction extends BaseAction {
 
-    @In
-    private Time time;
-
-    @In
-    private LocalPlayer localPlayer;
-
     @Override
     public BehaviorState modify(Actor actor, BehaviorState state) {
         CharacterMovementComponent characterMovementComponent = actor.getComponent(CharacterMovementComponent.class);

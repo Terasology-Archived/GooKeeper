@@ -70,10 +70,8 @@ import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
-import sun.text.resources.en.FormatData_en_IE;
 
 import java.math.RoundingMode;
-import java.util.Vector;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 @Share(value = BreedingSystem.class)
@@ -153,7 +151,6 @@ public class BreedingSystem extends BaseComponentSystem {
         if (matingComponent.selectedForMating) {
             for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
                 //if (breedingBlock.getOwner().equals(event.getInstigator())) {
-                    logger.info("Block with the same owner");
                     BreedingBlockComponent breedingBlockComponent = breedingBlock.getComponent(BreedingBlockComponent.class);
 
                     if (breedingBlockComponent.parentGooey != EntityRef.NULL && !breedingBlockComponent.parentGooey.equals(gooeyEntity)) {
@@ -189,7 +186,7 @@ public class BreedingSystem extends BaseComponentSystem {
                 }
             }
         }
-        
+
         gooeyEntity.addOrSaveComponent(matingComponent);
 
         if (matingComponent.selectedForMating && matingComponent.matingWithEntity != EntityRef.NULL) {
@@ -221,7 +218,11 @@ public class BreedingSystem extends BaseComponentSystem {
     public void onBreedingProcessEnd(AfterGooeyBreedingEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, MatingComponent matingComponent) {
         EntityRef offspringEntity = event.getOffspringGooey();
         SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);
-        skeletalMeshComponent.material = getOffspringMaterial(gooeyEntity, matingComponent.matingWithEntity, offspringEntity);
+        Material gooeyMaterial = getOffspringMaterial(gooeyEntity, matingComponent.matingWithEntity, offspringEntity);
+
+        if (gooeyMaterial != null) {
+            skeletalMeshComponent.material = gooeyMaterial;
+        }
         skeletalMeshComponent.mesh = null;
         offspringEntity.addComponent(skeletalMeshComponent);
 
@@ -235,14 +236,13 @@ public class BreedingSystem extends BaseComponentSystem {
 
         if (characterMovementComponent != null) {
             characterMovementComponent.speedMultiplier = 1f;
+            gooeyEntity.saveComponent(characterMovementComponent);
         }
 
         if (characterMovementComponent1 != null) {
             characterMovementComponent1.speedMultiplier = 1f;
+            matingComponent.matingWithEntity.saveComponent(characterMovementComponent1);
         }
-
-        gooeyEntity.saveComponent(characterMovementComponent);
-        matingComponent.matingWithEntity.saveComponent(characterMovementComponent1);
     }
 
     /**
@@ -374,12 +374,8 @@ public class BreedingSystem extends BaseComponentSystem {
         }
 
         offspringEntity.addOrSaveComponent(offspringGooeyColor);
-        offspringMaterial = Assets.getMaterial(materialName).get();
+        offspringMaterial = Assets.getMaterial(materialName).orElse(null);
 
-        if (offspringMaterial != null) {
-            return offspringMaterial;
-        } else {
-            return null;
-        }
+        return offspringMaterial;
     }
 }

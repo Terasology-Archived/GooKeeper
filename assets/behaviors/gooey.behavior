@@ -16,10 +16,7 @@
           componentPresent: "GooKeeper:Mating",
           values: ["V selectedForMating == true"],
           child: {
-            sequence: [
-              BeginBreeding,
-              AfterBreeding
-            ]
+            BeginBreeding
           }
         }
       },
