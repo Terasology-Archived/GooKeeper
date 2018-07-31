@@ -178,7 +178,18 @@ public class BreedingSystem extends BaseComponentSystem {
                     }
                 //}
             }
+
+            for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
+                BreedingBlockComponent breedingBlockComponent1 = breedingBlock.getComponent(BreedingBlockComponent.class);
+
+                if (breedingBlockComponent1.parentGooey.equals(gooeyEntity)) {
+                    breedingBlockComponent1.parentGooey = EntityRef.NULL;
+                    breedingBlock.saveComponent(breedingBlockComponent1);
+                    break;
+                }
+            }
         }
+        
         gooeyEntity.addOrSaveComponent(matingComponent);
 
         if (matingComponent.selectedForMating && matingComponent.matingWithEntity != EntityRef.NULL) {
@@ -294,7 +305,7 @@ public class BreedingSystem extends BaseComponentSystem {
             FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
             followComponent.entityToFollow = EntityRef.NULL;
             gooeyEntity.saveComponent(followComponent);
-            
+
             gooeyEntity.removeComponent(MeshComponent.class);
             SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);
             skeletalMeshComponent.mesh = prefabManager.getPrefab("GooKeeper:blueGooey").getComponent(SkeletalMeshComponent.class).mesh;
