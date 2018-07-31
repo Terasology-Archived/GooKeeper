@@ -64,6 +64,7 @@ import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.rendering.assets.texture.Texture;
 import org.terasology.rendering.logic.MeshComponent;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
+import org.terasology.rendering.nui.Color;
 import org.terasology.rendering.nui.NUIManager;
 import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
@@ -171,6 +172,8 @@ public class BreedingSystem extends BaseComponentSystem {
                         matingComponent1.matingWithEntity = gooeyEntity;
 
                         matingWithGooey.addOrSaveComponent(matingComponent1);
+                        breedingBlockComponent.parentGooey = EntityRef.NULL;
+                        breedingBlock.saveComponent(breedingBlockComponent);
                         break;
                     }
                 //}
@@ -207,7 +210,8 @@ public class BreedingSystem extends BaseComponentSystem {
     public void onBreedingProcessEnd(AfterGooeyBreedingEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, MatingComponent matingComponent) {
         EntityRef offspringEntity = event.getOffspringGooey();
         SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);
-        skeletalMeshComponent.material = getOffspringMaterial(gooeyEntity, matingComponent.matingWithEntity);
+        skeletalMeshComponent.material = getOffspringMaterial(gooeyEntity, matingComponent.matingWithEntity, offspringEntity);
+        skeletalMeshComponent.mesh = null;
         offspringEntity.addComponent(skeletalMeshComponent);
 
         MatingComponent matingComponent1 = matingComponent.matingWithEntity.getComponent(MatingComponent.class);
@@ -217,8 +221,14 @@ public class BreedingSystem extends BaseComponentSystem {
 
         CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
         CharacterMovementComponent characterMovementComponent1 = matingComponent.matingWithEntity.getComponent(CharacterMovementComponent.class);
-        characterMovementComponent.speedMultiplier = 1f;
-        characterMovementComponent1.speedMultiplier = 1f;
+
+        if (characterMovementComponent != null) {
+            characterMovementComponent.speedMultiplier = 1f;
+        }
+
+        if (characterMovementComponent1 != null) {
+            characterMovementComponent1.speedMultiplier = 1f;
+        }
 
         gooeyEntity.saveComponent(characterMovementComponent);
         matingComponent.matingWithEntity.saveComponent(characterMovementComponent1);
@@ -280,7 +290,15 @@ public class BreedingSystem extends BaseComponentSystem {
             BehaviorComponent behaviorComponent = new BehaviorComponent();
             behaviorComponent.tree = Assets.get("GooKeeper:gooey", BehaviorTree.class).get();
             gooeyEntity.addComponent(behaviorComponent);
+
+            FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
+            followComponent.entityToFollow = EntityRef.NULL;
+            gooeyEntity.saveComponent(followComponent);
+            
             gooeyEntity.removeComponent(MeshComponent.class);
+            SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);
+            skeletalMeshComponent.mesh = prefabManager.getPrefab("GooKeeper:blueGooey").getComponent(SkeletalMeshComponent.class).mesh;
+            gooeyEntity.saveComponent(skeletalMeshComponent);
             LocationComponent locationComponent = gooeyEntity.getComponent(LocationComponent.class);
             locationComponent.setWorldScale(1f);
         }
@@ -314,8 +332,8 @@ public class BreedingSystem extends BaseComponentSystem {
         return childComponent;
     }
 
-    private Material getOffspringMaterial(EntityRef parent1, EntityRef parent2) {
-        Material offspringMaterial = parent1.getComponent(SkeletalMeshComponent.class).material;
+    private Material getOffspringMaterial(EntityRef parent1, EntityRef parent2, EntityRef offspringEntity) {
+        Material offspringMaterial;
 
         Material parent1Mat = parent1.getComponent(SkeletalMeshComponent.class).material;
         Material parent2Mat = parent2.getComponent(SkeletalMeshComponent.class).material;
@@ -328,10 +346,29 @@ public class BreedingSystem extends BaseComponentSystem {
             return parent1Mat;
         }
 
-        offspringGooeyColor.color.alterRed(parent1Color.color.r() + parent2Color.color.r());
-        offspringGooeyColor.color.alterBlue(parent1Color.color.b() + parent2Color.color.b());
-        offspringGooeyColor.color.alterGreen(parent1Color.color.g() + parent2Color.color.g());
+        int redValue = parent1Color.color.r() + parent2Color.color.r();
+        int blueValue = parent1Color.color.b() + parent2Color.color.b();
+        int yellowValue = parent1Color.color.g() + parent2Color.color.g();
 
-        return offspringMaterial;
+        offspringGooeyColor.color = new Color(redValue, yellowValue, blueValue);
+        String materialName = "";
+        if (redValue > 0f) {
+            materialName += ((int)(Math.ceil(offspringGooeyColor.color.r()/128))) + "r";
+        }
+        if (yellowValue > 0f) {
+            materialName += ((int)(Math.ceil(offspringGooeyColor.color.g()/128))) + "y";
+        }
+        if (blueValue > 0f) {
+            materialName += ((int)(Math.ceil(offspringGooeyColor.color.b()/128))) + "b";
+        }
+
+        offspringEntity.addOrSaveComponent(offspringGooeyColor);
+        offspringMaterial = Assets.getMaterial(materialName).get();
+
+        if (offspringMaterial != null) {
+            return offspringMaterial;
+        } else {
+            return null;
+        }
     }
 }
