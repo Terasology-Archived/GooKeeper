@@ -47,6 +47,7 @@ import org.terasology.logic.characters.CharacterMovementComponent;
 import org.terasology.logic.characters.StandComponent;
 import org.terasology.logic.characters.WalkComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
+import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.logic.location.LocationComponent;
@@ -54,6 +55,7 @@ import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.network.ColorComponent;
 import org.terasology.physics.components.RigidBodyComponent;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
@@ -67,6 +69,7 @@ import org.terasology.utilities.Assets;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
+import sun.text.resources.en.FormatData_en_IE;
 
 import java.math.RoundingMode;
 import java.util.Vector;
@@ -202,6 +205,11 @@ public class BreedingSystem extends BaseComponentSystem {
      */
     @ReceiveEvent
     public void onBreedingProcessEnd(AfterGooeyBreedingEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, MatingComponent matingComponent) {
+        EntityRef offspringEntity = event.getOffspringGooey();
+        SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);
+        skeletalMeshComponent.material = getOffspringMaterial(gooeyEntity, matingComponent.matingWithEntity);
+        offspringEntity.addComponent(skeletalMeshComponent);
+
         MatingComponent matingComponent1 = matingComponent.matingWithEntity.getComponent(MatingComponent.class);
 
         matingComponent.selectedForMating = false;
@@ -251,9 +259,14 @@ public class BreedingSystem extends BaseComponentSystem {
             entityBuilder.addComponent(gooeyEntity.getComponent(WalkComponent.class));
             entityBuilder.addComponent(gooeyEntity.getComponent(StandComponent.class));
             entityBuilder.addComponent(gooeyEntity.getComponent(HungerComponent.class));
+
             GooeyComponent offspringGooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
             offspringGooeyComponent.isCaptured = false;
             entityBuilder.addComponent(offspringGooeyComponent);
+
+            DisplayNameComponent offspringNameComponent = gooeyEntity.getComponent(DisplayNameComponent.class);
+            offspringNameComponent.name = gooeyEntity.getComponent(DisplayNameComponent.class).name;
+            entityBuilder.saveComponent(offspringNameComponent);
 
             EntityRef offspringGooey = entityBuilder.build();
             gooeyEntity.send(new AfterGooeyBreedingEvent(gooeyEntity, matingComponent.matingWithEntity, offspringGooey));
@@ -268,8 +281,6 @@ public class BreedingSystem extends BaseComponentSystem {
             behaviorComponent.tree = Assets.get("GooKeeper:gooey", BehaviorTree.class).get();
             gooeyEntity.addComponent(behaviorComponent);
             gooeyEntity.removeComponent(MeshComponent.class);
-            SkeletalMeshComponent skeletalMeshComponent = prefabManager.getPrefab("GooKeeper:blueGooey").getComponent(SkeletalMeshComponent.class);
-            gooeyEntity.addComponent(skeletalMeshComponent);
             LocationComponent locationComponent = gooeyEntity.getComponent(LocationComponent.class);
             locationComponent.setWorldScale(1f);
         }
@@ -285,7 +296,7 @@ public class BreedingSystem extends BaseComponentSystem {
         }
     }
 
-    public <T extends FactorComponent> T getChildFactor(T childComponent, EntityRef parent1, EntityRef parent2) {
+    private  <T extends FactorComponent> T getChildFactor(T childComponent, EntityRef parent1, EntityRef parent2) {
         FactorComponent source1 = parent1.getComponent(childComponent.getClass());
         FactorComponent source2 = parent2.getComponent(childComponent.getClass());
 
@@ -301,5 +312,26 @@ public class BreedingSystem extends BaseComponentSystem {
 
         childComponent.magnitude /= 2f;
         return childComponent;
+    }
+
+    private Material getOffspringMaterial(EntityRef parent1, EntityRef parent2) {
+        Material offspringMaterial = parent1.getComponent(SkeletalMeshComponent.class).material;
+
+        Material parent1Mat = parent1.getComponent(SkeletalMeshComponent.class).material;
+        Material parent2Mat = parent2.getComponent(SkeletalMeshComponent.class).material;
+
+        ColorComponent parent1Color = parent1.getComponent(ColorComponent.class);
+        ColorComponent parent2Color = parent2.getComponent(ColorComponent.class);
+        ColorComponent offspringGooeyColor = new ColorComponent();
+
+        if (parent1Mat == parent2Mat) {
+            return parent1Mat;
+        }
+
+        offspringGooeyColor.color.alterRed(parent1Color.color.r() + parent2Color.color.r());
+        offspringGooeyColor.color.alterBlue(parent1Color.color.b() + parent2Color.color.b());
+        offspringGooeyColor.color.alterGreen(parent1Color.color.g() + parent2Color.color.g());
+
+        return offspringMaterial;
     }
 }
