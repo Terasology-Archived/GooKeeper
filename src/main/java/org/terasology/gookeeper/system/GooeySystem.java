@@ -475,6 +475,15 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      */
     @ReceiveEvent
     public void onGooeyFollowPlayer(FollowGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
+        FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
+        CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
+
+        if (followComponent.entityToFollow != EntityRef.NULL) {
+            followComponent.entityToFollow = EntityRef.NULL;
+            characterMovementComponent.jumpSpeed = 0f;
+            return;
+        }
+        
         CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
 
         if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem.hasComponent(DisplayNameComponent.class)) {
@@ -482,10 +491,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             String itemName = item.getComponent(DisplayNameComponent.class).name;
 
             if (!itemName.isEmpty() && hungerComponent.food.contains(itemName)) {
-                FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
-
                 followComponent.entityToFollow = event.getInstigator();
-                CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
                 characterMovementComponent.jumpSpeed = 12f;
 
                 gooeyEntity.saveComponent(characterMovementComponent);
