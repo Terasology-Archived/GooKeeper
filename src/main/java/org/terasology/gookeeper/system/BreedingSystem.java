@@ -182,14 +182,15 @@ public class BreedingSystem extends BaseComponentSystem {
     @ReceiveEvent
     public void onBreedingProcessEnd(AfterGooeyBreedingEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, MatingComponent matingComponent) {
         EntityRef offspringEntity = event.getOffspringGooey();
-        SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);
+
+        SkeletalMeshComponent skeletalMeshComponent = offspringEntity.getComponent(SkeletalMeshComponent.class);
         Material gooeyMaterial = getOffspringMaterial(gooeyEntity, matingComponent.matingWithEntity, offspringEntity);
 
         if (gooeyMaterial != null) {
             skeletalMeshComponent.material = gooeyMaterial;
         }
         skeletalMeshComponent.mesh = null;
-        offspringEntity.addComponent(skeletalMeshComponent);
+        offspringEntity.saveComponent(skeletalMeshComponent);
 
         DisplayNameComponent displayNameComponent = offspringEntity.getComponent(DisplayNameComponent.class);
         displayNameComponent.name = gooeyEntity.getComponent(DisplayNameComponent.class).name;
@@ -337,15 +338,25 @@ public class BreedingSystem extends BaseComponentSystem {
     }
 
     private void spawnGooeyEgg(EntityRef gooeyEntity) {
-        Prefab hatchlingPrefab = prefabManager.getPrefab("GooKeeper:gooeyHatchling");
-        EntityBuilder entityBuilder = entityManager.newBuilder(hatchlingPrefab);
+        Prefab eggPrefab = prefabManager.getPrefab("GooKeeper:gooeyEgg");
+        Prefab offpsringPrefab = prefabManager.getPrefab("GooKeeper:gooeyHatchling");
+
+        EntityBuilder entityBuilder = entityManager.newBuilder(eggPrefab);
+        EntityBuilder entityBuilder1 = entityManager.newBuilder(offpsringPrefab);
+
         LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
+        LocationComponent locationComponent1 = entityBuilder1.getComponent(LocationComponent.class);
+
         Vector3f parent1Location = gooeyEntity.getComponent(LocationComponent.class).getWorldPosition();
         Vector3f parent2Location = gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class).getWorldPosition();
 
         Vector3f middleLocation = new Vector3f((parent1Location.x + parent2Location.x)/2f, parent1Location.y + 1f, (parent2Location.z + parent2Location.z)/2f);
         locationComponent.setWorldPosition(middleLocation);
+        locationComponent1.setWorldPosition(middleLocation);
         locationComponent.setWorldScale(0.5f);
+
+        entityBuilder.saveComponent(locationComponent);
+        entityBuilder1.saveComponent(locationComponent1);
 
         AggressiveComponent aggressiveComponent = new AggressiveComponent();
         FriendlyComponent friendlyComponent = new FriendlyComponent();
@@ -359,23 +370,24 @@ public class BreedingSystem extends BaseComponentSystem {
 
         Component dominantComponent = getDominantComponent(aggressiveComponent, neutralComponent, friendlyComponent);
 
-        entityBuilder.addComponent(dominantComponent);
-        entityBuilder.addComponent(gooeyEntity.getComponent(WalkComponent.class));
-        entityBuilder.addComponent(gooeyEntity.getComponent(StandComponent.class));
-        entityBuilder.addComponent(gooeyEntity.getComponent(HungerComponent.class));
+        entityBuilder1.addOrSaveComponent(dominantComponent);
+        entityBuilder1.addOrSaveComponent(gooeyEntity.getComponent(HungerComponent.class));
 
         GooeyComponent offspringGooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
         offspringGooeyComponent.isCaptured = false;
-        entityBuilder.addComponent(offspringGooeyComponent);
+        entityBuilder1.addOrSaveComponent(offspringGooeyComponent);
 
         DisplayNameComponent offspringNameComponent = gooeyEntity.getComponent(DisplayNameComponent.class);
         offspringNameComponent.name = gooeyEntity.getComponent(DisplayNameComponent.class).name;
-        entityBuilder.saveComponent(offspringNameComponent);
+        entityBuilder1.saveComponent(offspringNameComponent);
 
-        EntityRef offspringGooey = entityBuilder.build();
+        EntityRef eggEntity = entityBuilder.build();
+        EntityRef offspringGooey = entityBuilder1.build();
         gooeyEntity.send(new AfterGooeyBreedingEvent(gooeyEntity, matingComponent.matingWithEntity, offspringGooey));
 
-        delayManager.addDelayedAction(offspringGooey, Constants.hatchEggEventID, random.nextLong(2000, 6000));
+        long timeToHatch = random.nextLong(2000, 6000);
+        delayManager.addDelayedAction(offspringGooey, Constants.hatchEggEventID, timeToHatch);
+        delayManager.addDelayedAction(eggEntity, Constants.hatchEggEventID, timeToHatch);
     }
 
     private void hatchGooeyEgg(EntityRef gooeyEntity) {
@@ -383,6 +395,11 @@ public class BreedingSystem extends BaseComponentSystem {
             During this event, the gooeyEntity attribute is the newly generated gooey offspring,
             This is where we "hatch" the egg to give the entity the necessary components.
          */
+        if (!gooeyEntity.hasComponent(GooeyComponent.class)) {
+            /* This means that the entity here is the egg prefab. */
+            gooeyEntity.destroy();
+            return;
+        }
         Prefab referenceGooeyPrefab = prefabManager.getPrefab("GooKeeper:blueGooey");
 
         LocationComponent locationComponent = gooeyEntity.getComponent(LocationComponent.class);
@@ -403,7 +420,6 @@ public class BreedingSystem extends BaseComponentSystem {
         TriggerComponent triggerComponent = referenceGooeyPrefab.getComponent(TriggerComponent.class);
         gooeyEntity.addComponent(triggerComponent);
 
-        gooeyEntity.removeComponent(MeshComponent.class);
         SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);
         skeletalMeshComponent.mesh = referenceGooeyPrefab.getComponent(SkeletalMeshComponent.class).mesh;
         gooeyEntity.saveComponent(skeletalMeshComponent);

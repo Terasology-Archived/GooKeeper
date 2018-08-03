@@ -12,14 +12,81 @@
       255
     ]
   },
-  "Mesh": {
-    "mesh" : "GooKeeper:ball",
-    "material" : "GooKeeper:slimePodMat"
+   "skeletalmesh": {
+     "mesh": "gooey",
+     "heightOffset": -2.0,
+     "material": "1b",
+     "animationPool": [
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyIdleBreathing",
+       "gooeyLookRightLeft",
+       "gooeyLookRightLeft",
+       "gooeyLookRightUp"
+     ],
+     "loop": true,
+     "scale": [
+       0.25,
+       0.25,
+       0.25
+     ]
    },
+     "Stand": {
+       "animationPool": [
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyIdleBreathing",
+         "gooeyLookRightLeft",
+         "gooeyLookRightLeft",
+         "gooeyLookRightUp"
+       ]
+     },
+     "Walk": {
+       "animationPool": [
+         "gooeyIdleBreathing"
+       ]
+     },
   "location": {},
   "Character": {},
   "AliveCharacter": {},
   "CharacterMovement": {
+    "faceMovementDirection": true,
     "groundFriction": 16,
     "speedMultiplier": 0.3,
     "distanceBetweenFootsteps": 0.2,
@@ -31,7 +98,6 @@
   "Network": {},
   "MinionMove": {},
   "Health": {},
-  "Follow": {
-  },
+  "Follow": {},
   "NPCMovement": {}
 }

@@ -1,0 +1,9 @@
+{
+  "alwaysRelevant": true,
+  "Mesh": {
+    "mesh" : "GooKeeper:ball",
+    "material" : "GooKeeper:slimePodMat"
+   },
+  "location": {},
+  "Network": {}
+}
