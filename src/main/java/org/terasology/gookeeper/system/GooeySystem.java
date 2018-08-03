@@ -55,6 +55,7 @@ import org.terasology.registry.In;
 import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
 import org.terasology.rendering.nui.NUIManager;
+import org.terasology.rendering.nui.widgets.UIButton;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
@@ -478,12 +479,14 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
         CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
 
-        if (followComponent.entityToFollow != EntityRef.NULL) {
+        if (followComponent.entityToFollow == event.getInstigator()) {
             followComponent.entityToFollow = EntityRef.NULL;
             characterMovementComponent.jumpSpeed = 0f;
+            nuiManager.getScreen("GooKeeper:gooeyActivateScreen").find("followButton", UIButton.class).setText("Lure");
+            nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
             return;
         }
-        
+
         CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
 
         if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem.hasComponent(DisplayNameComponent.class)) {
@@ -496,9 +499,10 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
                 gooeyEntity.saveComponent(characterMovementComponent);
                 gooeyEntity.saveComponent(followComponent);
+
+                nuiManager.getScreen("GooKeeper:gooeyActivateScreen").find("followButton", UIButton.class).setText("Set free");
             }
         }
-
         nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
     }
 }

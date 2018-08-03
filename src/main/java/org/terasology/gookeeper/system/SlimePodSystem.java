@@ -159,8 +159,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             releasedGooey.getComponent(SkeletalMeshComponent.class).mesh = slimePodComponent.capturedGooeyMesh;
 
             HungerComponent hungerComponent = releasedGooey.getComponent(HungerComponent.class);
-            FollowComponent followComponent = releasedGooey.getComponent(FollowComponent.class);
 
+            FollowComponent followComponent = releasedGooey.getComponent(FollowComponent.class);
             followComponent.entityToFollow = EntityRef.NULL;
 
             HealthComponent healthComponent = releasedGooey.getComponent(HealthComponent.class);

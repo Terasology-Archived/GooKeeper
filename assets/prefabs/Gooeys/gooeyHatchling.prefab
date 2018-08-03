@@ -31,13 +31,6 @@
   "Network": {},
   "MinionMove": {},
   "Health": {},
-  "BoxShape": {
-    "extents": [
-      1.0,
-      1.0,
-      1.0
-    ]
-  },
   "Trigger": {
     "detectGroups": [
       "engine:debris",

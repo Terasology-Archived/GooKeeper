@@ -57,6 +57,7 @@ import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.network.ColorComponent;
 import org.terasology.physics.components.RigidBodyComponent;
+import org.terasology.physics.components.shapes.BoxShapeComponent;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.assets.material.Material;
@@ -121,8 +122,8 @@ public class BreedingSystem extends BaseComponentSystem {
 
             if (followComponent.entityToFollow != EntityRef.NULL && breedingBlockComponent.parentGooey == EntityRef.NULL && gooeyComponent.isCaptured) {
                 breedingBlockComponent.parentGooey = entity;
-                entity.send(new SelectForBreedingEvent(followComponent.entityToFollow, entity));
                 blockEntity.saveComponent(breedingBlockComponent);
+                entity.send(new SelectForBreedingEvent(followComponent.entityToFollow, entity));
             }
         }
     }
@@ -149,45 +150,8 @@ public class BreedingSystem extends BaseComponentSystem {
         matingComponent.selectedForMating = !matingComponent.selectedForMating;
 
         if (matingComponent.selectedForMating) {
-            for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
-                //if (breedingBlock.getOwner().equals(event.getInstigator())) {
-                    BreedingBlockComponent breedingBlockComponent = breedingBlock.getComponent(BreedingBlockComponent.class);
-
-                    if (breedingBlockComponent.parentGooey != EntityRef.NULL && !breedingBlockComponent.parentGooey.equals(gooeyEntity)) {
-                        EntityRef matingWithGooey = breedingBlockComponent.parentGooey;
-                        MatingComponent matingComponent1;
-
-                        matingComponent.matingWithEntity = matingWithGooey;
-
-                        if (!matingWithGooey.hasComponent(MatingComponent.class)) {
-                            matingComponent1 = new MatingComponent();
-                        } else {
-                            matingComponent1 = matingWithGooey.getComponent(MatingComponent.class);
-                        }
-
-                        matingComponent1.selectedForMating = true;
-                        matingComponent1.matingWithEntity = gooeyEntity;
-
-                        matingWithGooey.addOrSaveComponent(matingComponent1);
-                        breedingBlockComponent.parentGooey = EntityRef.NULL;
-                        breedingBlock.saveComponent(breedingBlockComponent);
-                        break;
-                    }
-                //}
-            }
-
-            for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
-                BreedingBlockComponent breedingBlockComponent1 = breedingBlock.getComponent(BreedingBlockComponent.class);
-
-                if (breedingBlockComponent1.parentGooey.equals(gooeyEntity)) {
-                    breedingBlockComponent1.parentGooey = EntityRef.NULL;
-                    breedingBlock.saveComponent(breedingBlockComponent1);
-                    break;
-                }
-            }
+            setMatingAttributes(gooeyEntity, matingComponent);
         }
-
-        gooeyEntity.addOrSaveComponent(matingComponent);
 
         if (matingComponent.selectedForMating && matingComponent.matingWithEntity != EntityRef.NULL) {
             gooeyEntity.send(new BeginBreedingEvent(event.getInstigator(), gooeyEntity, matingComponent.matingWithEntity));
@@ -226,6 +190,10 @@ public class BreedingSystem extends BaseComponentSystem {
         skeletalMeshComponent.mesh = null;
         offspringEntity.addComponent(skeletalMeshComponent);
 
+        DisplayNameComponent displayNameComponent = offspringEntity.getComponent(DisplayNameComponent.class);
+        displayNameComponent.name = gooeyEntity.getComponent(DisplayNameComponent.class).name;
+        offspringEntity.saveComponent(displayNameComponent);
+
         MatingComponent matingComponent1 = matingComponent.matingWithEntity.getComponent(MatingComponent.class);
 
         matingComponent.selectedForMating = false;
@@ -254,64 +222,9 @@ public class BreedingSystem extends BaseComponentSystem {
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef gooeyEntity) {
         if (event.getActionId().equals(Constants.spawnGooeyEggEventID)) {
-            Prefab hatchlingPrefab = prefabManager.getPrefab("GooKeeper:gooeyHatchling");
-            EntityBuilder entityBuilder = entityManager.newBuilder(hatchlingPrefab);
-            LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
-            Vector3f parent1Location = gooeyEntity.getComponent(LocationComponent.class).getWorldPosition();
-            Vector3f parent2Location = gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class).getWorldPosition();
-
-            Vector3f middleLocation = new Vector3f((parent1Location.x + parent2Location.x)/2f, parent1Location.y + 1f, (parent2Location.z + parent2Location.z)/2f);
-            locationComponent.setWorldPosition(middleLocation);
-            locationComponent.setWorldScale(0.5f);
-
-            AggressiveComponent aggressiveComponent = new AggressiveComponent();
-            FriendlyComponent friendlyComponent = new FriendlyComponent();
-            NeutralComponent neutralComponent = new NeutralComponent();
-
-            MatingComponent matingComponent = gooeyEntity.getComponent(MatingComponent.class);
-
-            aggressiveComponent = getChildFactor(aggressiveComponent, gooeyEntity, matingComponent.matingWithEntity);
-            neutralComponent = getChildFactor(neutralComponent, gooeyEntity, matingComponent.matingWithEntity);
-            friendlyComponent = getChildFactor(friendlyComponent, gooeyEntity, matingComponent.matingWithEntity);
-
-            Component dominantComponent = getDominantComponent(aggressiveComponent, neutralComponent, friendlyComponent);
-
-            entityBuilder.addComponent(dominantComponent);
-            entityBuilder.addComponent(gooeyEntity.getComponent(WalkComponent.class));
-            entityBuilder.addComponent(gooeyEntity.getComponent(StandComponent.class));
-            entityBuilder.addComponent(gooeyEntity.getComponent(HungerComponent.class));
-
-            GooeyComponent offspringGooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
-            offspringGooeyComponent.isCaptured = false;
-            entityBuilder.addComponent(offspringGooeyComponent);
-
-            DisplayNameComponent offspringNameComponent = gooeyEntity.getComponent(DisplayNameComponent.class);
-            offspringNameComponent.name = gooeyEntity.getComponent(DisplayNameComponent.class).name;
-            entityBuilder.saveComponent(offspringNameComponent);
-
-            EntityRef offspringGooey = entityBuilder.build();
-            gooeyEntity.send(new AfterGooeyBreedingEvent(gooeyEntity, matingComponent.matingWithEntity, offspringGooey));
-
-            delayManager.addDelayedAction(offspringGooey, Constants.hatchEggEventID, random.nextLong(2000, 6000));
+            spawnGooeyEgg(gooeyEntity);
         } else if (event.getActionId().equals(Constants.hatchEggEventID)) {
-            /*
-                During this event, the gooeyEntity attribute is the newly generated gooey offspring,
-                This is where we "hatch" the egg to give the entity the necessary components.
-             */
-            BehaviorComponent behaviorComponent = new BehaviorComponent();
-            behaviorComponent.tree = Assets.get("GooKeeper:gooey", BehaviorTree.class).get();
-            gooeyEntity.addComponent(behaviorComponent);
-
-            FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
-            followComponent.entityToFollow = EntityRef.NULL;
-            gooeyEntity.saveComponent(followComponent);
-
-            gooeyEntity.removeComponent(MeshComponent.class);
-            SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);
-            skeletalMeshComponent.mesh = prefabManager.getPrefab("GooKeeper:blueGooey").getComponent(SkeletalMeshComponent.class).mesh;
-            gooeyEntity.saveComponent(skeletalMeshComponent);
-            LocationComponent locationComponent = gooeyEntity.getComponent(LocationComponent.class);
-            locationComponent.setWorldScale(1f);
+            hatchGooeyEgg(gooeyEntity);
         }
     }
 
@@ -377,5 +290,118 @@ public class BreedingSystem extends BaseComponentSystem {
         offspringMaterial = Assets.getMaterial(materialName).orElse(null);
 
         return offspringMaterial;
+    }
+
+    private void setMatingAttributes(EntityRef gooeyEntity, MatingComponent matingComponent) {
+        for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
+            //if (breedingBlock.getOwner().equals(event.getInstigator())) {
+            BreedingBlockComponent breedingBlockComponent = breedingBlock.getComponent(BreedingBlockComponent.class);
+
+            if (breedingBlockComponent.parentGooey != EntityRef.NULL && !breedingBlockComponent.parentGooey.equals(gooeyEntity)) {
+                EntityRef matingWithGooey = breedingBlockComponent.parentGooey;
+                MatingComponent matingComponent1;
+
+                matingComponent.matingWithEntity = matingWithGooey;
+
+                if (!matingWithGooey.hasComponent(MatingComponent.class)) {
+                    matingComponent1 = new MatingComponent();
+                } else {
+                    matingComponent1 = matingWithGooey.getComponent(MatingComponent.class);
+                }
+
+                matingComponent1.selectedForMating = true;
+                matingComponent1.matingWithEntity = gooeyEntity;
+
+                matingWithGooey.addOrSaveComponent(matingComponent1);
+                breedingBlockComponent.parentGooey = EntityRef.NULL;
+                breedingBlock.saveComponent(breedingBlockComponent);
+                break;
+            }
+            //}
+        }
+
+        if (matingComponent.matingWithEntity != EntityRef.NULL) {
+            for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
+                BreedingBlockComponent breedingBlockComponent1 = breedingBlock.getComponent(BreedingBlockComponent.class);
+
+                if (breedingBlockComponent1.parentGooey.equals(gooeyEntity)) {
+                    breedingBlockComponent1.parentGooey = EntityRef.NULL;
+                    breedingBlock.saveComponent(breedingBlockComponent1);
+                    break;
+                }
+            }
+        }
+
+        gooeyEntity.addOrSaveComponent(matingComponent);
+    }
+
+    private void spawnGooeyEgg(EntityRef gooeyEntity) {
+        Prefab hatchlingPrefab = prefabManager.getPrefab("GooKeeper:gooeyHatchling");
+        EntityBuilder entityBuilder = entityManager.newBuilder(hatchlingPrefab);
+        LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
+        Vector3f parent1Location = gooeyEntity.getComponent(LocationComponent.class).getWorldPosition();
+        Vector3f parent2Location = gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class).getWorldPosition();
+
+        Vector3f middleLocation = new Vector3f((parent1Location.x + parent2Location.x)/2f, parent1Location.y + 1f, (parent2Location.z + parent2Location.z)/2f);
+        locationComponent.setWorldPosition(middleLocation);
+        locationComponent.setWorldScale(0.5f);
+
+        AggressiveComponent aggressiveComponent = new AggressiveComponent();
+        FriendlyComponent friendlyComponent = new FriendlyComponent();
+        NeutralComponent neutralComponent = new NeutralComponent();
+
+        MatingComponent matingComponent = gooeyEntity.getComponent(MatingComponent.class);
+
+        aggressiveComponent = getChildFactor(aggressiveComponent, gooeyEntity, matingComponent.matingWithEntity);
+        neutralComponent = getChildFactor(neutralComponent, gooeyEntity, matingComponent.matingWithEntity);
+        friendlyComponent = getChildFactor(friendlyComponent, gooeyEntity, matingComponent.matingWithEntity);
+
+        Component dominantComponent = getDominantComponent(aggressiveComponent, neutralComponent, friendlyComponent);
+
+        entityBuilder.addComponent(dominantComponent);
+        entityBuilder.addComponent(gooeyEntity.getComponent(WalkComponent.class));
+        entityBuilder.addComponent(gooeyEntity.getComponent(StandComponent.class));
+        entityBuilder.addComponent(gooeyEntity.getComponent(HungerComponent.class));
+
+        GooeyComponent offspringGooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
+        offspringGooeyComponent.isCaptured = false;
+        entityBuilder.addComponent(offspringGooeyComponent);
+
+        DisplayNameComponent offspringNameComponent = gooeyEntity.getComponent(DisplayNameComponent.class);
+        offspringNameComponent.name = gooeyEntity.getComponent(DisplayNameComponent.class).name;
+        entityBuilder.saveComponent(offspringNameComponent);
+
+        EntityRef offspringGooey = entityBuilder.build();
+        gooeyEntity.send(new AfterGooeyBreedingEvent(gooeyEntity, matingComponent.matingWithEntity, offspringGooey));
+
+        delayManager.addDelayedAction(offspringGooey, Constants.hatchEggEventID, random.nextLong(2000, 6000));
+    }
+
+    private void hatchGooeyEgg(EntityRef gooeyEntity) {
+        /*
+            During this event, the gooeyEntity attribute is the newly generated gooey offspring,
+            This is where we "hatch" the egg to give the entity the necessary components.
+         */
+        Prefab referenceGooeyPrefab = prefabManager.getPrefab("GooKeeper:blueGooey");
+
+        LocationComponent locationComponent = gooeyEntity.getComponent(LocationComponent.class);
+        locationComponent.setWorldScale(1f);
+        gooeyEntity.saveComponent(locationComponent);
+
+        BehaviorComponent behaviorComponent = new BehaviorComponent();
+        behaviorComponent.tree = Assets.get("GooKeeper:gooey", BehaviorTree.class).get();
+        gooeyEntity.addComponent(behaviorComponent);
+
+        FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
+        followComponent.entityToFollow = EntityRef.NULL;
+        gooeyEntity.saveComponent(followComponent);
+
+        BoxShapeComponent boxShapeComponent = referenceGooeyPrefab.getComponent(BoxShapeComponent.class);
+        gooeyEntity.addOrSaveComponent(boxShapeComponent);
+
+        gooeyEntity.removeComponent(MeshComponent.class);
+        SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);
+        skeletalMeshComponent.mesh = referenceGooeyPrefab.getComponent(SkeletalMeshComponent.class).mesh;
+        gooeyEntity.saveComponent(skeletalMeshComponent);
     }
 }
