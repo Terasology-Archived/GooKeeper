@@ -441,8 +441,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         if (moveComp != null && blockEntity.hasComponent(PenBlockComponent.class) && gooeyComponent.isCaptured) {
             PenBlockComponent penBlockComponent = blockEntity.getComponent(PenBlockComponent.class);
             DisplayNameComponent displayNameComponent = entity.getComponent(DisplayNameComponent.class);
+            FollowComponent followComponent = entity.getComponent(FollowComponent.class);
 
-            if (penBlockComponent.type.equals(displayNameComponent.name)) {
+            if (penBlockComponent.type.equals(displayNameComponent.name) && followComponent.entityToFollow == EntityRef.NULL) {
                 moveComp.jumpSpeed = 0f;
 
                 // Pen number 0 signifies that it hasn't been set
@@ -482,7 +483,6 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         if (followComponent.entityToFollow == event.getInstigator()) {
             followComponent.entityToFollow = EntityRef.NULL;
             characterMovementComponent.jumpSpeed = 0f;
-            nuiManager.getScreen("GooKeeper:gooeyActivateScreen").find("followButton", UIButton.class).setText("Lure");
             nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");
             return;
         }
@@ -499,8 +499,6 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
                 gooeyEntity.saveComponent(characterMovementComponent);
                 gooeyEntity.saveComponent(followComponent);
-
-                nuiManager.getScreen("GooKeeper:gooeyActivateScreen").find("followButton", UIButton.class).setText("Set free");
             }
         }
         nuiManager.closeScreen("GooKeeper:gooeyActivateScreen");

@@ -57,6 +57,7 @@ import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.network.ColorComponent;
 import org.terasology.physics.components.RigidBodyComponent;
+import org.terasology.physics.components.TriggerComponent;
 import org.terasology.physics.components.shapes.BoxShapeComponent;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
@@ -397,7 +398,10 @@ public class BreedingSystem extends BaseComponentSystem {
         gooeyEntity.saveComponent(followComponent);
 
         BoxShapeComponent boxShapeComponent = referenceGooeyPrefab.getComponent(BoxShapeComponent.class);
-        gooeyEntity.addOrSaveComponent(boxShapeComponent);
+        gooeyEntity.addComponent(boxShapeComponent);
+
+        TriggerComponent triggerComponent = referenceGooeyPrefab.getComponent(TriggerComponent.class);
+        gooeyEntity.addComponent(triggerComponent);
 
         gooeyEntity.removeComponent(MeshComponent.class);
         SkeletalMeshComponent skeletalMeshComponent = gooeyEntity.getComponent(SkeletalMeshComponent.class);

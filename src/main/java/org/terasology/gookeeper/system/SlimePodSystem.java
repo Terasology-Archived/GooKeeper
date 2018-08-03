@@ -148,6 +148,10 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         if (slimePodComponent.capturedEntity != EntityRef.NULL) {
             EntityRef releasedGooey = slimePodComponent.capturedEntity;
 
+            FollowComponent followComponent = releasedGooey.getComponent(FollowComponent.class);
+            followComponent.entityToFollow = EntityRef.NULL;
+            releasedGooey.saveComponent(followComponent);
+
             LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
             locationComponent.setWorldPosition(blockPos);
             releasedGooey.saveComponent(locationComponent);
@@ -160,14 +164,10 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
             HungerComponent hungerComponent = releasedGooey.getComponent(HungerComponent.class);
 
-            FollowComponent followComponent = releasedGooey.getComponent(FollowComponent.class);
-            followComponent.entityToFollow = EntityRef.NULL;
-
             HealthComponent healthComponent = releasedGooey.getComponent(HealthComponent.class);
             GooeyComponent gooeyComponent = releasedGooey.getComponent(GooeyComponent.class);
             healthComponent.currentHealth = healthComponent.maxHealth;
             releasedGooey.saveComponent(healthComponent);
-            releasedGooey.saveComponent(followComponent);
 
             /* This adds the health degradation to the newly captured gooey entities */
             delayManager.addPeriodicAction(releasedGooey, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
