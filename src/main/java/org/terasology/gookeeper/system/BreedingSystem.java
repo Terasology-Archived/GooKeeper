@@ -386,8 +386,9 @@ public class BreedingSystem extends BaseComponentSystem {
         gooeyEntity.send(new AfterGooeyBreedingEvent(gooeyEntity, matingComponent.matingWithEntity, offspringGooey));
 
         long timeToHatch = random.nextLong(2000, 6000);
-        delayManager.addDelayedAction(offspringGooey, Constants.hatchEggEventID, timeToHatch);
+
         delayManager.addDelayedAction(eggEntity, Constants.hatchEggEventID, timeToHatch);
+        delayManager.addDelayedAction(offspringGooey, Constants.hatchEggEventID, timeToHatch);
     }
 
     private void hatchGooeyEgg(EntityRef gooeyEntity) {

@@ -86,7 +86,6 @@
   "Character": {},
   "AliveCharacter": {},
   "CharacterMovement": {
-    "faceMovementDirection": true,
     "groundFriction": 16,
     "speedMultiplier": 0.3,
     "distanceBetweenFootsteps": 0.2,
