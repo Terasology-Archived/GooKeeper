@@ -17,19 +17,15 @@ package org.terasology.gookeeper.event;
 
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.Event;
-import org.terasology.gookeeper.component.SlimePodComponent;
-import org.terasology.world.block.Block;
 
-public class AfterGooeyFedEvent implements Event {
+public class SelectForBreedingEvent implements Event {
 
     private EntityRef instigator;
     private EntityRef gooey;
-    private EntityRef item;
 
-    public AfterGooeyFedEvent(EntityRef instigator, EntityRef gooey, EntityRef item) {
+    public SelectForBreedingEvent(EntityRef instigator, EntityRef gooey) {
         this.instigator = instigator;
         this.gooey = gooey;
-        this.item = item;
     }
 
     public EntityRef getGooey() {
@@ -38,9 +34,5 @@ public class AfterGooeyFedEvent implements Event {
 
     public EntityRef getInstigator() {
         return instigator;
-    }
-
-    public EntityRef getItem() {
-        return item;
     }
 }

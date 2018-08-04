@@ -9,7 +9,8 @@
         {"id": "Behaviors", "minVersion": "0.2.0"},
         {"id": "Fences", "minVersion": "0.1.0"},
         {"id": "StructureTemplates", "minVersion": "0.3.0"},
-        {"id" : "WorldlyTooltip", "minVersion" : "1.1.1"}
+        {"id" : "WorldlyTooltip", "minVersion" : "1.1.1"},
+        {"id": "Valentines", "minVersion": "0.1.0"}
     ],
     "serverSideOnly" : false,
     "isGameplay" : "true",

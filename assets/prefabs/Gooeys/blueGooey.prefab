@@ -6,16 +6,16 @@
   "persisted": true,
   "Color": {
     "color": [
-      135,
+      0,
+      0,
       128,
-      191,
       255
     ]
   },
   "skeletalmesh": {
     "mesh": "gooey",
     "heightOffset": -2.0,
-    "material": "blueGooeySkin",
+    "material": "1b",
     "animationPool": [
       "gooeyIdleBreathing",
       "gooeyIdleBreathing",
@@ -126,7 +126,9 @@
     "SPAWN_CHANCE": 85,
     "MAX_GROUP_SIZE": 6
   },
-  "Neutral": {},
+  "Neutral": {
+    "magnitude": 50
+  },
   "Hunger": {
     "food": ["Grass", "Dirt"]
   }

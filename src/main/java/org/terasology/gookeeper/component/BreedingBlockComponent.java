@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 MovingBlocks
+ * Copyright 2017 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 package org.terasology.gookeeper.component;
 
 import org.terasology.entitySystem.Component;
-import org.terasology.world.block.ForceBlockActive;
+import org.terasology.entitySystem.entity.EntityRef;
 
-public class AggressiveComponent extends FactorComponent {
+public class BreedingBlockComponent implements Component {
+    /**
+     * The gooey entity which is to be involved in mating
+     */
+    public EntityRef parentGooey = EntityRef.NULL;
 }

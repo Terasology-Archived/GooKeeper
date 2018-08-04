@@ -1,7 +1,7 @@
 {
     "shader" : "engine:genericMeshMaterial",
     "params" : {
-        "diffuse" : "yellowGooey",
+        "diffuse" : "2r1y",
         "colorOffset" : [1.0, 1.0, 1.0],
         "textured" : true
     }

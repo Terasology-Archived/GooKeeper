@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 MovingBlocks
+ * Copyright 2017 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,24 @@ package org.terasology.gookeeper.event;
 
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.Event;
-import org.terasology.gookeeper.component.SlimePodComponent;
-import org.terasology.world.block.Block;
 
-public class AfterGooeyFedEvent implements Event {
+public class AfterGooeyBreedingEvent implements Event {
 
-    private EntityRef instigator;
     private EntityRef gooey;
-    private EntityRef item;
+    private EntityRef matingWithEntity;
+    private EntityRef offspringGooey;
 
-    public AfterGooeyFedEvent(EntityRef instigator, EntityRef gooey, EntityRef item) {
-        this.instigator = instigator;
+    public AfterGooeyBreedingEvent(EntityRef gooey, EntityRef matingWithEntity, EntityRef offspringGooey) {
         this.gooey = gooey;
-        this.item = item;
+        this.matingWithEntity = matingWithEntity;
+        this.offspringGooey = offspringGooey;
     }
 
     public EntityRef getGooey() {
         return gooey;
     }
 
-    public EntityRef getInstigator() {
-        return instigator;
-    }
+    public EntityRef getMatingWithEntity() { return matingWithEntity; }
 
-    public EntityRef getItem() {
-        return item;
-    }
+    public EntityRef getOffspringGooey() { return offspringGooey; }
 }

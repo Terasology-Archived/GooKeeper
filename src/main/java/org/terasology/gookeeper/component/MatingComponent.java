@@ -20,4 +20,5 @@ import org.terasology.entitySystem.entity.EntityRef;
 
 public class MatingComponent implements Component {
     public EntityRef matingWithEntity = EntityRef.NULL;
+    public boolean selectedForMating = false;
 }

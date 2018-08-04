@@ -12,6 +12,17 @@
         }
       },
       {
+        guard: {
+          componentPresent: "GooKeeper:Mating",
+          values: ["V selectedForMating == true"],
+          child: {
+            sequence: [
+              BeginBreeding
+            ]
+          }
+        }
+      },
+      {
         sequence: [
         {
           guard: {
@@ -74,6 +85,21 @@
           }
         }
         ]
+      },
+      {
+        guard: {
+          componentPresent: "Behaviors:Follow",
+          values: ["N entityToFollow exists"],
+          child: {
+            sequence: [
+              {
+                lookup: {
+                  tree: "GooKeeper:follow"
+                }
+              }
+            ]
+          }
+        }
       },
       {
         lookup: {

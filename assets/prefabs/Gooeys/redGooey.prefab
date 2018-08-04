@@ -6,16 +6,16 @@
   "persisted": true,
   "Color": {
     "color": [
-      191,
-      65,
-      65,
+      128,
+      0,
+      0,
       255
     ]
   },
   "skeletalmesh": {
     "mesh": "gooey",
     "heightOffset": -2.0,
-    "material": "redGooeySkin",
+    "material": "1r",
     "animationPool": [
       "gooeyIdleBreathing",
       "gooeyIdleBreathing",
@@ -130,7 +130,7 @@
     "MAX_GROUP_SIZE": 1
   },
   "Aggressive": {
-    "aggressivenessFactor": 85
+    "magnitude": 85
   },
   "Hunger": {
     "food": ["Lava"]

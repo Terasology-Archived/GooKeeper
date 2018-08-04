@@ -18,6 +18,7 @@ package org.terasology.gookeeper.system;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.management.AssetManager;
+import org.terasology.behaviors.components.FollowComponent;
 import org.terasology.engine.Time;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -132,7 +133,6 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      */
     @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
-        BehaviorTree capturedBT = assetManager.getAsset("GooKeeper:capturedGooey", BehaviorTree.class).get();
         EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(event.getTargetLocation(), RoundingMode.HALF_UP));
 
         BlockComponent blockComponent = blockEntity.getComponent(BlockComponent.class);
@@ -148,6 +148,10 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
         if (slimePodComponent.capturedEntity != EntityRef.NULL) {
             EntityRef releasedGooey = slimePodComponent.capturedEntity;
 
+            FollowComponent followComponent = releasedGooey.getComponent(FollowComponent.class);
+            followComponent.entityToFollow = EntityRef.NULL;
+            releasedGooey.saveComponent(followComponent);
+
             LocationComponent locationComponent = releasedGooey.getComponent(LocationComponent.class);
             locationComponent.setWorldPosition(blockPos);
             releasedGooey.saveComponent(locationComponent);
@@ -157,10 +161,6 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             }
 
             releasedGooey.getComponent(SkeletalMeshComponent.class).mesh = slimePodComponent.capturedGooeyMesh;
-
-            BehaviorComponent behaviorComponent = releasedGooey.getComponent(BehaviorComponent.class);
-            behaviorComponent.tree = capturedBT;
-            releasedGooey.saveComponent(behaviorComponent);
 
             HungerComponent hungerComponent = releasedGooey.getComponent(HungerComponent.class);
 

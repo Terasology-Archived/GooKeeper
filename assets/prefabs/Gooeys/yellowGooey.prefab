@@ -6,16 +6,16 @@
   "persisted": true,
   "Color": {
     "color": [
-      191,
-      65,
-      65,
+      0,
+      128,
+      0,
       255
     ]
   },
   "skeletalmesh": {
     "mesh": "gooey",
     "heightOffset": -2.0,
-    "material": "yellowGooeySkin",
+    "material": "1y",
     "animationPool": [
       "gooeyIdleBreathing",
       "gooeyIdleBreathing",
@@ -129,7 +129,7 @@
     "MAX_GROUP_SIZE": 4
   },
   "Friendly": {
-     "friendlinessFactor": 85
+     "magnitude": 85
   },
   "Hunger": {
     "food": ["TallGrass1", "RedFlower", "Dandelion"]
