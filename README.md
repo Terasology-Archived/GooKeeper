@@ -1,7 +1,7 @@
 # GooKeeper
 
 ## What is the module about?
-GooKeeper is a new gameplay module, designed by SuperSnark, which is closely related to the game "Slime Rancher". Here, the player is left in the GooWorld, and he has to earn a living by catching different gooeys, and building a GooZoo! He can also make the gooeys mate with one another to produce new and interesting gooeys and nurture all of them. Attract more customers, earn more profit and then spend it on upgrading the equipment/zoo.
+GooKeeper is a gameplay module which is closely related to the game "Slime Rancher". Here, the player is left in the Goo World, and has to earn a living by catching, feeding, and breeding gooeys of different kinds to make a "Goo Zoo" which simulated visitors can visit. This module first started as a game design concept by SuperSnark, which was later taken up by l0ftyWhizZ as a Google Summer of Code 2018 project.
 
 ## Playthroughs!
 Here's a video demonstrating gooey capturing mechanic as well as the zoo visitor spawn system:
