@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.terasology.behaviors.components.AttackOnHitComponent;
 import org.terasology.behaviors.components.FindNearbyPlayersComponent;
 import org.terasology.behaviors.components.FollowComponent;
+import org.terasology.biomesAPI.Biome;
+import org.terasology.biomesAPI.BiomeRegistry;
 import org.terasology.core.world.CoreBiome;
 import org.terasology.entitySystem.entity.EntityBuilder;
 import org.terasology.entitySystem.prefab.PrefabManager;
@@ -60,7 +62,6 @@ import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
-import org.terasology.world.biomes.Biome;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
@@ -99,6 +100,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     @In
     private NUIManager nuiManager;
+
+    @In
+    private BiomeRegistry biomeRegistry;
 
     private Random random = new FastRandom();
     private List<Prefab> gooeyPrefabs = new ArrayList();
@@ -295,12 +299,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         if (!blockAbove.equals(airBlock)) {
             return false;
         }
-        for (int i = 0; i < gooeyComponent.biome.size(); i++) {
-            if (worldProvider.getBiome(pos).equals(getBiomeFromString(gooeyComponent.biome.get(i))))
-                return true;
-        }
-
-        return false;
+        return biomeRegistry.getBiome(pos).map(biome ->
+            gooeyComponent.biome.stream().anyMatch(s -> biome.equals(getBiomeFromString(s)))
+        ).orElse(false);
     }
 
     /**
