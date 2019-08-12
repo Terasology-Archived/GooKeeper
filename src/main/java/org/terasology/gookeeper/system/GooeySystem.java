@@ -52,12 +52,11 @@ import org.terasology.math.ChunkMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.logic.health.OnDamagedEvent;
+import org.terasology.logic.health.event.OnDamagedEvent;
 import org.terasology.registry.In;
 import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
 import org.terasology.rendering.nui.NUIManager;
-import org.terasology.rendering.nui.widgets.UIButton;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
@@ -110,9 +109,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     private Block airBlock;
 
-    private static final int numOfEntitiesAllowed = 10;
+    private static final int NUM_OF_ENTITIES_ALLOWED = 10;
     private static int currentNumOfEntities = 0;
-    private static final float maxDistanceFromPlayer = 60f;
+    private static final float MAX_DISTANCE_FROM_PLAYER = 60f;
 
     private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
 
@@ -140,7 +139,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
             if (locationComponent != null) {
                 float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
-                if (distanceFromPlayer > maxDistanceFromPlayer && !gooeyComponent.isCaptured) {
+                if (distanceFromPlayer > MAX_DISTANCE_FROM_PLAYER && !gooeyComponent.isCaptured) {
                     entity.destroy();
                     currentNumOfEntities--;
                 }
@@ -227,10 +226,10 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             int randomIndex = random.nextInt(foundPositions.size());
             Vector3i randomSpawnPosition = foundPositions.remove(randomIndex);
             currentNumOfEntities ++;
-            if (currentNumOfEntities <= numOfEntitiesAllowed) {
+            if (currentNumOfEntities <= NUM_OF_ENTITIES_ALLOWED) {
                 spawnGooey(gooey, randomSpawnPosition);
             } else {
-                currentNumOfEntities = numOfEntitiesAllowed;
+                currentNumOfEntities = NUM_OF_ENTITIES_ALLOWED;
             }
         }
     }
@@ -265,7 +264,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         Quat4f rotation = new Quat4f(yAxis, randomAngle);
 
         float distanceFromPlayer = Vector3f.distance(new Vector3f((float)location.x, (float)location.y, (float)location.z), localPlayer.getPosition());
-        if (distanceFromPlayer < maxDistanceFromPlayer) {
+        if (distanceFromPlayer < MAX_DISTANCE_FROM_PLAYER) {
             if (gooey.exists() && gooey.getComponent(LocationComponent.class) != null) {
                 EntityBuilder entityBuilder = entityManager.newBuilder(gooey);
                 LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
