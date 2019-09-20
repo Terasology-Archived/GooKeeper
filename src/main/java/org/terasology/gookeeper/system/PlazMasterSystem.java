@@ -36,7 +36,6 @@ import org.terasology.gookeeper.component.PlazMasterShotComponent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.gookeeper.input.DecreaseFrequencyButton;
 import org.terasology.gookeeper.input.IncreaseFrequencyButton;
-import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.common.ActivateEvent;
 import org.terasology.logic.delay.DelayManager;
@@ -142,7 +141,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
             Block currentBlock = worldProvider.getBlock(blockPos);
 
             if (currentBlock.isDestructible()) {
-                EntityBuilder builder = entityManager.newBuilder("Core:defaultBlockParticles");
+                EntityBuilder builder = entityManager.newBuilder("CoreAssets:defaultBlockParticles");
                 builder.getComponent(LocationComponent.class).setWorldPosition(target);
                 builder.build();
             }
