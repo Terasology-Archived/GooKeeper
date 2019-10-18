@@ -1,15 +1,17 @@
 {
     "id" : "GooKeeper",
-    "version" : "0.1.0-SNAPSHOT",
+    "version" : "0.1.1-SNAPSHOT",
     "author" : "l0ftyWhizZ",
     "displayName" : "GooKeeper",
     "description" : "GooKeeper is a new gameplay mode based on the popular game Slime Rancher, developed according to the game design by SuperSnark.",
     "dependencies" : [
         {"id": "Core", "minVersion": "2.0.0"},
+        {"id": "CoreAssets", "minVersion": "1.0.0"},
+        {"id": "CoreBlocks", "minVersion": "1.0.0"},
         {"id": "Behaviors", "minVersion": "0.2.0"},
         {"id": "Fences", "minVersion": "0.1.0"},
         {"id": "StructureTemplates", "minVersion": "0.3.0"},
-        {"id" : "WorldlyTooltip", "minVersion" : "1.1.1"},
+        {"id": "WorldlyTooltip", "minVersion" : "1.1.1"},
         {"id": "Valentines", "minVersion": "0.1.0"}
     ],
     "serverSideOnly" : false,
