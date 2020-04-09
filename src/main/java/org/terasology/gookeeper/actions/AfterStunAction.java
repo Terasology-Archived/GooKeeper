@@ -16,13 +16,12 @@
 package org.terasology.gookeeper.actions;
 
 import org.terasology.behaviors.components.AttackOnHitComponent;
-import org.terasology.behaviors.components.FleeComponent;
+import org.terasology.behaviors.components.FleeingComponent;
 import org.terasology.behaviors.components.FleeOnHitComponent;
 import org.terasology.behaviors.components.FollowComponent;
 import org.terasology.engine.Time;
 import org.terasology.gookeeper.component.AggressiveComponent;
 import org.terasology.gookeeper.component.FriendlyComponent;
-import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.NeutralComponent;
 import org.terasology.logic.behavior.BehaviorAction;
 import org.terasology.logic.behavior.core.Actor;
@@ -74,7 +73,7 @@ public class AfterStunAction extends BaseAction {
             actor.save(followComponent);
         } else if (actor.hasComponent(FriendlyComponent.class)) {
             FleeOnHitComponent fleeOnHitComponent = actor.getComponent(FleeOnHitComponent.class);
-            FleeComponent fleeComponent = actor.getComponent(FleeComponent.class);
+            FleeingComponent fleeComponent = actor.getComponent(FleeingComponent.class);
             fleeComponent.instigator = localPlayer.getCharacterEntity();
             fleeComponent.minDistance = actor.getComponent(FleeOnHitComponent.class).minDistance;
             actor.save(fleeComponent);

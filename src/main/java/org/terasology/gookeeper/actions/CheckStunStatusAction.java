@@ -15,30 +15,17 @@
  */
 package org.terasology.gookeeper.actions;
 
-import org.terasology.behaviors.components.AttackOnHitComponent;
-import org.terasology.behaviors.components.FleeComponent;
-import org.terasology.behaviors.components.FleeOnHitComponent;
-import org.terasology.behaviors.components.FollowComponent;
 import org.terasology.engine.Time;
-import org.terasology.gookeeper.component.AggressiveComponent;
-import org.terasology.gookeeper.component.FriendlyComponent;
 import org.terasology.gookeeper.component.GooeyComponent;
-import org.terasology.gookeeper.component.NeutralComponent;
 import org.terasology.logic.behavior.BehaviorAction;
 import org.terasology.logic.behavior.core.Actor;
 import org.terasology.logic.behavior.core.BaseAction;
 import org.terasology.logic.behavior.core.BehaviorState;
 import org.terasology.logic.characters.CharacterMovementComponent;
-import org.terasology.logic.location.LocationComponent;
-import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.geom.Vector3f;
 import org.terasology.registry.In;
-import org.terasology.rendering.nui.properties.Range;
-
 
 @BehaviorAction(name = "CheckStunStatus")
 public class CheckStunStatusAction extends BaseAction {
-
     @In
     private Time time;
 
