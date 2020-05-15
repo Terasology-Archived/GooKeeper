@@ -1,19 +1,19 @@
 {
-    "id" : "GooKeeper",
-    "version" : "0.2.0",
-    "author" : "l0ftyWhizZ",
-    "displayName" : "GooKeeper",
-    "description" : "GooKeeper is a new gameplay mode based on the popular game Slime Rancher, developed according to the game design by SuperSnark.",
-    "dependencies" : [
-        {"id": "CoreAssets", "minVersion": "1.0.0"},
-        {"id": "CoreBlocks", "minVersion": "1.0.0"},
-        {"id": "Behaviors", "minVersion": "0.2.0"},
-        {"id": "Fences", "minVersion": "0.1.0"},
-        {"id": "StructureTemplates", "minVersion": "0.3.0"},
-        {"id": "WorldlyTooltip", "minVersion" : "1.1.1"},
-        {"id": "Valentines", "minVersion": "0.1.0"}
+    "id": "GooKeeper",
+    "version": "1.0.0",
+    "author": "l0ftyWhizZ",
+    "displayName": "GooKeeper",
+    "description": "GooKeeper is a new gameplay mode based on the popular game Slime Rancher, developed according to the game design by SuperSnark.",
+    "dependencies": [
+        { "id": "CoreAssets", "minVersion": "2.0.1" },
+        { "id": "CoreWorlds", "minVersion": "1.0.0" },
+        { "id": "Behaviors", "minVersion": "0.2.0" },
+        { "id": "Fences", "minVersion": "0.1.0" },
+        { "id": "StructureTemplates", "minVersion": "0.3.0" },
+        { "id": "Valentines", "minVersion": "0.1.0" },
+        { "id": "WorldlyTooltip", "minVersion": "1.1.1" }
     ],
-    "serverSideOnly" : false,
-    "isGameplay" : "true",
-    "defaultWorldGenerator" : "Core:Flat"
+    "serverSideOnly": false,
+    "isGameplay": "true",
+    "defaultWorldGenerator": "CoreWorlds:Flat"
 }
