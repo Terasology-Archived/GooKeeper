@@ -122,7 +122,7 @@
   "Gooey": {
     "profitPayOff": 1,
     "biome": ["FOREST", "PLAINS", "MOUNTAINS"],
-    "blockBelow": "CoreBlocks:Grass",
+    "blockBelow": "CoreAssets:Grass",
     "SPAWN_CHANCE": 85,
     "MAX_GROUP_SIZE": 6
   },

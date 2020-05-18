@@ -125,7 +125,7 @@
   "Gooey": {
     "profitPayOff": 5,
     "biome": ["DESERT"],
-    "blockBelow": "CoreBlocks:Sand",
+    "blockBelow": "CoreAssets:Sand",
     "SPAWN_CHANCE": 5,
     "MAX_GROUP_SIZE": 1
   },
