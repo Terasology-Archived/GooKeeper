@@ -15,16 +15,16 @@
  */
 package org.terasology.gookeeper.input;
 
-import org.lwjgl.input.Keyboard;
 import org.terasology.input.BindButtonEvent;
 import org.terasology.input.DefaultBinding;
 import org.terasology.input.InputType;
+import org.terasology.input.Keyboard;
 import org.terasology.input.RegisterBindButton;
 
 /**
  *
  */
 @RegisterBindButton(id = "freq_increase", description = "Increase PlazMaster's frequency")
-@DefaultBinding(type = InputType.KEY, id = Keyboard.KEY_SEMICOLON)
+@DefaultBinding(type = InputType.KEY, id = Keyboard.KeyId.SEMICOLON)
 public class IncreaseFrequencyButton extends BindButtonEvent {
 }
