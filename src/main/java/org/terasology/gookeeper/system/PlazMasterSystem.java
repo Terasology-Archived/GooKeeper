@@ -44,6 +44,7 @@ import org.terasology.logic.health.event.DoDamageEvent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.math.JomlUtil;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
@@ -182,7 +183,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
 
             GazeMountPointComponent gaze = localPlayer.getCharacterEntity().getComponent(GazeMountPointComponent.class);
             if (gaze != null) {
-                locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(0.3f)));
+                locationComponent.setWorldPosition(localPlayer.getPosition().add(JomlUtil.from(gaze.translate)).add(finalDir.scale(0.3f)));
             }
 
             entityBuilder.setPersistent(false);

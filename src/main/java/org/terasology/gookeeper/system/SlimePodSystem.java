@@ -44,6 +44,7 @@ import org.terasology.logic.inventory.PickupComponent;
 import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
+import org.terasology.math.JomlUtil;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
@@ -207,7 +208,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
             GazeMountPointComponent gaze = localPlayer.getCharacterEntity().getComponent(GazeMountPointComponent.class);
             if (gaze != null) {
-                locationComponent.setWorldPosition(localPlayer.getPosition().add(gaze.translate).add(finalDir.scale(2f)));
+                locationComponent.setWorldPosition(localPlayer.getPosition().add(JomlUtil.from(gaze.translate)).add(finalDir.scale(2f)));
             }
 
             entityBuilder.setPersistent(false);
