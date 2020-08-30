@@ -29,11 +29,11 @@ import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.gookeeper.Constants;
-import org.terasology.gookeeper.component.*;
+import org.terasology.gookeeper.component.GooeyComponent;
+import org.terasology.gookeeper.component.HungerComponent;
+import org.terasology.gookeeper.component.SlimePodComponent;
+import org.terasology.gookeeper.component.SlimePodItemComponent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
-import org.terasology.logic.behavior.BehaviorComponent;
-import org.terasology.logic.behavior.asset.BehaviorTree;
-import org.terasology.logic.characters.CharacterHeldItemComponent;
 import org.terasology.logic.characters.GazeMountPointComponent;
 import org.terasology.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.logic.common.ActivateEvent;
@@ -67,6 +67,7 @@ import java.math.RoundingMode;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+    private static final Logger logger = LoggerFactory.getLogger(SlimePodSystem.class);
 
     @In
     private WorldProvider worldProvider;
@@ -95,7 +96,6 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     @In
     private Time time;
 
-    private static final Logger logger = LoggerFactory.getLogger(SlimePodSystem.class);
     private Random random = new FastRandom();
 
     @Override
@@ -130,11 +130,12 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     /**
      * Receives ActivateEvent when the held slime pod launcher item is activated, shooting out a slime pod.
      *
-     * @param event,entity   The ActivateEvent, the instigator entity
+     * @param event,entity The ActivateEvent, the instigator entity
      */
     @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
-        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(event.getTargetLocation(), RoundingMode.HALF_UP));
+        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(event.getTargetLocation(),
+            RoundingMode.HALF_UP));
 
         BlockComponent blockComponent = blockEntity.getComponent(BlockComponent.class);
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
@@ -171,7 +172,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             releasedGooey.saveComponent(healthComponent);
 
             /* This adds the health degradation to the newly captured gooey entities */
-            delayManager.addPeriodicAction(releasedGooey, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+            delayManager.addPeriodicAction(releasedGooey, Constants.healthDecreaseEventID,
+                hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
             /* Gives a life time to the entity */
             delayManager.addDelayedAction(entity, Constants.gooeyDeathEventID, gooeyComponent.lifeTime);
 
@@ -182,7 +184,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     /**
      * Receives ActivateEvent when the held/targeted slime pod item is activated, releasing the captured gooey.
      *
-     * @param event,entity   The ActivateEvent, the instigator entity
+     * @param event,entity The ActivateEvent, the instigator entity
      */
     @ReceiveEvent(components = {SlimePodItemComponent.class})
     public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
@@ -199,7 +201,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             if (entityBuilder.hasComponent(MeshComponent.class)) {
                 MeshComponent mesh = entityBuilder.getComponent(MeshComponent.class);
                 BoxShapeComponent box = new BoxShapeComponent();
-                box.extents = mesh.mesh.getAABB().getExtents().scale(2.0f);
+                box.extents = JomlUtil.from(mesh.mesh.getAABB().getExtents().scale(2.0f));
                 entityBuilder.addOrSaveComponent(box);
             }
             locationComponent.setWorldScale(0.3f);
@@ -218,9 +220,10 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             Vector3f direction = localPlayer.getViewDirection();
 
             Vector3f maxAllowedDistanceInDirection = direction.mul(1.5f);
-            HitResult hitResult = physics.rayTrace(position, direction, 1.5f, StandardCollisionGroup.CHARACTER, StandardCollisionGroup.WORLD);
+            HitResult hitResult = physics.rayTrace(JomlUtil.from(position), JomlUtil.from(direction), 1.5f,
+                StandardCollisionGroup.CHARACTER, StandardCollisionGroup.WORLD);
             if (hitResult.isHit()) {
-                Vector3f possibleNewPosition = hitResult.getHitPoint();
+                Vector3f possibleNewPosition = JomlUtil.from(hitResult.getHitPoint());
                 maxAllowedDistanceInDirection = possibleNewPosition.sub(position);
             }
 
@@ -230,23 +233,23 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             slimePodEntity.send(new DropItemEvent(newPosition));
             slimePodEntity.send(new ImpulseEvent(dir.mul(125f)));
 
-            slimePodItemComponent.slimePods --;
+            slimePodItemComponent.slimePods--;
         }
     }
 
     /**
-     * This method is not appropriate for the poke-ball'ish slime pods, instead a different bear-trap
-     * type of slime pod can be introduced.
-     *
+     * This method is not appropriate for the poke-ball'ish slime pods, instead a different bear-trap type of slime pod
+     * can be introduced.
+     * <p>
      * Receives OnEnterBlockEvent when a gooey entity steps over a slime pod.
      *
-     * @param event,entity   The OnEnterBlockEvent, the gooey entity
+     * @param event,entity The OnEnterBlockEvent, the gooey entity
      */
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
         LocationComponent loc = entity.getComponent(LocationComponent.class);
         Vector3f pos = loc.getWorldPosition();
-        pos.setY(pos.getY() -1);
+        pos.setY(pos.getY() - 1);
 
         EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(pos, RoundingMode.HALF_UP));
 
@@ -261,12 +264,12 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     }
 
     /**
-     * This method is computes the probability of capturing a gooey entity within a slime pod, based on its type
-     * and distance from the slime pod.
+     * This method is computes the probability of capturing a gooey entity within a slime pod, based on its type and
+     * distance from the slime pod.
      *
-     * @param slimePodEntity,gooeyEntity   slime pod item entity, the gooey entity
+     * @param slimePodEntity,gooeyEntity slime pod item entity, the gooey entity
      */
-    private float tryToCapture (EntityRef slimePodEntity, EntityRef gooeyEntity) {
+    private float tryToCapture(EntityRef slimePodEntity, EntityRef gooeyEntity) {
         SlimePodComponent slimePodComponent = slimePodEntity.getComponent(SlimePodComponent.class);
         GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
         LocationComponent slimePodLocation = slimePodEntity.getComponent(LocationComponent.class);
@@ -276,21 +279,24 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             return 0f;
         }
 
-        float distanceFromGooey = Vector3f.distance(slimePodLocation.getWorldPosition(), gooeyLocation.getWorldPosition());
+        float distanceFromGooey = Vector3f.distance(slimePodLocation.getWorldPosition(),
+            gooeyLocation.getWorldPosition());
         if (distanceFromGooey > slimePodComponent.maxDistance) {
             return 0f;
         }
 
-        float captureProbability = TeraMath.fastAbs(distanceFromGooey - slimePodComponent.maxDistance) * gooeyComponent.captureProbabiltyFactor;
+        float captureProbability =
+            TeraMath.fastAbs(distanceFromGooey - slimePodComponent.maxDistance) * gooeyComponent.captureProbabiltyFactor;
         return captureProbability;
     }
 
     /**
-     * Sends a `OnCapturedEvent` to the gooey entity, and sets the `SlimePodComponent` capturedEntity to the corresponding gooey entity.
+     * Sends a `OnCapturedEvent` to the gooey entity, and sets the `SlimePodComponent` capturedEntity to the
+     * corresponding gooey entity.
      *
-     * @param slimePodComponent,gooeyEntity   slime pod component, the gooey entity
+     * @param slimePodComponent,gooeyEntity slime pod component, the gooey entity
      */
-    private void captureGooey (SlimePodComponent slimePodComponent, EntityRef gooeyEntity) {
+    private void captureGooey(SlimePodComponent slimePodComponent, EntityRef gooeyEntity) {
         GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
 
         if (slimePodComponent != null) {
@@ -301,19 +307,20 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     }
 
     /**
-     * Whenever a player picks up a slime pod item, then depending upon whether the pod was
-     * containing a captured gooey or not, it adds it back to the launcher
-     *
+     * Whenever a player picks up a slime pod item, then depending upon whether the pod was containing a captured gooey
+     * or not, it adds it back to the launcher
+     * <p>
      * Receives CollideEvent when a player steps over a slime pod
      *
-     * @param event,entity,pickupComponent   The CollideEvent, the slime pod item entity, pickupComponent
+     * @param event,entity,pickupComponent The CollideEvent, the slime pod item entity, pickupComponent
      */
     @ReceiveEvent
     public void onBumpGiveItemToEntity(CollideEvent event, EntityRef entity, PickupComponent pickupComponent) {
         if (entity.hasComponent(SlimePodComponent.class)) {
             if (entity.getComponent(SlimePodComponent.class).capturedEntity.equals(EntityRef.NULL)) {
                 for (EntityRef slimePodLauncher : entityManager.getEntitiesWith(SlimePodItemComponent.class)) {
-                    SlimePodItemComponent slimePodItemComponent = slimePodLauncher.getComponent(SlimePodItemComponent.class);
+                    SlimePodItemComponent slimePodItemComponent =
+                        slimePodLauncher.getComponent(SlimePodItemComponent.class);
                     slimePodItemComponent.slimePods++;
                     slimePodLauncher.saveComponent(slimePodItemComponent);
                     entity.destroy();

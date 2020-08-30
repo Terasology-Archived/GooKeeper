@@ -92,7 +92,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     private static final Logger logger = LoggerFactory.getLogger(PlazMasterSystem.class);
     private float lastTime = 0f;
     private Random random = new FastRandom();
-    private static final Prefab arrowPrefab = Assets.getPrefab("GooKeeper:arrow").get();
+    private static final Prefab ARROW_PREFAB = Assets.getPrefab("GooKeeper:arrow").get();
     private StaticSound gunShotAudio = Assets.getSound("GooKeeper:PlasmaShot").get();
     private StaticSound gooeyHitAudio = Assets.getSound("GooKeeper:GooeyHit").get();
 
@@ -137,7 +137,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
             }
 
             HitResult result;
-            result = physicsRenderer.rayTrace(position, dir, plazMasterComponent.maxDistance, filter);
+            result = physicsRenderer.rayTrace(JomlUtil.from(position), JomlUtil.from(dir), plazMasterComponent.maxDistance, filter);
 
             Block currentBlock = worldProvider.getBlock(blockPos);
 
@@ -169,7 +169,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
 
             lastTime = time.getGameTime();
 
-            EntityBuilder entityBuilder = entityManager.newBuilder(arrowPrefab);
+            EntityBuilder entityBuilder = entityManager.newBuilder(ARROW_PREFAB);
             LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
 
             Vector3f initialDir = locationComponent.getWorldDirection();
