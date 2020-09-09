@@ -4,11 +4,11 @@ package org.terasology.gookeeper.actions;
 
 import org.terasology.behaviors.components.AttackOnHitComponent;
 import org.terasology.behaviors.components.FollowComponent;
-import org.terasology.logic.behavior.BehaviorAction;
-import org.terasology.logic.behavior.core.Actor;
-import org.terasology.logic.behavior.core.BaseAction;
-import org.terasology.logic.behavior.core.BehaviorState;
-import org.terasology.logic.location.LocationComponent;
+import org.terasology.engine.logic.behavior.BehaviorAction;
+import org.terasology.engine.logic.behavior.core.Actor;
+import org.terasology.engine.logic.behavior.core.BaseAction;
+import org.terasology.engine.logic.behavior.core.BehaviorState;
+import org.terasology.engine.logic.location.LocationComponent;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.nui.properties.Range;
 
@@ -17,11 +17,11 @@ import org.terasology.nui.properties.Range;
 public class GooeyCheckAttackStopAction extends BaseAction {
 
     @Range(max = 40)
-    private float maxDistance = 10f;
+    private final float maxDistance = 10f;
 
     /**
-     * Makes the character follow a player within a given range
-     * Sends FAILURE when the distance is greater than maxDistance
+     * Makes the character follow a player within a given range Sends FAILURE when the distance is greater than
+     * maxDistance
      */
     @Override
     public BehaviorState modify(Actor actor, BehaviorState state) {
@@ -41,7 +41,8 @@ public class GooeyCheckAttackStopAction extends BaseAction {
             return BehaviorState.FAILURE;
         }
         Vector3f actorPosition = actorLocationComponent.getWorldPosition();
-        float maxDistance = actor.hasComponent(AttackOnHitComponent.class) ? actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistance;
+        float maxDistance = actor.hasComponent(AttackOnHitComponent.class) ?
+                actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistance;
 
         float maxDistanceSquared = maxDistance * maxDistance;
         FollowComponent followWish = actor.getComponent(FollowComponent.class);

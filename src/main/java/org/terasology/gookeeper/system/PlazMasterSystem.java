@@ -1,34 +1,40 @@
-/*
- * Copyright 2018 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.system;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.audio.StaticSound;
-import org.terasology.audio.events.PlaySoundEvent;
-import org.terasology.engine.Time;
-import org.terasology.entitySystem.entity.EntityBuilder;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.Prefab;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterMode;
-import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.engine.audio.StaticSound;
+import org.terasology.engine.audio.events.PlaySoundEvent;
+import org.terasology.engine.core.Time;
+import org.terasology.engine.entitySystem.entity.EntityBuilder;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.ReceiveEvent;
+import org.terasology.engine.entitySystem.prefab.Prefab;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterMode;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.engine.logic.characters.GazeMountPointComponent;
+import org.terasology.engine.logic.common.ActivateEvent;
+import org.terasology.engine.logic.delay.DelayManager;
+import org.terasology.engine.logic.delay.DelayedActionTriggeredEvent;
+import org.terasology.engine.logic.location.LocationComponent;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.math.JomlUtil;
+import org.terasology.engine.network.ClientComponent;
+import org.terasology.engine.physics.CollisionGroup;
+import org.terasology.engine.physics.HitResult;
+import org.terasology.engine.physics.Physics;
+import org.terasology.engine.physics.StandardCollisionGroup;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.utilities.Assets;
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
+import org.terasology.engine.world.BlockEntityRegistry;
+import org.terasology.engine.world.WorldProvider;
+import org.terasology.engine.world.block.Block;
 import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.PlazMasterComponent;
@@ -36,65 +42,38 @@ import org.terasology.gookeeper.component.PlazMasterShotComponent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.gookeeper.input.DecreaseFrequencyButton;
 import org.terasology.gookeeper.input.IncreaseFrequencyButton;
-import org.terasology.logic.characters.GazeMountPointComponent;
-import org.terasology.logic.common.ActivateEvent;
-import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.delay.DelayedActionTriggeredEvent;
-import org.terasology.logic.health.event.DoDamageEvent;
-import org.terasology.logic.inventory.InventoryManager;
-import org.terasology.logic.location.LocationComponent;
-import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.JomlUtil;
+import org.terasology.health.logic.event.DoDamageEvent;
+import org.terasology.inventory.logic.InventoryManager;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.network.ClientComponent;
-import org.terasology.physics.CollisionGroup;
-import org.terasology.physics.HitResult;
-import org.terasology.physics.Physics;
-import org.terasology.physics.StandardCollisionGroup;
-import org.terasology.registry.In;
-import org.terasology.utilities.Assets;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
-import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+    private static final Logger logger = LoggerFactory.getLogger(PlazMasterSystem.class);
+    private static final Prefab arrowPrefab = Assets.getPrefab("GooKeeper:arrow").get();
+    private final CollisionGroup filter = StandardCollisionGroup.ALL;
+    private final Random random = new FastRandom();
+    private final StaticSound gunShotAudio = Assets.getSound("GooKeeper:PlasmaShot").get();
+    private final StaticSound gooeyHitAudio = Assets.getSound("GooKeeper:GooeyHit").get();
     @In
     private WorldProvider worldProvider;
-
     @In
     private Physics physicsRenderer;
-
     @In
     private BlockEntityRegistry blockEntityRegistry;
-
     @In
     private EntityManager entityManager;
-
     @In
     private DelayManager delayManager;
-
     @In
     private InventoryManager inventoryManager;
-
     @In
     private Time time;
-
     @In
     private LocalPlayer localPlayer;
-
-    private CollisionGroup filter = StandardCollisionGroup.ALL;
-    private static final Logger logger = LoggerFactory.getLogger(PlazMasterSystem.class);
     private float lastTime = 0f;
-    private Random random = new FastRandom();
-    private static final Prefab arrowPrefab = Assets.getPrefab("GooKeeper:arrow").get();
-    private StaticSound gunShotAudio = Assets.getSound("GooKeeper:PlasmaShot").get();
-    private StaticSound gooeyHitAudio = Assets.getSound("GooKeeper:GooeyHit").get();
 
     @Override
     public void initialise() {
@@ -118,7 +97,8 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives ActivateEvent when the held PlazMaster item is activated, shooting a plasma pulse.
      *
-     * @param event,entity,plazMasterComponent   The ActivateEvent, the instigator entity and the corresponding PlazMasterComponent of the activated item
+     * @param event,entity,plazMasterComponent The ActivateEvent, the instigator entity and the corresponding
+     *         PlazMasterComponent of the activated item
      */
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, PlazMasterComponent plazMasterComponent) {
@@ -132,8 +112,11 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
                 dir = new Vector3f(event.getDirection());
             } else {
                 // Add noise to this dir for simulating recoil.
-                float timeDiff = TeraMath.fastAbs(time.getGameTime() - (lastTime + plazMasterComponent.shotRecoveryTime));
-                dir = new Vector3f(event.getDirection().x + random.nextFloat(-0.05f, 0.05f) * timeDiff,  event.getDirection().y + random.nextFloat(-0.05f, 0.05f) * timeDiff, event.getDirection().z + random.nextFloat(-0.05f, 0.05f) * timeDiff);
+                float timeDiff =
+                        TeraMath.fastAbs(time.getGameTime() - (lastTime + plazMasterComponent.shotRecoveryTime));
+                dir = new Vector3f(event.getDirection().x + random.nextFloat(-0.05f, 0.05f) * timeDiff,
+                        event.getDirection().y + random.nextFloat(-0.05f, 0.05f) * timeDiff,
+                        event.getDirection().z + random.nextFloat(-0.05f, 0.05f) * timeDiff);
             }
 
             HitResult result;
@@ -149,11 +132,12 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
             EntityRef hitEntity = result.getEntity();
             if (hitEntity.hasComponent(GooeyComponent.class)) {
                 GooeyComponent gooeyComponent = hitEntity.getComponent(GooeyComponent.class);
-                hitEntity.send(new DoDamageEvent(plazMasterComponent.damageAmount, plazMasterComponent.damageType, localPlayer.getCharacterEntity()));
+                hitEntity.send(new DoDamageEvent(plazMasterComponent.damageAmount, plazMasterComponent.damageType,
+                        localPlayer.getCharacterEntity()));
 
                 if (TeraMath.fastAbs(gooeyComponent.stunFrequency - plazMasterComponent.frequency) <= 10f && !gooeyComponent.isStunned) {
                     // Begin the gooey wrangling.
-                    gooeyComponent.stunChargesReq --;
+                    gooeyComponent.stunChargesReq--;
                     if (gooeyComponent.stunChargesReq == 0) {
                         hitEntity.send(new OnStunnedEvent(localPlayer.getCharacterEntity()));
                         hitEntity.send(new PlaySoundEvent(gooeyHitAudio, 0.8f));
@@ -164,8 +148,9 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
             } else {
                 hitEntity.send(new DoDamageEvent(plazMasterComponent.damageAmount, plazMasterComponent.damageType));
             }
-            plazMasterComponent.charges --;
-            plazMasterComponent.charges = TeraMath.clamp(plazMasterComponent.charges, 0f, plazMasterComponent.maxCharges);
+            plazMasterComponent.charges--;
+            plazMasterComponent.charges = TeraMath.clamp(plazMasterComponent.charges, 0f,
+                    plazMasterComponent.maxCharges);
 
             lastTime = time.getGameTime();
 
@@ -198,7 +183,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives DelayedActionTriggeredEvent, which deletes the plasma stub entity
      *
-     * @param event,entity   The DelayedActionTriggeredEvent event, plasma stub entity to be destroyed
+     * @param event,entity The DelayedActionTriggeredEvent event, plasma stub entity to be destroyed
      */
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef entityRef) {
@@ -208,10 +193,11 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     }
 
     // TODO: Instead of the current implementation, use itemHeld... and related funcs for multiplayer support.
+
     /**
      * Receives IncreaseFrequencyButton, which increases the plazmasters frequency.
      *
-     * @param event,entity   The IncreaseFrequencyButton event
+     * @param event,entity The IncreaseFrequencyButton event
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onIncreaseFrequency(IncreaseFrequencyButton event, EntityRef entityRef) {
@@ -237,7 +223,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives DecreaseFrequencyButton, which decreases the plazmasters frequency.
      *
-     * @param event,entity   The DecreaseFrequencyButton event
+     * @param event,entity The DecreaseFrequencyButton event
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onDecreaseFrequency(DecreaseFrequencyButton event, EntityRef entityRef) {

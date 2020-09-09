@@ -5,16 +5,37 @@ package org.terasology.gookeeper.system;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.behaviors.components.FollowComponent;
-import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.entity.EntityBuilder;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.Prefab;
-import org.terasology.entitySystem.prefab.PrefabManager;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterMode;
-import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.entitySystem.Component;
+import org.terasology.engine.entitySystem.entity.EntityBuilder;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.ReceiveEvent;
+import org.terasology.engine.entitySystem.prefab.Prefab;
+import org.terasology.engine.entitySystem.prefab.PrefabManager;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterMode;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.logic.behavior.BehaviorComponent;
+import org.terasology.engine.logic.behavior.asset.BehaviorTree;
+import org.terasology.engine.logic.characters.CharacterMovementComponent;
+import org.terasology.engine.logic.characters.events.OnEnterBlockEvent;
+import org.terasology.engine.logic.common.DisplayNameComponent;
+import org.terasology.engine.logic.delay.DelayManager;
+import org.terasology.engine.logic.delay.DelayedActionTriggeredEvent;
+import org.terasology.engine.logic.location.LocationComponent;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.network.ColorComponent;
+import org.terasology.engine.physics.components.TriggerComponent;
+import org.terasology.engine.physics.components.shapes.BoxShapeComponent;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.registry.Share;
+import org.terasology.engine.rendering.assets.material.Material;
+import org.terasology.engine.rendering.logic.SkeletalMeshComponent;
+import org.terasology.engine.rendering.nui.NUIManager;
+import org.terasology.engine.utilities.Assets;
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
+import org.terasology.engine.world.BlockEntityRegistry;
 import org.terasology.gestalt.assets.management.AssetManager;
 import org.terasology.gookeeper.Constants;
 import org.terasology.gookeeper.component.AggressiveComponent;
@@ -28,30 +49,9 @@ import org.terasology.gookeeper.component.NeutralComponent;
 import org.terasology.gookeeper.event.AfterGooeyBreedingEvent;
 import org.terasology.gookeeper.event.BeginBreedingEvent;
 import org.terasology.gookeeper.event.SelectForBreedingEvent;
-import org.terasology.logic.behavior.BehaviorComponent;
-import org.terasology.logic.behavior.asset.BehaviorTree;
-import org.terasology.logic.characters.CharacterMovementComponent;
-import org.terasology.logic.characters.events.OnEnterBlockEvent;
-import org.terasology.logic.common.DisplayNameComponent;
-import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.delay.DelayedActionTriggeredEvent;
-import org.terasology.logic.location.LocationComponent;
-import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.network.ColorComponent;
 import org.terasology.nui.Color;
-import org.terasology.physics.components.TriggerComponent;
-import org.terasology.physics.components.shapes.BoxShapeComponent;
-import org.terasology.registry.In;
-import org.terasology.registry.Share;
-import org.terasology.rendering.assets.material.Material;
-import org.terasology.rendering.logic.SkeletalMeshComponent;
-import org.terasology.rendering.nui.NUIManager;
-import org.terasology.utilities.Assets;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
-import org.terasology.world.BlockEntityRegistry;
 
 import java.math.RoundingMode;
 
@@ -59,41 +59,34 @@ import java.math.RoundingMode;
 @Share(value = BreedingSystem.class)
 public class BreedingSystem extends BaseComponentSystem {
 
+    private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
+    private final Random random = new FastRandom();
     @In
     private BlockEntityRegistry blockEntityRegistry;
-
     @In
     private LocalPlayer localPlayer;
-
     @In
     private AssetManager assetManager;
-
     @In
     private NUIManager nuiManager;
-
     @In
     private EntityManager entityManager;
-
     @In
     private PrefabManager prefabManager;
-
     @In
     private DelayManager delayManager;
-
-    private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
-    private Random random = new FastRandom();
 
     /**
      * This method is called when a gooey steps on a breeding block
      *
-     * @param event     The OnEnterBlockEvent
-     * @param entity    the gooey entity
+     * @param event The OnEnterBlockEvent
+     * @param entity the gooey entity
      */
     @ReceiveEvent
     public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity, GooeyComponent gooeyComponent) {
         LocationComponent loc = entity.getComponent(LocationComponent.class);
         Vector3f pos = loc.getWorldPosition();
-        pos.setY(pos.getY() -1);
+        pos.setY(pos.getY() - 1);
 
         EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(pos, RoundingMode.HALF_UP));
 
@@ -135,7 +128,8 @@ public class BreedingSystem extends BaseComponentSystem {
         }
 
         if (matingComponent.selectedForMating && matingComponent.matingWithEntity != EntityRef.NULL) {
-            gooeyEntity.send(new BeginBreedingEvent(event.getInstigator(), gooeyEntity, matingComponent.matingWithEntity));
+            gooeyEntity.send(new BeginBreedingEvent(event.getInstigator(), gooeyEntity,
+                    matingComponent.matingWithEntity));
         }
     }
 
@@ -160,7 +154,8 @@ public class BreedingSystem extends BaseComponentSystem {
      * @param matingComponent
      */
     @ReceiveEvent
-    public void onBreedingProcessEnd(AfterGooeyBreedingEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, MatingComponent matingComponent) {
+    public void onBreedingProcessEnd(AfterGooeyBreedingEvent event, EntityRef gooeyEntity,
+                                     GooeyComponent gooeyComponent, MatingComponent matingComponent) {
         EntityRef offspringEntity = event.getOffspringGooey();
 
         SkeletalMeshComponent skeletalMeshComponent = offspringEntity.getComponent(SkeletalMeshComponent.class);
@@ -181,8 +176,10 @@ public class BreedingSystem extends BaseComponentSystem {
         matingComponent.selectedForMating = false;
         matingComponent1.selectedForMating = false;
 
-        CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
-        CharacterMovementComponent characterMovementComponent1 = matingComponent.matingWithEntity.getComponent(CharacterMovementComponent.class);
+        CharacterMovementComponent characterMovementComponent =
+                gooeyEntity.getComponent(CharacterMovementComponent.class);
+        CharacterMovementComponent characterMovementComponent1 =
+                matingComponent.matingWithEntity.getComponent(CharacterMovementComponent.class);
 
         if (characterMovementComponent != null) {
             characterMovementComponent.speedMultiplier = 1f;
@@ -198,8 +195,8 @@ public class BreedingSystem extends BaseComponentSystem {
     /**
      * Receives DelayedActionTriggeredEvent, which spawns the gooey egg
      *
-     * @param event     The DelayedActionTriggeredEvent event
-     * @param gooeyEntity    The entity to which the event is sent
+     * @param event The DelayedActionTriggeredEvent event
+     * @param gooeyEntity The entity to which the event is sent
      */
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef gooeyEntity) {
@@ -210,7 +207,8 @@ public class BreedingSystem extends BaseComponentSystem {
         }
     }
 
-    private Component getDominantComponent(AggressiveComponent aggressiveComponent, NeutralComponent neutralComponent, FriendlyComponent friendlyComponent) {
+    private Component getDominantComponent(AggressiveComponent aggressiveComponent, NeutralComponent neutralComponent
+            , FriendlyComponent friendlyComponent) {
         if (aggressiveComponent.magnitude >= neutralComponent.magnitude && aggressiveComponent.magnitude >= friendlyComponent.magnitude) {
             return aggressiveComponent;
         } else if (neutralComponent.magnitude >= aggressiveComponent.magnitude && neutralComponent.magnitude >= friendlyComponent.magnitude) {
@@ -220,7 +218,7 @@ public class BreedingSystem extends BaseComponentSystem {
         }
     }
 
-    private  <T extends FactorComponent> T getChildFactor(T childComponent, EntityRef parent1, EntityRef parent2) {
+    private <T extends FactorComponent> T getChildFactor(T childComponent, EntityRef parent1, EntityRef parent2) {
         FactorComponent source1 = parent1.getComponent(childComponent.getClass());
         FactorComponent source2 = parent2.getComponent(childComponent.getClass());
 
@@ -259,13 +257,13 @@ public class BreedingSystem extends BaseComponentSystem {
         offspringGooeyColor.color = new Color(redValue, yellowValue, blueValue);
         String materialName = "";
         if (redValue > 0f) {
-            materialName += ((int)(Math.ceil(offspringGooeyColor.color.r()/128))) + "r";
+            materialName += ((int) (Math.ceil(offspringGooeyColor.color.r() / 128))) + "r";
         }
         if (yellowValue > 0f) {
-            materialName += ((int)(Math.ceil(offspringGooeyColor.color.g()/128))) + "y";
+            materialName += ((int) (Math.ceil(offspringGooeyColor.color.g() / 128))) + "y";
         }
         if (blueValue > 0f) {
-            materialName += ((int)(Math.ceil(offspringGooeyColor.color.b()/128))) + "b";
+            materialName += ((int) (Math.ceil(offspringGooeyColor.color.b() / 128))) + "b";
         }
 
         offspringEntity.addOrSaveComponent(offspringGooeyColor);
@@ -304,7 +302,8 @@ public class BreedingSystem extends BaseComponentSystem {
 
         if (matingComponent.matingWithEntity != EntityRef.NULL) {
             for (EntityRef breedingBlock : entityManager.getEntitiesWith(BreedingBlockComponent.class)) {
-                BreedingBlockComponent breedingBlockComponent1 = breedingBlock.getComponent(BreedingBlockComponent.class);
+                BreedingBlockComponent breedingBlockComponent1 =
+                        breedingBlock.getComponent(BreedingBlockComponent.class);
 
                 if (breedingBlockComponent1.parentGooey.equals(gooeyEntity)) {
                     breedingBlockComponent1.parentGooey = EntityRef.NULL;
@@ -328,9 +327,11 @@ public class BreedingSystem extends BaseComponentSystem {
         LocationComponent locationComponent1 = entityBuilder1.getComponent(LocationComponent.class);
 
         Vector3f parent1Location = gooeyEntity.getComponent(LocationComponent.class).getWorldPosition();
-        Vector3f parent2Location = gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class).getWorldPosition();
+        Vector3f parent2Location =
+                gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class).getWorldPosition();
 
-        Vector3f middleLocation = new Vector3f((parent1Location.x + parent2Location.x)/2f, parent1Location.y + 1f, (parent2Location.z + parent2Location.z)/2f);
+        Vector3f middleLocation = new Vector3f((parent1Location.x + parent2Location.x) / 2f, parent1Location.y + 1f,
+                (parent2Location.z + parent2Location.z) / 2f);
         locationComponent.setWorldPosition(middleLocation);
         locationComponent1.setWorldPosition(middleLocation);
         locationComponent.setWorldScale(0.5f);

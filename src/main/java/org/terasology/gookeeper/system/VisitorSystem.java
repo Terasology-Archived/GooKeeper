@@ -1,110 +1,85 @@
-/*
- * Copyright 2018 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.system;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.engine.Time;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.prefab.Prefab;
-import org.terasology.entitySystem.prefab.PrefabManager;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterMode;
-import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.engine.core.Time;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.ReceiveEvent;
+import org.terasology.engine.entitySystem.prefab.Prefab;
+import org.terasology.engine.entitySystem.prefab.PrefabManager;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterMode;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.engine.logic.common.ActivateEvent;
+import org.terasology.engine.logic.delay.DelayManager;
+import org.terasology.engine.logic.delay.PeriodicActionTriggeredEvent;
+import org.terasology.engine.logic.location.LocationComponent;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.math.Direction;
+import org.terasology.engine.math.Side;
+import org.terasology.engine.math.SideBitFlag;
+import org.terasology.engine.network.NetworkSystem;
+import org.terasology.engine.physics.Physics;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.utilities.Assets;
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
+import org.terasology.engine.world.BlockEntityRegistry;
+import org.terasology.engine.world.WorldProvider;
+import org.terasology.engine.world.block.BlockComponent;
+import org.terasology.engine.world.block.BlockManager;
+import org.terasology.engine.world.block.items.OnBlockItemPlaced;
 import org.terasology.fences.ConnectsToFencesComponent;
 import org.terasology.gookeeper.Constants;
-import org.terasology.gookeeper.component.VisitBlockComponent;
-import org.terasology.gookeeper.component.VisitorExitComponent;
-import org.terasology.gookeeper.component.VisitorEntranceComponent;
 import org.terasology.gookeeper.component.PenBlockComponent;
+import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
+import org.terasology.gookeeper.component.VisitorEntranceComponent;
+import org.terasology.gookeeper.component.VisitorExitComponent;
 import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
-import org.terasology.logic.common.ActivateEvent;
-import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.delay.PeriodicActionTriggeredEvent;
-import org.terasology.logic.inventory.InventoryManager;
-import org.terasology.logic.location.LocationComponent;
-import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.Direction;
-import org.terasology.math.Side;
-import org.terasology.math.SideBitFlag;
+import org.terasology.inventory.logic.InventoryManager;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.minion.move.MinionMoveComponent;
-import org.terasology.network.NetworkSystem;
-import org.terasology.physics.Physics;
-import org.terasology.registry.In;
-import org.terasology.utilities.Assets;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
-import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.WorldProvider;
-import org.terasology.world.block.BlockComponent;
-import org.terasology.world.block.BlockManager;
-import org.terasology.world.block.items.OnBlockItemPlaced;
 
 import java.util.Optional;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class VisitorSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+    private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
+    private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
+    private static int penIdCounter = 1;
+    private final Random random = new FastRandom();
     @In
     private WorldProvider worldProvider;
-
     @In
     private Physics physicsRenderer;
-
     @In
     private BlockEntityRegistry blockEntityRegistry;
-
     @In
     private EntityManager entityManager;
-
     @In
     private BlockManager blockManager;
-
     @In
     private DelayManager delayManager;
-
     @In
     private InventoryManager inventoryManager;
-
     @In
     private Time time;
-
     @In
     private LocalPlayer localPlayer;
-
     @In
     private PrefabManager prefabManager;
-
     @In
     private EconomyManager economySystem;
-
     @In
     private NetworkSystem networkSystem;
-
-    private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
-    private static int penIdCounter = 1;
-    private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
-    private Random random = new FastRandom();
 
     @Override
     public void initialise() {
@@ -124,7 +99,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
                 int cutoffRNG = random.nextInt(0, 10);
 
-                for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class, LocationComponent.class)) {
+                for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class,
+                        LocationComponent.class)) {
                     VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
 
                     if (visitBlockComponent.cutoffFactor <= cutoffRNG) {
@@ -132,7 +108,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                     }
                 }
 
-                for (EntityRef exitBlock : entityManager.getEntitiesWith(VisitorExitComponent.class, LocationComponent.class)) {
+                for (EntityRef exitBlock : entityManager.getEntitiesWith(VisitorExitComponent.class,
+                        LocationComponent.class)) {
                     visitorComponent.pensToVisit.add(exitBlock);
                 }
 
@@ -152,7 +129,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     public void onBlockPlaced(OnBlockItemPlaced event, EntityRef entity) {
         BlockComponent blockComponent = event.getPlacedBlock().getComponent(BlockComponent.class);
         VisitBlockComponent visitBlockComponent = event.getPlacedBlock().getComponent(VisitBlockComponent.class);
-        VisitorEntranceComponent visitorEntranceComponent = event.getPlacedBlock().getComponent(VisitorEntranceComponent.class);
+        VisitorEntranceComponent visitorEntranceComponent =
+                event.getPlacedBlock().getComponent(VisitorEntranceComponent.class);
 
         if (blockComponent != null && visitBlockComponent != null) {
             Vector3f targetBlock = blockComponent.getPosition().toVector3f();
@@ -177,7 +155,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             visitorEntranceComponent.owner = event.getInstigator();
             event.getPlacedBlock().saveComponent(visitorEntranceComponent);
 
-            delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.visitorSpawnDelayEventID, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
+            delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.visitorSpawnDelayEventID,
+                    visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
         }
     }
 
@@ -209,7 +188,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
         if (penBlockComponent != null && !penBlockComponent.penIDSet) {
 
-            Byte sides = SideBitFlag.getSides(Side.LEFT, Side.RIGHT,Side.FRONT,Side.BACK);
+            Byte sides = SideBitFlag.getSides(Side.LEFT, Side.RIGHT, Side.FRONT, Side.BACK);
 
             for (Side side : SideBitFlag.getSides(sides)) {
                 Vector3i neighborLocation = new Vector3i(blockComponent.getPosition());
@@ -235,8 +214,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
     /**
      * Receives LeaveVisitBlockEvent sent to a visitor entity when it leaves a visit block, and moves towards the next.
-     * This is used to add credits to the players wallet depending on the type of gooeys associated with this visit block,
-     * hence rarer the gooey, more would be the pay off.
+     * This is used to add credits to the players wallet depending on the type of gooeys associated with this visit
+     * block, hence rarer the gooey, more would be the pay off.
      *
      * @param event the LeaveVisitBlockEvent event
      * @param entityRef the visitor entity to which it is sent
@@ -251,7 +230,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         if (blockEntity.hasComponent(VisitBlockComponent.class) && visitor.hasComponent(VisitorComponent.class) && minionMoveComponent != null) {
             VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
             Vector3f blockPos = blockEntity.getComponent(LocationComponent.class).getWorldPosition();
-            if (visitorComponent.pensToVisit.contains(blockEntity) && Vector3f.distance(minionMoveComponent.target, blockPos) <= 1f) {
+            if (visitorComponent.pensToVisit.contains(blockEntity) && Vector3f.distance(minionMoveComponent.target,
+                    blockPos) <= 1f) {
                 economySystem.payVisitFee(visitor, blockEntity);
                 visitorComponent.pensToVisit.remove(blockEntity);
             }
@@ -261,7 +241,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     }
 
     /**
-     * Receives PeriodicActionTriggeredEvent sent to a visitor entrance block entity hence triggering the periodic visitor spawning
+     * Receives PeriodicActionTriggeredEvent sent to a visitor entrance block entity hence triggering the periodic
+     * visitor spawning
      *
      * @param event the PeriodicActionTriggeredEvent event
      * @param entity the visitor entrance block entity to which it is sent

@@ -1,119 +1,99 @@
-/*
- * Copyright 2018 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.system;
 
 import com.google.common.collect.Lists;
-
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.behaviors.components.AttackOnHitComponent;
 import org.terasology.behaviors.components.FindNearbyPlayersComponent;
 import org.terasology.behaviors.components.FollowComponent;
 import org.terasology.biomesAPI.Biome;
 import org.terasology.biomesAPI.BiomeRegistry;
-import org.terasology.core.world.CoreBiome;
-import org.terasology.entitySystem.entity.EntityBuilder;
-import org.terasology.entitySystem.prefab.PrefabManager;
-import org.terasology.gookeeper.component.*;
-import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.prefab.Prefab;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.coreworlds.CoreBiome;
+import org.terasology.engine.entitySystem.entity.EntityBuilder;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.ReceiveEvent;
+import org.terasology.engine.entitySystem.prefab.Prefab;
+import org.terasology.engine.entitySystem.prefab.PrefabManager;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.engine.logic.behavior.BehaviorComponent;
+import org.terasology.engine.logic.characters.CharacterHeldItemComponent;
+import org.terasology.engine.logic.characters.CharacterMovementComponent;
+import org.terasology.engine.logic.characters.StandComponent;
+import org.terasology.engine.logic.characters.WalkComponent;
+import org.terasology.engine.logic.characters.events.HorizontalCollisionEvent;
+import org.terasology.engine.logic.common.DisplayNameComponent;
+import org.terasology.engine.logic.delay.DelayManager;
+import org.terasology.engine.logic.location.LocationComponent;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.math.ChunkMath;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.rendering.assets.skeletalmesh.SkeletalMesh;
+import org.terasology.engine.rendering.logic.SkeletalMeshComponent;
+import org.terasology.engine.rendering.nui.NUIManager;
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
+import org.terasology.engine.world.BlockEntityRegistry;
+import org.terasology.engine.world.WorldProvider;
+import org.terasology.engine.world.block.Block;
+import org.terasology.engine.world.block.BlockComponent;
+import org.terasology.engine.world.block.BlockManager;
+import org.terasology.engine.world.chunks.ChunkConstants;
+import org.terasology.engine.world.sun.CelestialSystem;
+import org.terasology.gookeeper.component.AggressiveComponent;
+import org.terasology.gookeeper.component.FriendlyComponent;
+import org.terasology.gookeeper.component.GooeyComponent;
+import org.terasology.gookeeper.component.HungerComponent;
+import org.terasology.gookeeper.component.NeutralComponent;
+import org.terasology.gookeeper.component.PenBlockComponent;
+import org.terasology.gookeeper.component.SlimePodComponent;
+import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.event.FollowGooeyEvent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
-import org.terasology.logic.behavior.BehaviorComponent;
-import org.terasology.logic.characters.CharacterHeldItemComponent;
-import org.terasology.logic.characters.CharacterMovementComponent;
-import org.terasology.logic.characters.StandComponent;
-import org.terasology.logic.characters.WalkComponent;
-import org.terasology.logic.characters.events.HorizontalCollisionEvent;
-import org.terasology.logic.common.DisplayNameComponent;
-import org.terasology.logic.delay.DelayManager;
-import org.terasology.logic.health.HealthComponent;
-import org.terasology.logic.location.LocationComponent;
-import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.ChunkMath;
+import org.terasology.health.logic.HealthComponent;
+import org.terasology.health.logic.event.OnDamagedEvent;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.logic.health.event.OnDamagedEvent;
-import org.terasology.registry.In;
-import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
-import org.terasology.rendering.logic.SkeletalMeshComponent;
-import org.terasology.rendering.nui.NUIManager;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
-import org.terasology.world.BlockEntityRegistry;
-import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
-import org.terasology.world.block.BlockComponent;
-import org.terasology.world.block.BlockManager;
-import org.terasology.world.chunks.ChunkConstants;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.terasology.world.sun.CelestialSystem;
 
 @RegisterSystem
 public class GooeySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+    private static final int NUM_OF_ENTITIES_ALLOWED = 10;
+    private static final float MAX_DISTANCE_FROM_PLAYER = 60f;
+    private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
+    private static int currentNumOfEntities = 0;
+    private final Random random = new FastRandom();
+    private final List<Prefab> gooeyPrefabs = new ArrayList();
     @In
     private WorldProvider worldProvider;
-
     @In
     private BlockEntityRegistry blockEntityRegistry;
-
     @In
     private EntityManager entityManager;
-
     @In
     private BlockManager blockManager;
-
     @In
     private DelayManager delayManager;
-
     @In
     private PrefabManager prefabManager;
-
     @In
     private LocalPlayer localPlayer;
-
     @In
     private CelestialSystem celestialSystem;
-
     @In
     private NUIManager nuiManager;
-
     @In
     private BiomeRegistry biomeRegistry;
-
-    private Random random = new FastRandom();
-    private List<Prefab> gooeyPrefabs = new ArrayList();
     private SkeletalMesh gooeySkeletalMesh = null;
-
     private Block airBlock;
-
-    private static final int NUM_OF_ENTITIES_ALLOWED = 10;
-    private static int currentNumOfEntities = 0;
-    private static final float MAX_DISTANCE_FROM_PLAYER = 60f;
-
-    private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
 
     @Override
     public void initialise() {
@@ -127,7 +107,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     }
 
     @Override
-    public void update (float delta) {
+    public void update(float delta) {
         for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class)) {
             if (gooeySkeletalMesh == null) {
                 SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
@@ -138,7 +118,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
 
             if (locationComponent != null) {
-                float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
+                float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(),
+                        localPlayer.getPosition());
                 if (distanceFromPlayer > MAX_DISTANCE_FROM_PLAYER && !gooeyComponent.isCaptured) {
                     entity.destroy();
                     currentNumOfEntities--;
@@ -157,12 +138,13 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Implementation of distance-based visual culling for gooey entities
      *
-     * @param entity,locationComponent   The corresponding gooey entity and its location component
+     * @param entity,locationComponent The corresponding gooey entity and its location component
      */
     private void cullDistantGooeys(EntityRef entity, LocationComponent locationComponent) {
         SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
         if (locationComponent != null) {
-            float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
+            float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(),
+                    localPlayer.getPosition());
             if (distanceFromPlayer > 50f && skeleton.mesh != null) {
                 skeleton.mesh = null;
             } else if (distanceFromPlayer <= 50f && skeleton.mesh == null) {
@@ -174,11 +156,11 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Try spawning gooeys based on the player's current world position
      */
-    private void spawnNearPlayer () {
+    private void spawnNearPlayer() {
         Vector3f pos = localPlayer.getPosition();
         Vector3i chunkPos = ChunkMath.calcChunkPos((int) pos.x, (int) pos.y, (int) pos.z);
         for (Prefab gooey : gooeyPrefabs) {
-            boolean trySpawn = (gooey.getComponent(GooeyComponent.class).SPAWN_CHANCE/10f) > random.nextInt(400);
+            boolean trySpawn = (gooey.getComponent(GooeyComponent.class).SPAWN_CHANCE / 10f) > random.nextInt(400);
             if (trySpawn) {
                 tryGooeySpawn(gooey, chunkPos);
             }
@@ -206,7 +188,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * Attempts to spawn gooey on the specified chunk. The number of gooeys spawned will depend on probability
      * configurations defined earlier
      *
-     * @param gooey,chunkPos   The prefab to be spawned and the chunk which the game will try to spawn gooeys on
+     * @param gooey,chunkPos The prefab to be spawned and the chunk which the game will try to spawn gooeys on
      */
     private void tryGooeySpawn(Prefab gooey, Vector3i chunkPos) {
         GooeyComponent gooeyComponent = gooey.getComponent(GooeyComponent.class);
@@ -222,10 +204,10 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         }
         int gooeyCount = random.nextInt(maxGooeyCount - 1) + 1;
 
-        for (int i = 0; i < gooeyCount; i++ ) {
+        for (int i = 0; i < gooeyCount; i++) {
             int randomIndex = random.nextInt(foundPositions.size());
             Vector3i randomSpawnPosition = foundPositions.remove(randomIndex);
-            currentNumOfEntities ++;
+            currentNumOfEntities++;
             if (currentNumOfEntities <= NUM_OF_ENTITIES_ALLOWED) {
                 spawnGooey(gooey, randomSpawnPosition);
             } else {
@@ -255,15 +237,16 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Spawns the gooey at the location specified by the parameter.
      *
-     * @param gooey,location   Gooey prefab to be spawned and the location where the gooey is to be spawned
+     * @param gooey,location Gooey prefab to be spawned and the location where the gooey is to be spawned
      */
     private void spawnGooey(Prefab gooey, Vector3i location) {
         Vector3f floatVectorLocation = location.toVector3f();
         Vector3f yAxis = new Vector3f(0, 1, 0);
-        float randomAngle = (float) (random.nextFloat()*Math.PI*2);
+        float randomAngle = (float) (random.nextFloat() * Math.PI * 2);
         Quat4f rotation = new Quat4f(yAxis, randomAngle);
 
-        float distanceFromPlayer = Vector3f.distance(new Vector3f((float)location.x, (float)location.y, (float)location.z), localPlayer.getPosition());
+        float distanceFromPlayer = Vector3f.distance(new Vector3f((float) location.x, (float) location.y,
+                (float) location.z), localPlayer.getPosition());
         if (distanceFromPlayer < MAX_DISTANCE_FROM_PLAYER) {
             if (gooey.exists() && gooey.getComponent(LocationComponent.class) != null) {
                 EntityBuilder entityBuilder = entityManager.newBuilder(gooey);
@@ -279,7 +262,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Check blocks at and around the target position and check if it's a valid spawning spot
      *
-     * @param gooeyComponent,pos   GooeyComponent of the particular gooey to be spawned & the block to be checked if it's a valid spot for spawning
+     * @param gooeyComponent,pos GooeyComponent of the particular gooey to be spawned & the block to be checked
+     *         if it's a valid spot for spawning
      * @return A boolean with the value of true if the block is a valid spot for spawing
      */
     private boolean isValidSpawnPosition(GooeyComponent gooeyComponent, Vector3i pos) {
@@ -299,17 +283,17 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             return false;
         }
         return biomeRegistry.getBiome(pos).map(biome ->
-            gooeyComponent.biome.stream().anyMatch(s -> biome.equals(getBiomeFromString(s)))
+                gooeyComponent.biome.stream().anyMatch(s -> biome.equals(getBiomeFromString(s)))
         ).orElse(false);
     }
 
     /**
      * Returns the Biome from the string provided as an argument.
      *
-     * @param biomeName   The name of the biome (String)
+     * @param biomeName The name of the biome (String)
      * @return Corresponding biome
      */
-    private Biome getBiomeFromString (String biomeName) {
+    private Biome getBiomeFromString(String biomeName) {
         if (biomeName.equals("DESERT")) {
             return CoreBiome.DESERT;
         } else if (biomeName.equals("FOREST")) {
@@ -328,10 +312,10 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Returns the Block from the string provided as an argument.
      *
-     * @param blockName   The name of the block (String)
+     * @param blockName The name of the block (String)
      * @return Corresponding block
      */
-    private Block getBlockFromString (String blockName) {
+    private Block getBlockFromString(String blockName) {
         if (blockName != null) {
             return blockManager.getBlock(blockName);
         } else {
@@ -347,7 +331,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Receives OnStunnedEvent sent to a gooey entity when it gets stunned by PlazMaster.
      *
-     * @param event,entity   The OnStunnedEvent and the gooey entity to which it is sent
+     * @param event,entity The OnStunnedEvent and the gooey entity to which it is sent
      */
     @ReceiveEvent
     public void onStunned(OnStunnedEvent event, EntityRef entity) {
@@ -362,7 +346,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Receives OnCapturedEvent sent to a gooey entity when it gets captured in a slime pod.
      *
-     * @param event,entity   The OnCapturedEvent and the gooey entity to which it is sent
+     * @param event,entity The OnCapturedEvent and the gooey entity to which it is sent
      */
     @ReceiveEvent
     public void onCaptured(OnCapturedEvent event, EntityRef entity) {
@@ -409,13 +393,13 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     }
 
     /**
-     * Receives HorizontalCollisionEvent sent to a gooey entity when it collides with any entity. Here, it is used to detect collisions
-     * with the pen blocks, and if the types match then the gooey is not allowed to jump over the block.
+     * Receives HorizontalCollisionEvent sent to a gooey entity when it collides with any entity. Here, it is used to
+     * detect collisions with the pen blocks, and if the types match then the gooey is not allowed to jump over the
+     * block.
+     * <p>
+     * Also, it adds to the total number of gooeys in a pen, which is stored in the corresponding VisitBlockComponent
      *
-     * Also, it adds to the total number of gooeys in a pen, which is stored in the corresponding
-     * VisitBlockComponent
-     *
-     * @param event,entity   The HorizontalCollisionEvent and the gooey entity to which it is sent
+     * @param event,entity The HorizontalCollisionEvent and the gooey entity to which it is sent
      */
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onBump(HorizontalCollisionEvent event, EntityRef entity) {
@@ -448,7 +432,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
                 // Pen number 0 signifies that it hasn't been set
                 if (gooeyComponent.penNumber == 0) {
-                    for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class, BlockComponent.class)) {
+                    for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class,
+                            BlockComponent.class)) {
                         VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
                         if (visitBlockComponent.penNumber == penBlockComponent.penNumber) {
                             gooeyComponent.penNumber = visitBlockComponent.penNumber;
@@ -467,8 +452,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     }
 
     /**
-     * Receives the FollowGooeyEvent when the "activated" gooey is to be made to follow the player character
-     * when the player is holding a food item of the gooey's liking
+     * Receives the FollowGooeyEvent when the "activated" gooey is to be made to follow the player character when the
+     * player is holding a food item of the gooey's liking
      *
      * @param event
      * @param gooeyEntity
@@ -476,9 +461,11 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * @param hungerComponent
      */
     @ReceiveEvent
-    public void onGooeyFollowPlayer(FollowGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
+    public void onGooeyFollowPlayer(FollowGooeyEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent,
+                                    HungerComponent hungerComponent) {
         FollowComponent followComponent = gooeyEntity.getComponent(FollowComponent.class);
-        CharacterMovementComponent characterMovementComponent = gooeyEntity.getComponent(CharacterMovementComponent.class);
+        CharacterMovementComponent characterMovementComponent =
+                gooeyEntity.getComponent(CharacterMovementComponent.class);
 
         if (followComponent.entityToFollow == event.getInstigator()) {
             followComponent.entityToFollow = EntityRef.NULL;
@@ -487,7 +474,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             return;
         }
 
-        CharacterHeldItemComponent characterHeldItemComponent = event.getInstigator().getComponent(CharacterHeldItemComponent.class);
+        CharacterHeldItemComponent characterHeldItemComponent =
+                event.getInstigator().getComponent(CharacterHeldItemComponent.class);
 
         if (characterHeldItemComponent != null && characterHeldItemComponent.selectedItem.hasComponent(DisplayNameComponent.class)) {
             EntityRef item = characterHeldItemComponent.selectedItem;

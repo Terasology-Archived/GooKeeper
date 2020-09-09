@@ -2,17 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.ui;
 
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.rendering.nui.layers.hud.CoreHudWidget;
 import org.terasology.gookeeper.component.EconomyComponent;
 import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.component.SlimePodItemComponent;
-import org.terasology.logic.inventory.InventoryManager;
-import org.terasology.logic.players.LocalPlayer;
+import org.terasology.inventory.logic.InventoryManager;
 import org.terasology.nui.databinding.ReadOnlyBinding;
 import org.terasology.nui.widgets.UIText;
-import org.terasology.registry.In;
-import org.terasology.rendering.nui.layers.hud.CoreHudWidget;
 
 public class PlayerHud extends CoreHudWidget {
     @In
@@ -43,7 +43,7 @@ public class PlayerHud extends CoreHudWidget {
         }
     }
 
-    public void bindWalletText (EconomyComponent component) {
+    public void bindWalletText(EconomyComponent component) {
         if (component != null) {
             UIText walletBalance;
 
@@ -51,13 +51,13 @@ public class PlayerHud extends CoreHudWidget {
             walletBalance.bindText(new ReadOnlyBinding<String>() {
                 @Override
                 public String get() {
-                    return "Wallet Balance: " + String.valueOf(component.playerWalletCredit);
+                    return "Wallet Balance: " + component.playerWalletCredit;
                 }
             });
         }
     }
 
-    public void bindSlimePodText (SlimePodItemComponent component) {
+    public void bindSlimePodText(SlimePodItemComponent component) {
         if (component != null) {
             UIText slimePodQuantity;
 
@@ -65,13 +65,13 @@ public class PlayerHud extends CoreHudWidget {
             slimePodQuantity.bindText(new ReadOnlyBinding<String>() {
                 @Override
                 public String get() {
-                    return "Slime Pods: " + String.valueOf(component.slimePods);
+                    return "Slime Pods: " + component.slimePods;
                 }
             });
         }
     }
 
-    public void bindPlazmasterText (PlazMasterComponent component) {
+    public void bindPlazmasterText(PlazMasterComponent component) {
         if (component != null) {
             UIText plazmasterCharge;
             UIText plazmasterFrequency;
@@ -80,7 +80,7 @@ public class PlayerHud extends CoreHudWidget {
             plazmasterCharge.bindText(new ReadOnlyBinding<String>() {
                 @Override
                 public String get() {
-                    return "PlazMaster Charges: " + String.valueOf(component.charges);
+                    return "PlazMaster Charges: " + component.charges;
                 }
             });
 
@@ -88,7 +88,7 @@ public class PlayerHud extends CoreHudWidget {
             plazmasterFrequency.bindText(new ReadOnlyBinding<String>() {
                 @Override
                 public String get() {
-                    return "PlazMaster Frequency: " + String.valueOf(component.frequency);
+                    return "PlazMaster Frequency: " + component.frequency;
                 }
             });
         }

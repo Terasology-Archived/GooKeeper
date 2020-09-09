@@ -1,64 +1,64 @@
 {
-    "type": "PlayerHud",
-    "contents": {
-        "type": "relativeLayout",
-        "contents": [
-            {
-                "type": "UIText",
-                "id": "walletBalance",
-                "text": "",
-                "layoutInfo": {
-                    "position-right": {
-                        "offset": 50
-                    },
-                    "position-top": {
-                        "offset": 25
-                    },
-                    "width": 200
-                }
-            },
-            {
-                "type": "UIText",
-                "id": "slimePodAmount",
-                "text": "",
-                "layoutInfo": {
-                    "position-right": {
-                        "offset": 50
-                    },
-                    "position-top": {
-                        "offset": 100
-                    },
-                    "width": 200
-                }
-            },
-            {
-                "type": "UIText",
-                "id": "plazmasterCharges",
-                "text": "",
-                "layoutInfo": {
-                    "position-right": {
-                        "offset": 50
-                    },
-                    "position-top": {
-                        "offset": 175
-                    },
-                    "width": 200
-                }
-            },
-            {
-                 "type": "UIText",
-                 "id": "plazmasterFrequency",
-                 "text": "",
-                 "layoutInfo": {
-                     "position-right": {
-                         "offset": 50
-                     },
-                     "position-top": {
-                         "offset": 250
-                     },
-                     "width": 200
-                 }
-            }
-        ]
-    }
+  "type": "PlayerHud",
+  "contents": {
+    "type": "relativeLayout",
+    "contents": [
+      {
+        "type": "UIText",
+        "id": "walletBalance",
+        "text": "",
+        "layoutInfo": {
+          "position-right": {
+            "offset": 50
+          },
+          "position-top": {
+            "offset": 25
+          },
+          "width": 200
+        }
+      },
+      {
+        "type": "UIText",
+        "id": "slimePodAmount",
+        "text": "",
+        "layoutInfo": {
+          "position-right": {
+            "offset": 50
+          },
+          "position-top": {
+            "offset": 100
+          },
+          "width": 200
+        }
+      },
+      {
+        "type": "UIText",
+        "id": "plazmasterCharges",
+        "text": "",
+        "layoutInfo": {
+          "position-right": {
+            "offset": 50
+          },
+          "position-top": {
+            "offset": 175
+          },
+          "width": 200
+        }
+      },
+      {
+        "type": "UIText",
+        "id": "plazmasterFrequency",
+        "text": "",
+        "layoutInfo": {
+          "position-right": {
+            "offset": 50
+          },
+          "position-top": {
+            "offset": 250
+          },
+          "width": 200
+        }
+      }
+    ]
+  }
 }
