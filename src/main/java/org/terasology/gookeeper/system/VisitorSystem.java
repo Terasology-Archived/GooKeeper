@@ -4,6 +4,7 @@ package org.terasology.gookeeper.system;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.terasology.behaviors.minion.move.MinionMoveComponent;
 import org.terasology.engine.core.Time;
 import org.terasology.engine.entitySystem.entity.EntityManager;
 import org.terasology.engine.entitySystem.entity.EntityRef;
@@ -46,7 +47,6 @@ import org.terasology.inventory.logic.InventoryManager;
 import org.terasology.math.geom.Quat4f;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.minion.move.MinionMoveComponent;
 
 import java.util.Optional;
 
