@@ -123,13 +123,13 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, PlazMasterComponent plazMasterComponent) {
         if ((time.getGameTime() > lastTime + 1.0f / plazMasterComponent.rateOfFire) && plazMasterComponent.charges > 0f) {
-            Vector3f target = event.getHitNormal();
+            Vector3f target = JomlUtil.from(event.getHitNormal());
             Vector3i blockPos = new Vector3i(target);
             Vector3f dir;
-            Vector3f position = new Vector3f(event.getOrigin());
+            Vector3f position = new Vector3f(JomlUtil.from(event.getOrigin()));
             if (time.getGameTime() > lastTime + plazMasterComponent.shotRecoveryTime) {
                 // No recoil here; 100% accurate shot.
-                dir = new Vector3f(event.getDirection());
+                dir = new Vector3f(JomlUtil.from(event.getDirection()));
             } else {
                 // Add noise to this dir for simulating recoil.
                 float timeDiff = TeraMath.fastAbs(time.getGameTime() - (lastTime + plazMasterComponent.shotRecoveryTime));
