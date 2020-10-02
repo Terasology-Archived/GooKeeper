@@ -231,7 +231,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             newPosition.add(maxAllowedDistanceInDirection.mul(0.9f));
 
             slimePodEntity.send(new DropItemEvent(newPosition));
-            slimePodEntity.send(new ImpulseEvent(dir.mul(125f)));
+            slimePodEntity.send(new ImpulseEvent(JomlUtil.from(dir).mul(125f)));
 
             slimePodItemComponent.slimePods--;
         }
