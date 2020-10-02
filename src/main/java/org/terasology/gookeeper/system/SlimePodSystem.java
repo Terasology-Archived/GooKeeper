@@ -134,8 +134,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      */
     @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
-        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(event.getTargetLocation(),
-            RoundingMode.HALF_UP));
+        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new org.joml.Vector3i(event.getTargetLocation(),
+            org.joml.RoundingMode.HALF_UP));
 
         BlockComponent blockComponent = blockEntity.getComponent(BlockComponent.class);
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
@@ -194,7 +194,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             EntityBuilder entityBuilder = entityManager.newBuilder(slimePodItemComponent.launchPrefab);
             LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
 
-            Vector3f dir = new Vector3f(event.getDirection());
+            Vector3f dir = new Vector3f(JomlUtil.from(event.getDirection()));
             Vector3f finalDir = new Vector3f(dir);
             finalDir.normalize();
 
