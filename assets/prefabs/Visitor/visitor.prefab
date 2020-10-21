@@ -7,8 +7,8 @@
     "mesh": "femaleHuman",
     "heightOffset": -1.9,
     "material": "femalehumanSkin",
-    "animation": "femalehumanRun",
-    "animationPool": ["femalehumanRun"],
+    "animation": "femaleHuman#Running",
+    "animationPool": ["femaleHuman#Running"],
     "loop": true,
     "scale": [0.32, 0.32, 0.32]
   },
@@ -16,10 +16,10 @@
     "tree": "GooKeeper:visitor"
   },
   "Stand" :{
-    "animationPool": ["femalehumanStand"]
+    "animationPool": ["femaleHuman#Idle"]
   },
   "Walk" :{
-    "animationPool": ["femalehumanRun"]
+    "animationPool": ["femaleHuman#Running"]
   },
   "location": {},
   "Character": {},
