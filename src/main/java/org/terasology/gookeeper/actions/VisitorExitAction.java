@@ -15,19 +15,16 @@
  */
 package org.terasology.gookeeper.actions;
 
+import org.joml.Vector3f;
 import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
 import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
-import org.terasology.gookeeper.interfaces.EconomyManager;
 import org.terasology.logic.behavior.BehaviorAction;
 import org.terasology.logic.behavior.core.Actor;
 import org.terasology.logic.behavior.core.BaseAction;
 import org.terasology.logic.behavior.core.BehaviorState;
 import org.terasology.logic.location.LocationComponent;
-import org.terasology.math.geom.Vector3f;
 import org.terasology.minion.move.MinionMoveComponent;
-import org.terasology.registry.In;
 
 @BehaviorAction(name = "visitor_exit")
 public class VisitorExitAction extends BaseAction {
@@ -40,12 +37,16 @@ public class VisitorExitAction extends BaseAction {
         int penListSize = visitorComponent.pensToVisit.size();
         EntityRef exitBlock = visitorComponent.pensToVisit.get(penListSize - 1);
 
-        if (Vector3f.distance(minionMoveComponent.target, exitBlock.getComponent(LocationComponent.class).getWorldPosition()) <= 1f) {
+        Vector3f exitBlockPosition = exitBlock.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
+        if (Vector3f.distance(minionMoveComponent.target.x(), minionMoveComponent.target.y(),
+                minionMoveComponent.target.z(), exitBlockPosition.x(), exitBlockPosition.y(), exitBlockPosition.z()) <= 1f) {
             actor.getEntity().destroy();
             return BehaviorState.SUCCESS;
         } else {
             for (EntityRef pen : visitorComponent.pensToVisit) {
-                if (Vector3f.distance(minionMoveComponent.target, pen.getComponent(LocationComponent.class).getWorldPosition()) <= 1f) {
+                Vector3f penPosition = pen.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
+                if (Vector3f.distance(minionMoveComponent.target.x(), minionMoveComponent.target.y(),
+                        minionMoveComponent.target.z(), penPosition.x(), penPosition.y(), penPosition.z()) <= 1f) {
                     actor.getEntity().send(new LeaveVisitBlockEvent(actor.getEntity(), pen));
                     break;
                 }

@@ -16,7 +16,10 @@
 package org.terasology.gookeeper.system;
 
 import com.google.common.collect.Lists;
-
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.behaviors.components.AttackOnHitComponent;
 import org.terasology.behaviors.components.FindNearbyPlayersComponent;
@@ -25,15 +28,22 @@ import org.terasology.biomesAPI.Biome;
 import org.terasology.biomesAPI.BiomeRegistry;
 import org.terasology.core.world.CoreBiome;
 import org.terasology.entitySystem.entity.EntityBuilder;
-import org.terasology.entitySystem.prefab.PrefabManager;
-import org.terasology.gookeeper.component.*;
-import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.prefab.Prefab;
+import org.terasology.entitySystem.prefab.PrefabManager;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.gookeeper.component.AggressiveComponent;
+import org.terasology.gookeeper.component.FriendlyComponent;
+import org.terasology.gookeeper.component.GooeyComponent;
+import org.terasology.gookeeper.component.HungerComponent;
+import org.terasology.gookeeper.component.NeutralComponent;
+import org.terasology.gookeeper.component.PenBlockComponent;
+import org.terasology.gookeeper.component.SlimePodComponent;
+import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.event.FollowGooeyEvent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
@@ -46,13 +56,11 @@ import org.terasology.logic.characters.events.HorizontalCollisionEvent;
 import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.delay.DelayManager;
 import org.terasology.logic.health.HealthComponent;
+import org.terasology.logic.health.event.OnDamagedEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.ChunkMath;
-import org.terasology.math.geom.Quat4f;
-import org.terasology.math.geom.Vector3f;
-import org.terasology.math.geom.Vector3i;
-import org.terasology.logic.health.event.OnDamagedEvent;
+import org.terasology.math.JomlUtil;
 import org.terasology.registry.In;
 import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.rendering.logic.SkeletalMeshComponent;
@@ -65,11 +73,10 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.chunks.ChunkConstants;
+import org.terasology.world.sun.CelestialSystem;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.terasology.world.sun.CelestialSystem;
 
 @RegisterSystem
 public class GooeySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
@@ -138,7 +145,10 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
 
             if (locationComponent != null) {
-                float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
+                Vector3f worldPosition = locationComponent.getWorldPosition(new Vector3f());
+                Vector3f playerPosition = localPlayer.getPosition(new Vector3f());
+                float distanceFromPlayer = Vector3f.distance(worldPosition.x(), worldPosition.y(), worldPosition.z(),
+                        playerPosition.x(), playerPosition.y(), playerPosition.z());
                 if (distanceFromPlayer > MAX_DISTANCE_FROM_PLAYER && !gooeyComponent.isCaptured) {
                     entity.destroy();
                     currentNumOfEntities--;
@@ -162,7 +172,9 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     private void cullDistantGooeys(EntityRef entity, LocationComponent locationComponent) {
         SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
         if (locationComponent != null) {
-            float distanceFromPlayer = Vector3f.distance(locationComponent.getWorldPosition(), localPlayer.getPosition());
+            Vector3f worldPosition = locationComponent.getWorldPosition(new Vector3f());
+            Vector3f playerPosition = localPlayer.getPosition(new Vector3f());
+            float distanceFromPlayer = Vector3f.distance(worldPosition.x(), worldPosition.y(), worldPosition.z(), playerPosition.x(), playerPosition.y(), playerPosition.z());
             if (distanceFromPlayer > 50f && skeleton.mesh != null) {
                 skeleton.mesh = null;
             } else if (distanceFromPlayer <= 50f && skeleton.mesh == null) {
@@ -175,8 +187,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * Try spawning gooeys based on the player's current world position
      */
     private void spawnNearPlayer () {
-        Vector3f pos = localPlayer.getPosition();
-        Vector3i chunkPos = ChunkMath.calcChunkPos((int) pos.x, (int) pos.y, (int) pos.z);
+        Vector3f pos = localPlayer.getPosition(new Vector3f());
+        Vector3i chunkPos = ChunkMath.calcChunkPos((int) pos.x(), (int) pos.y(), (int) pos.z(), new Vector3i());
         for (Prefab gooey : gooeyPrefabs) {
             boolean trySpawn = (gooey.getComponent(GooeyComponent.class).SPAWN_CHANCE/10f) > random.nextInt(400);
             if (trySpawn) {
@@ -258,12 +270,13 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * @param gooey,location   Gooey prefab to be spawned and the location where the gooey is to be spawned
      */
     private void spawnGooey(Prefab gooey, Vector3i location) {
-        Vector3f floatVectorLocation = location.toVector3f();
+        Vector3f floatVectorLocation = new Vector3f(location);
         Vector3f yAxis = new Vector3f(0, 1, 0);
         float randomAngle = (float) (random.nextFloat()*Math.PI*2);
-        Quat4f rotation = new Quat4f(yAxis, randomAngle);
+        Quaternionf rotation = new Quaternionf(yAxis.x(), yAxis.y(), yAxis.z(), randomAngle);
 
-        float distanceFromPlayer = Vector3f.distance(new Vector3f((float)location.x, (float)location.y, (float)location.z), localPlayer.getPosition());
+        Vector3f playerPosition = localPlayer.getPosition(new Vector3f());
+        float distanceFromPlayer = Vector3f.distance(location.x(), location.y(), location.z(), playerPosition.x(), playerPosition.y(), playerPosition.z());
         if (distanceFromPlayer < MAX_DISTANCE_FROM_PLAYER) {
             if (gooey.exists() && gooey.getComponent(LocationComponent.class) != null) {
                 EntityBuilder entityBuilder = entityManager.newBuilder(gooey);
@@ -298,7 +311,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         if (!blockAbove.equals(airBlock)) {
             return false;
         }
-        return biomeRegistry.getBiome(pos).map(biome ->
+        return biomeRegistry.getBiome(JomlUtil.from(pos)).map(biome ->
             gooeyComponent.biome.stream().anyMatch(s -> biome.equals(getBiomeFromString(s)))
         ).orElse(false);
     }
@@ -420,7 +433,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onBump(HorizontalCollisionEvent event, EntityRef entity) {
         GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
-        Vector3f collisionPosition = event.getLocation();
+        Vector3f collisionPosition = JomlUtil.from(event.getLocation());
 
         EntityRef blockEntity = EntityRef.NULL;
 
@@ -432,7 +445,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
                 continue;
             }
 
-            if (Vector3f.distance(blockPos.getWorldPosition(), collisionPosition) <= 3f) {
+            Vector3f worldPosition = blockPos.getWorldPosition(new Vector3f());
+            if (Vector3f.distance(worldPosition.x(), worldPosition.y(), worldPosition.z(), collisionPosition.x(), collisionPosition.y(), collisionPosition.z()) <= 3f) {
                 blockEntity = entityRef;
             }
         }

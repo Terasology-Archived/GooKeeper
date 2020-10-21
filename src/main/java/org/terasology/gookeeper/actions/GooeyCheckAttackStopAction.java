@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.actions;
 
+import org.joml.Vector3f;
 import org.terasology.behaviors.components.AttackOnHitComponent;
 import org.terasology.behaviors.components.FollowComponent;
 import org.terasology.logic.behavior.BehaviorAction;
@@ -9,7 +10,6 @@ import org.terasology.logic.behavior.core.Actor;
 import org.terasology.logic.behavior.core.BaseAction;
 import org.terasology.logic.behavior.core.BehaviorState;
 import org.terasology.logic.location.LocationComponent;
-import org.terasology.math.geom.Vector3f;
 import org.terasology.nui.properties.Range;
 
 
@@ -20,8 +20,8 @@ public class GooeyCheckAttackStopAction extends BaseAction {
     private float maxDistance = 10f;
 
     /**
-     * Makes the character follow a player within a given range
-     * Sends FAILURE when the distance is greater than maxDistance
+     * Makes the character follow a player within a given range Sends FAILURE when the distance is greater than
+     * maxDistance
      */
     @Override
     public BehaviorState modify(Actor actor, BehaviorState state) {
@@ -40,8 +40,9 @@ public class GooeyCheckAttackStopAction extends BaseAction {
         if (actorLocationComponent == null) {
             return BehaviorState.FAILURE;
         }
-        Vector3f actorPosition = actorLocationComponent.getWorldPosition();
-        float maxDistance = actor.hasComponent(AttackOnHitComponent.class) ? actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistance;
+        Vector3f actorPosition = actorLocationComponent.getWorldPosition(new Vector3f());
+        float maxDistance = actor.hasComponent(AttackOnHitComponent.class) ?
+                actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistance;
 
         float maxDistanceSquared = maxDistance * maxDistance;
         FollowComponent followWish = actor.getComponent(FollowComponent.class);
@@ -53,7 +54,7 @@ public class GooeyCheckAttackStopAction extends BaseAction {
         if (locationComponent == null) {
             return BehaviorState.FAILURE;
         }
-        if (locationComponent.getWorldPosition().distanceSquared(actorPosition) <= maxDistanceSquared) {
+        if (locationComponent.getWorldPosition(new Vector3f()).distanceSquared(actorPosition) <= maxDistanceSquared) {
             return BehaviorState.SUCCESS;
         }
         return BehaviorState.FAILURE;
