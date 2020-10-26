@@ -15,6 +15,9 @@
  */
 package org.terasology.gookeeper.system;
 
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.engine.Time;
@@ -29,11 +32,11 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.fences.ConnectsToFencesComponent;
 import org.terasology.gookeeper.Constants;
-import org.terasology.gookeeper.component.VisitBlockComponent;
-import org.terasology.gookeeper.component.VisitorExitComponent;
-import org.terasology.gookeeper.component.VisitorEntranceComponent;
 import org.terasology.gookeeper.component.PenBlockComponent;
+import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
+import org.terasology.gookeeper.component.VisitorEntranceComponent;
+import org.terasology.gookeeper.component.VisitorExitComponent;
 import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
 import org.terasology.logic.common.ActivateEvent;
@@ -45,9 +48,6 @@ import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.Direction;
 import org.terasology.math.Side;
 import org.terasology.math.SideBitFlag;
-import org.terasology.math.geom.Quat4f;
-import org.terasology.math.geom.Vector3f;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.minion.move.MinionMoveComponent;
 import org.terasology.network.NetworkSystem;
 import org.terasology.physics.Physics;
@@ -124,7 +124,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
                 int cutoffRNG = random.nextInt(0, 10);
 
-                for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class, LocationComponent.class)) {
+                for (EntityRef visitBlock : entityManager.getEntitiesWith(VisitBlockComponent.class,
+                        LocationComponent.class)) {
                     VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
 
                     if (visitBlockComponent.cutoffFactor <= cutoffRNG) {
@@ -132,7 +133,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                     }
                 }
 
-                for (EntityRef exitBlock : entityManager.getEntitiesWith(VisitorExitComponent.class, LocationComponent.class)) {
+                for (EntityRef exitBlock : entityManager.getEntitiesWith(VisitorExitComponent.class,
+                        LocationComponent.class)) {
                     visitorComponent.pensToVisit.add(exitBlock);
                 }
 
@@ -152,10 +154,11 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     public void onBlockPlaced(OnBlockItemPlaced event, EntityRef entity) {
         BlockComponent blockComponent = event.getPlacedBlock().getComponent(BlockComponent.class);
         VisitBlockComponent visitBlockComponent = event.getPlacedBlock().getComponent(VisitBlockComponent.class);
-        VisitorEntranceComponent visitorEntranceComponent = event.getPlacedBlock().getComponent(VisitorEntranceComponent.class);
+        VisitorEntranceComponent visitorEntranceComponent =
+                event.getPlacedBlock().getComponent(VisitorEntranceComponent.class);
 
         if (blockComponent != null && visitBlockComponent != null) {
-            Vector3f targetBlock = blockComponent.getPosition().toVector3f();
+            Vector3f targetBlock = new Vector3f(blockComponent.getPosition(new Vector3i()));
             EntityRef pen = getClosestPen(targetBlock);
 
             if (pen != EntityRef.NULL) {
@@ -177,7 +180,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             visitorEntranceComponent.owner = event.getInstigator();
             event.getPlacedBlock().saveComponent(visitorEntranceComponent);
 
-            delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.visitorSpawnDelayEventID, visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
+            delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.visitorSpawnDelayEventID,
+                    visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
         }
     }
 
@@ -188,9 +192,10 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         for (EntityRef pen : entityManager.getEntitiesWith(PenBlockComponent.class, BlockComponent.class)) {
             BlockComponent blockComponent = pen.getComponent(BlockComponent.class);
 
-            Vector3f blockPos = blockComponent.getPosition().toVector3f();
-            if (Vector3f.distance(blockPos, location) < minDistance) {
-                minDistance = Vector3f.distance(blockPos, location);
+            Vector3f blockPos = new Vector3f(blockComponent.getPosition(new Vector3i()));
+            if (Vector3f.distance(blockPos.x(), blockPos.y(), blockPos.z(), location.x(), location.y(), location.z()) < minDistance) {
+                minDistance = Vector3f.distance(blockPos.x(), blockPos.y(), blockPos.z(), location.x(), location.y(),
+                        location.z());
                 closestPen = pen;
             }
         }
@@ -209,11 +214,11 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
         if (penBlockComponent != null && !penBlockComponent.penIDSet) {
 
-            Byte sides = SideBitFlag.getSides(Side.LEFT, Side.RIGHT,Side.FRONT,Side.BACK);
+            Byte sides = SideBitFlag.getSides(Side.LEFT, Side.RIGHT, Side.FRONT, Side.BACK);
 
             for (Side side : SideBitFlag.getSides(sides)) {
-                Vector3i neighborLocation = new Vector3i(blockComponent.getPosition());
-                neighborLocation.add(side.getVector3i());
+                Vector3i neighborLocation = new Vector3i(blockComponent.getPosition(new Vector3i()));
+                neighborLocation.add(side.direction());
 
                 EntityRef neighborEntity = blockEntityRegistry.getEntityAt(neighborLocation);
                 BlockComponent blockComponent1 = neighborEntity.getComponent(BlockComponent.class);
@@ -235,8 +240,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
     /**
      * Receives LeaveVisitBlockEvent sent to a visitor entity when it leaves a visit block, and moves towards the next.
-     * This is used to add credits to the players wallet depending on the type of gooeys associated with this visit block,
-     * hence rarer the gooey, more would be the pay off.
+     * This is used to add credits to the players wallet depending on the type of gooeys associated with this visit
+     * block, hence rarer the gooey, more would be the pay off.
      *
      * @param event the LeaveVisitBlockEvent event
      * @param entityRef the visitor entity to which it is sent
@@ -250,8 +255,11 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
         if (blockEntity.hasComponent(VisitBlockComponent.class) && visitor.hasComponent(VisitorComponent.class) && minionMoveComponent != null) {
             VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
-            Vector3f blockPos = blockEntity.getComponent(LocationComponent.class).getWorldPosition();
-            if (visitorComponent.pensToVisit.contains(blockEntity) && Vector3f.distance(minionMoveComponent.target, blockPos) <= 1f) {
+            Vector3f blockPos = blockEntity.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
+            if (visitorComponent.pensToVisit.contains(blockEntity) &&
+                    Vector3f.distance(minionMoveComponent.target.x(), minionMoveComponent.target.y(),
+                            minionMoveComponent.target.z(),
+                            blockPos.x(), blockPos.y(), blockPos.z()) <= 1f) {
                 economySystem.payVisitFee(visitor, blockEntity);
                 visitorComponent.pensToVisit.remove(blockEntity);
             }
@@ -261,26 +269,27 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     }
 
     /**
-     * Receives PeriodicActionTriggeredEvent sent to a visitor entrance block entity hence triggering the periodic visitor spawning
+     * Receives PeriodicActionTriggeredEvent sent to a visitor entrance block entity hence triggering the periodic
+     * visitor spawning
      *
      * @param event the PeriodicActionTriggeredEvent event
-     * @param entity the visitor entrance block entity to which it is sent
+     * @param entityRef the visitor entrance block entity to which it is sent
      */
     @ReceiveEvent(components = {VisitorEntranceComponent.class})
     public void onPeriodicAction(PeriodicActionTriggeredEvent event, EntityRef entityRef) {
         if (event.getActionId().equals(Constants.visitorSpawnDelayEventID)) {
             LocationComponent locationComponent = entityRef.getComponent(LocationComponent.class);
-            Vector3f blockPos = locationComponent.getWorldPosition().addY(1f);
+            Vector3f blockPos = locationComponent.getWorldPosition(new Vector3f()).add(0, 1f, 0);
 
             Vector3f spawnPos = blockPos;
-            Vector3f dir = new Vector3f(locationComponent.getWorldDirection());
+            Vector3f dir = new Vector3f(locationComponent.getWorldDirection(new Vector3f()));
             dir.y = 0;
             if (dir.lengthSquared() > 0.001f) {
                 dir.normalize();
             } else {
-                dir.set(Direction.FORWARD.getVector3f());
+                dir.set(Direction.FORWARD.asVector3f());
             }
-            Quat4f rotation = Quat4f.shortestArcQuat(Direction.FORWARD.getVector3f(), dir);
+            Quaternionf rotation = new Quaternionf().rotateTo(Direction.FORWARD.asVector3f(), dir);
 
             if (visitorPrefab.isPresent() && visitorPrefab.get().getComponent(LocationComponent.class) != null) {
                 EntityRef visitor = entityManager.create(visitorPrefab.get(), spawnPos, rotation);

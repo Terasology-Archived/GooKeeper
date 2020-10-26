@@ -15,6 +15,8 @@
  */
 package org.terasology.gookeeper.system;
 
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.assets.management.AssetManager;
@@ -46,8 +48,6 @@ import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.JomlUtil;
 import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Vector3f;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
 import org.terasology.physics.StandardCollisionGroup;
@@ -64,6 +64,8 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.block.BlockComponent;
 
 import java.math.RoundingMode;
+
+import static org.joml.RoundingMode.HALF_UP;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
@@ -134,14 +136,15 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      */
     @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
-        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new org.joml.Vector3i(event.getTargetLocation(),
-            org.joml.RoundingMode.HALF_UP));
+        EntityRef blockEntity =
+                blockEntityRegistry.getExistingBlockEntityAt(new org.joml.Vector3i(event.getTargetLocation(),
+                HALF_UP));
 
         BlockComponent blockComponent = blockEntity.getComponent(BlockComponent.class);
         SlimePodComponent slimePodComponent = entity.getComponent(SlimePodComponent.class);
         Vector3f blockPos;
         if (blockEntity.hasComponent(BlockComponent.class)) {
-            blockPos = blockComponent.getPosition().toVector3f().addY(1f);
+            blockPos = new Vector3f(blockComponent.getPosition(new Vector3i())).add(0, 1f, 0);
         } else {
             return;
         }
@@ -173,7 +176,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
             /* This adds the health degradation to the newly captured gooey entities */
             delayManager.addPeriodicAction(releasedGooey, Constants.healthDecreaseEventID,
-                hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+                    hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
             /* Gives a life time to the entity */
             delayManager.addDelayedAction(entity, Constants.gooeyDeathEventID, gooeyComponent.lifeTime);
 
@@ -194,7 +197,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             EntityBuilder entityBuilder = entityManager.newBuilder(slimePodItemComponent.launchPrefab);
             LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
 
-            Vector3f dir = new Vector3f(JomlUtil.from(event.getDirection()));
+            Vector3f dir = new Vector3f(event.getDirection());
             Vector3f finalDir = new Vector3f(dir);
             finalDir.normalize();
 
@@ -210,28 +213,28 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
             GazeMountPointComponent gaze = localPlayer.getCharacterEntity().getComponent(GazeMountPointComponent.class);
             if (gaze != null) {
-                locationComponent.setWorldPosition(localPlayer.getPosition().add(JomlUtil.from(gaze.translate)).add(finalDir.scale(2f)));
+                locationComponent.setWorldPosition(localPlayer.getPosition(new Vector3f()).add(gaze.translate).add(finalDir.mul(2f)));
             }
 
             entityBuilder.setPersistent(false);
             EntityRef slimePodEntity = entityBuilder.build();
 
-            Vector3f position = localPlayer.getViewPosition();
-            Vector3f direction = localPlayer.getViewDirection();
+            Vector3f position = localPlayer.getViewPosition(new Vector3f());
+            Vector3f direction = localPlayer.getViewDirection(new Vector3f());
 
             Vector3f maxAllowedDistanceInDirection = direction.mul(1.5f);
-            HitResult hitResult = physics.rayTrace(JomlUtil.from(position), JomlUtil.from(direction), 1.5f,
-                StandardCollisionGroup.CHARACTER, StandardCollisionGroup.WORLD);
+            HitResult hitResult = physics.rayTrace(position, direction, 1.5f,
+                    StandardCollisionGroup.CHARACTER, StandardCollisionGroup.WORLD);
             if (hitResult.isHit()) {
-                Vector3f possibleNewPosition = JomlUtil.from(hitResult.getHitPoint());
+                Vector3f possibleNewPosition = hitResult.getHitPoint();
                 maxAllowedDistanceInDirection = possibleNewPosition.sub(position);
             }
 
             Vector3f newPosition = position;
             newPosition.add(maxAllowedDistanceInDirection.mul(0.9f));
 
-            slimePodEntity.send(new DropItemEvent(newPosition));
-            slimePodEntity.send(new ImpulseEvent(JomlUtil.from(dir).mul(125f)));
+            slimePodEntity.send(new DropItemEvent(JomlUtil.from(newPosition)));
+            slimePodEntity.send(new ImpulseEvent(dir.mul(125f)));
 
             slimePodItemComponent.slimePods--;
         }
@@ -248,10 +251,10 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
         LocationComponent loc = entity.getComponent(LocationComponent.class);
-        Vector3f pos = loc.getWorldPosition();
-        pos.setY(pos.getY() - 1);
+        Vector3f pos = loc.getWorldPosition(new Vector3f());
+        pos.set(0, pos.y() - 1, 0);
 
-        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(pos, RoundingMode.HALF_UP));
+        EntityRef blockEntity = blockEntityRegistry.getExistingBlockEntityAt(new Vector3i(pos, HALF_UP));
 
         if (blockEntity.hasComponent(SlimePodComponent.class) && entity.hasComponent(GooeyComponent.class)) {
             SlimePodComponent slimePodComponent = blockEntity.getComponent(SlimePodComponent.class);
@@ -279,14 +282,15 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             return 0f;
         }
 
-        float distanceFromGooey = Vector3f.distance(slimePodLocation.getWorldPosition(),
-            gooeyLocation.getWorldPosition());
+        Vector3f slimePodPosition = slimePodLocation.getWorldPosition(new Vector3f());
+        Vector3f gooeyPosition = gooeyLocation.getWorldPosition(new Vector3f());
+        float distanceFromGooey = Vector3f.distance(slimePodPosition.x(), slimePodPosition.y(), slimePodPosition.z(), gooeyPosition.x(), gooeyPosition.y(), gooeyPosition.z());
         if (distanceFromGooey > slimePodComponent.maxDistance) {
             return 0f;
         }
 
         float captureProbability =
-            TeraMath.fastAbs(distanceFromGooey - slimePodComponent.maxDistance) * gooeyComponent.captureProbabiltyFactor;
+                TeraMath.fastAbs(distanceFromGooey - slimePodComponent.maxDistance) * gooeyComponent.captureProbabiltyFactor;
         return captureProbability;
     }
 
@@ -320,7 +324,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             if (entity.getComponent(SlimePodComponent.class).capturedEntity.equals(EntityRef.NULL)) {
                 for (EntityRef slimePodLauncher : entityManager.getEntitiesWith(SlimePodItemComponent.class)) {
                     SlimePodItemComponent slimePodItemComponent =
-                        slimePodLauncher.getComponent(SlimePodItemComponent.class);
+                            slimePodLauncher.getComponent(SlimePodItemComponent.class);
                     slimePodItemComponent.slimePods++;
                     slimePodLauncher.saveComponent(slimePodItemComponent);
                     entity.destroy();
