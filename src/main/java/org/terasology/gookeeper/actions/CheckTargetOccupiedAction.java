@@ -15,6 +15,7 @@
  */
 package org.terasology.gookeeper.actions;
 
+import org.joml.Vector3f;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
@@ -23,7 +24,6 @@ import org.terasology.logic.behavior.core.Actor;
 import org.terasology.logic.behavior.core.BaseAction;
 import org.terasology.logic.behavior.core.BehaviorState;
 import org.terasology.logic.location.LocationComponent;
-import org.terasology.math.geom.Vector3f;
 import org.terasology.minion.move.MinionMoveComponent;
 
 import java.util.Random;
@@ -42,7 +42,9 @@ public class CheckTargetOccupiedAction extends BaseAction {
         if (moveComponent.currentBlock != null) {
             for (EntityRef pen : visitorComponent.pensToVisit) {
                 LocationComponent penLocationComponent = pen.getComponent(LocationComponent.class);
-                if (Vector3f.distance(moveComponent.target, penLocationComponent.getWorldPosition()) <= 1f) {
+                Vector3f penPosition = penLocationComponent.getWorldPosition(new Vector3f());
+                if (Vector3f.distance(moveComponent.target.x(), moveComponent.target.y(), moveComponent.target.z(),
+                        penPosition.x(), penPosition.y(), penPosition.z()) <= 1f) {
                     VisitBlockComponent visitBlockComponent = pen.getComponent(VisitBlockComponent.class);
 
                     if (visitBlockComponent != null && !visitBlockComponent.isOccupied) {
@@ -50,7 +52,8 @@ public class CheckTargetOccupiedAction extends BaseAction {
                     } else {
                         int currentPenIndex = visitorComponent.pensToVisit.indexOf(pen);
                         int newPenIndex = RNG(currentPenIndex, visitorComponent.pensToVisit.size());
-                        moveComponent.target = visitorComponent.pensToVisit.get(newPenIndex).getComponent(LocationComponent.class).getWorldPosition();
+                        moveComponent.target =
+                                visitorComponent.pensToVisit.get(newPenIndex).getComponent(LocationComponent.class).getWorldPosition();
                         return BehaviorState.SUCCESS;
                     }
                 }
@@ -61,7 +64,7 @@ public class CheckTargetOccupiedAction extends BaseAction {
         }
     }
 
-    private int RNG (int oldNumber, int size) {
+    private int RNG(int oldNumber, int size) {
         int newNumber = random.nextInt(size);
 
         if (newNumber != oldNumber) {
