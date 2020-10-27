@@ -26,15 +26,15 @@ import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterMode;
 import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
-import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.EconomyComponent;
-import org.terasology.gookeeper.component.UpgradableComponent;
-import org.terasology.gookeeper.component.SlimePodItemComponent;
+import org.terasology.gookeeper.component.GooeyComponent;
 import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.component.PurchasableComponent;
-import org.terasology.gookeeper.component.VisitorEntranceComponent;
-import org.terasology.gookeeper.component.VisitorComponent;
+import org.terasology.gookeeper.component.SlimePodItemComponent;
+import org.terasology.gookeeper.component.UpgradableComponent;
 import org.terasology.gookeeper.component.VisitBlockComponent;
+import org.terasology.gookeeper.component.VisitorComponent;
+import org.terasology.gookeeper.component.VisitorEntranceComponent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
 import org.terasology.logic.common.DisplayNameComponent;
 import org.terasology.logic.console.commandSystem.annotations.Command;
@@ -125,7 +125,8 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
         EntityRef player = client.getComponent(ClientComponent.class).character;
         EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
 
-        PurchasableComponent purchasableComponent = Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class);
+        PurchasableComponent purchasableComponent =
+                Assets.getPrefab(itemPrefabName + "Fenced").get().getComponent(PurchasableComponent.class);
         int quantityParam = amount != null ? amount : purchasableComponent.baseQuantity;
 
         if (economyComponent != null && economyComponent.playerWalletCredit - (quantityParam * purchasableComponent.basePrice) > 0f) {
@@ -152,7 +153,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     @Command(shortDescription = "Upgrade your equipment (PlazMaster and Slime Pod Launcher",
             requiredPermission = PermissionManager.NO_PERMISSION)
     public String upgrade(@Sender EntityRef client,
-                           @CommandParam("prefabId or blockName") String itemPrefabName) {
+                          @CommandParam("prefabId or blockName") String itemPrefabName) {
         EntityRef player = client.getComponent(ClientComponent.class).character;
         EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
 
@@ -177,63 +178,69 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
         return "Couldn't find the requested item to upgrade.";
     }
 
-    private void upgradeByType (EntityRef item, UpgradableComponent upgradableComponent) {
-        upgradableComponent.currentTier ++;
+    private void upgradeByType(EntityRef item, UpgradableComponent upgradableComponent) {
+        upgradableComponent.currentTier++;
 
         if (item.hasComponent(SlimePodItemComponent.class)) {
             SlimePodItemComponent slimePodItemComponent = item.getComponent(SlimePodItemComponent.class);
-            slimePodItemComponent.slimePods = upgradableComponent.baseQuantity * (1 + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier);
+            slimePodItemComponent.slimePods =
+                    upgradableComponent.baseQuantity * (1 + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier);
             item.saveComponent(slimePodItemComponent);
         } else if (item.hasComponent(PlazMasterComponent.class)) {
             PlazMasterComponent plazMasterComponent = item.getComponent(PlazMasterComponent.class);
-            plazMasterComponent.charges = upgradableComponent.baseQuantity * (1 + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier);
+            plazMasterComponent.charges =
+                    upgradableComponent.baseQuantity * (1 + upgradableComponent.currentTier * upgradableComponent.baseQuantityMultiplier);
             plazMasterComponent.maxCharges = plazMasterComponent.charges;
             item.saveComponent(plazMasterComponent);
         }
     }
 
     /**
-     * This function is to be called by a visitor entity when it gets spawned into the world
-     * Adds up credit in the player wallet in form of an entrance fee.
+     * This function is to be called by a visitor entity when it gets spawned into the world Adds up credit in the
+     * player wallet in form of an entrance fee.
      *
-     * @param visitor The visitor entity
+     * @param visitorComponent The visitor entity's {@link VisitorComponent}
      */
     @Override
-    public void payEntranceFee (EntityRef visitor) {
-        VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
-        VisitorEntranceComponent visitorEntranceComponent = visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
-        EntityRef player = visitorEntranceComponent.owner;
-        EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
+    public void payEntranceFee(VisitorComponent visitorComponent) {
+        if (visitorComponent.visitorEntranceBlock.hasComponent(VisitorEntranceComponent.class)) {
+            VisitorEntranceComponent visitorEntranceComponent =
+                    visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
+            EntityRef player = visitorEntranceComponent.owner;
 
-        if (economyComponent != null) {
-            economyComponent.playerWalletCredit += baseEntranceFee;
-            player.saveComponent(economyComponent);
+            if (player.hasComponent(EconomyComponent.class)) {
+                EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
+                economyComponent.playerWalletCredit += baseEntranceFee;
+                player.saveComponent(economyComponent);
+            }
         }
     }
 
     /**
-     * This function is to be called by a visitor entity when it visits a particular visit block attached to a pen,
-     * and depending upon the rarity and number of gooeys in the pen, credits get added accordingly.
+     * This function is to be called by a visitor entity when it visits a particular visit block attached to a pen, and
+     * depending upon the rarity and number of gooeys in the pen, credits get added accordingly.
      *
-     * @param visitor,visitBlock The visitor entity, the visit block entity
+     * @param visitorComponent,visitBlock The visitor entity's {@link VisitorComponent}, the visit block entity
      */
 
     @Override
-    public void payVisitFee (EntityRef visitor, EntityRef visitBlock) {
-        VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
-        VisitorEntranceComponent visitorEntranceComponent = visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
-        EntityRef player = visitorEntranceComponent.owner;
-        EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
+    public void payVisitFee(VisitorComponent visitorComponent, EntityRef visitBlock) {
+        if (visitorComponent.visitorEntranceBlock.hasComponent(VisitorEntranceComponent.class)) {
+            VisitorEntranceComponent visitorEntranceComponent =
+                    visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
+            EntityRef player = visitorEntranceComponent.owner;
+            EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
 
-        VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
+            VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
 
-        Prefab gooeyPrefab = prefabManager.getPrefab("GooKeeper:"+ visitBlockComponent.type);
+            Prefab gooeyPrefab = prefabManager.getPrefab("GooKeeper:" + visitBlockComponent.type);
 
-        if (economyComponent != null && gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
-            float profitPayOff = gooeyPrefab.getComponent(GooeyComponent.class).profitPayOff;
+            if (economyComponent != null && gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
+                float profitPayOff = gooeyPrefab.getComponent(GooeyComponent.class).profitPayOff;
 
-            economyComponent.playerWalletCredit += baseVisitFee * profitPayOff * (visitBlockComponent.gooeyQuantity/3f);
-            player.saveComponent(economyComponent);
+                economyComponent.playerWalletCredit += baseVisitFee * profitPayOff * (visitBlockComponent.gooeyQuantity / 3f);
+                player.saveComponent(economyComponent);
+            }
         }
     }
 }

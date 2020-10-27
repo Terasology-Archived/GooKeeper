@@ -16,10 +16,11 @@
 package org.terasology.gookeeper.interfaces;
 
 import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.gookeeper.component.VisitorComponent;
 
 public interface EconomyManager {
-    void payEntranceFee(EntityRef visitor);
+    void payEntranceFee(VisitorComponent visitorComponent);
 
-    void payVisitFee(EntityRef visitor, EntityRef visitBlock);
+    void payVisitFee(VisitorComponent visitorComponent, EntityRef visitBlock);
 }
 
