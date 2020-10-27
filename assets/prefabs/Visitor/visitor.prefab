@@ -3,23 +3,27 @@
     "name": "A Visitor"
   },
   "persisted": false,
-  "skeletalmesh": {
-    "mesh": "femaleHuman",
-    "heightOffset": -1.9,
-    "material": "femalehumanSkin",
-    "animation": "femaleHuman#Running",
-    "animationPool": ["femaleHuman#Running"],
-    "loop": true,
-    "scale": [0.32, 0.32, 0.32]
+  "skeletalMesh": {
+    "mesh": "femaleHumanSmooth",
+    "material": "femaleHumanSkin",
+    "animation": "femaleHumanSmooth#idle",
+    "animationPool": [
+      "femaleHumanSmooth#idle"
+    ],
+    "loop": true
   },
   "Behavior": {
     "tree": "GooKeeper:visitor"
   },
-  "Stand" :{
-    "animationPool": ["femaleHuman#Idle"]
+  "Stand": {
+    "animationPool": [
+      "femaleHumanSmooth#idle"
+    ]
   },
-  "Walk" :{
-    "animationPool": ["femaleHuman#Running"]
+  "Walk": {
+    "animationPool": [
+      "femaleHumanSmooth#Running"
+    ]
   },
   "location": {},
   "Character": {},
@@ -44,7 +48,7 @@
       1.0,
       1.0
     ]
-    },
+  },
   "Trigger": {
     "detectGroups": [
       "engine:debris",

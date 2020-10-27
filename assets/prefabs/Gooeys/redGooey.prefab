@@ -12,9 +12,9 @@
       255
     ]
   },
-  "skeletalmesh": {
+  "skeletalMesh": {
     "mesh": "gooey",
-    "heightOffset": -2.0,
+    "heightOffset": -0.5,
     "material": "1r",
     "animationPool": [
       "gooey#ArmatureAction",
@@ -124,7 +124,9 @@
   "NPCMovement": {},
   "Gooey": {
     "profitPayOff": 5,
-    "biome": ["DESERT"],
+    "biome": [
+      "DESERT"
+    ],
     "blockBelow": "CoreAssets:Sand",
     "SPAWN_CHANCE": 5,
     "MAX_GROUP_SIZE": 1
@@ -133,7 +135,9 @@
     "magnitude": 85
   },
   "Hunger": {
-    "food": ["Lava"]
+    "food": [
+      "Lava"
+    ]
   }
 }
 
