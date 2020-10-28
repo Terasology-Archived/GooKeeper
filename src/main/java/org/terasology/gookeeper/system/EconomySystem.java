@@ -208,11 +208,10 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
                     visitorComponent.visitorEntranceBlock.getComponent(VisitorEntranceComponent.class);
             EntityRef player = visitorEntranceComponent.owner;
 
-            if (player.hasComponent(EconomyComponent.class)) {
-                EconomyComponent economyComponent = player.getComponent(EconomyComponent.class);
+            player.updateComponent(EconomyComponent.class, economyComponent  -> {
                 economyComponent.playerWalletCredit += baseEntranceFee;
-                player.saveComponent(economyComponent);
-            }
+                return economyComponent;
+            });
         }
     }
 
