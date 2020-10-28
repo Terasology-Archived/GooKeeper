@@ -196,7 +196,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     }
 
     /**
-     * This function is to be called by a visitor entity when it gets spawned into the world Adds up credit in the
+     * This function is to be called by a visitor entity when it gets spawned into the world. Adds up credit in the
      * player wallet in form of an entrance fee.
      *
      * @param visitorComponent The visitor entity's {@link VisitorComponent}
