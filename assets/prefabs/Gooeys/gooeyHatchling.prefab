@@ -77,6 +77,9 @@
       "gooey#ArmatureAction"
     ]
   },
+  "Behavior": {
+    "tree": "GooKeeper:gooey"
+  },
   "Walk": {
     "animationPool": [
       "gooey#ArmatureAction"
@@ -97,6 +100,20 @@
   "Network": {},
   "MinionMove": {},
   "Health": {},
-  "Follow": {},
+  "BoxShape": {
+    "extents": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "Trigger": {
+    "detectGroups": [
+      "engine:debris",
+      "engine:sensor"
+    ]
+  },
+  "Follow": {
+  },
   "NPCMovement": {}
 }

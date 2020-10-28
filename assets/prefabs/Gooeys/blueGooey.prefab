@@ -1,7 +1,7 @@
 {
   "alwaysRelevant": true,
   "DisplayName": {
-    "name": "blueGooey"
+    "name": "Blue Gooey"
   },
   "persisted": true,
   "Color": {
@@ -49,9 +49,6 @@
       0.25
     ]
   },
-  "Behavior": {
-    "tree": "GooKeeper:gooey"
-  },
   "Stand": {
     "animationPool": [
       "gooey#ArmatureAction",
@@ -79,6 +76,9 @@
       "gooey#ArmatureAction",
       "gooey#ArmatureAction"
     ]
+  },
+  "Behavior": {
+    "tree": "GooKeeper:gooey"
   },
   "Walk": {
     "animationPool": [
