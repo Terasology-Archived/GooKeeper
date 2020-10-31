@@ -1,7 +1,7 @@
 {
   "alwaysRelevant": true,
   "DisplayName": {
-    "name": "blueGooey"
+    "name": "Blue Gooey"
   },
   "persisted": true,
   "Color": {
@@ -12,35 +12,35 @@
       255
     ]
   },
-  "skeletalmesh": {
+  "skeletalMesh": {
     "mesh": "gooey",
-    "heightOffset": -2.0,
+    "heightOffset": -0.5,
     "material": "1b",
     "animationPool": [
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyLookRightLeft",
-      "gooeyLookRightLeft",
-      "gooeyLookRightUp"
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction"
     ],
     "loop": true,
     "scale": [
@@ -49,40 +49,40 @@
       0.25
     ]
   },
+  "Stand": {
+    "animationPool": [
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction"
+    ]
+  },
   "Behavior": {
     "tree": "GooKeeper:gooey"
   },
-  "Stand": {
-    "animationPool": [
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyLookRightLeft",
-      "gooeyLookRightLeft",
-      "gooeyLookRightUp"
-    ]
-  },
   "Walk": {
     "animationPool": [
-      "gooeyIdleBreathing"
+      "gooey#ArmatureAction"
     ]
   },
   "location": {},
