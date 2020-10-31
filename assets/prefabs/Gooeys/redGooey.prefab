@@ -1,7 +1,7 @@
 {
   "alwaysRelevant": true,
   "DisplayName": {
-    "name": "redGooey"
+    "name": "Red Gooey"
   },
   "persisted": true,
   "Color": {
@@ -12,35 +12,35 @@
       255
     ]
   },
-  "skeletalmesh": {
+  "skeletalMesh": {
     "mesh": "gooey",
-    "heightOffset": -2.0,
+    "heightOffset": -0.5,
     "material": "1r",
     "animationPool": [
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyLookRightLeft",
-      "gooeyLookRightLeft",
-      "gooeyLookRightUp"
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction"
     ],
     "loop": true,
     "scale": [
@@ -54,35 +54,35 @@
   },
   "Stand": {
     "animationPool": [
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyIdleBreathing",
-      "gooeyLookRightLeft",
-      "gooeyLookRightLeft",
-      "gooeyLookRightUp"
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction"
     ]
   },
   "Walk": {
     "animationPool": [
-      "gooeyIdleBreathing"
+      "gooey#ArmatureAction"
     ]
   },
   "location": {},
@@ -124,7 +124,9 @@
   "NPCMovement": {},
   "Gooey": {
     "profitPayOff": 5,
-    "biome": ["DESERT"],
+    "biome": [
+      "DESERT"
+    ],
     "blockBelow": "CoreAssets:Sand",
     "SPAWN_CHANCE": 5,
     "MAX_GROUP_SIZE": 1
@@ -133,7 +135,9 @@
     "magnitude": 85
   },
   "Hunger": {
-    "food": ["Lava"]
+    "food": [
+      "Lava"
+    ]
   }
 }
 

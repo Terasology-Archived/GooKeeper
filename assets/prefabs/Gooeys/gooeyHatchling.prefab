@@ -12,76 +12,79 @@
       255
     ]
   },
-   "skeletalmesh": {
-     "mesh": "gooey",
-     "heightOffset": -2.0,
-     "material": "1b",
-     "animationPool": [
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyIdleBreathing",
-       "gooeyLookRightLeft",
-       "gooeyLookRightLeft",
-       "gooeyLookRightUp"
-     ],
-     "loop": true,
-     "scale": [
-       0.25,
-       0.25,
-       0.25
-     ]
-   },
-     "Stand": {
-       "animationPool": [
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyIdleBreathing",
-         "gooeyLookRightLeft",
-         "gooeyLookRightLeft",
-         "gooeyLookRightUp"
-       ]
-     },
-     "Walk": {
-       "animationPool": [
-         "gooeyIdleBreathing"
-       ]
-     },
+  "skeletalMesh": {
+    "mesh": "gooey",
+    "heightOffset": -0.5,
+    "material": "1b",
+    "animationPool": [
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction"
+    ],
+    "loop": true,
+    "scale": [
+      0.25,
+      0.25,
+      0.25
+    ]
+  },
+  "Stand": {
+    "animationPool": [
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction",
+      "gooey#ArmatureAction"
+    ]
+  },
+  "Behavior": {
+    "tree": "GooKeeper:gooey"
+  },
+  "Walk": {
+    "animationPool": [
+      "gooey#ArmatureAction"
+    ]
+  },
   "location": {},
   "Character": {},
   "AliveCharacter": {},
@@ -97,6 +100,20 @@
   "Network": {},
   "MinionMove": {},
   "Health": {},
-  "Follow": {},
+  "BoxShape": {
+    "extents": [
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "Trigger": {
+    "detectGroups": [
+      "engine:debris",
+      "engine:sensor"
+    ]
+  },
+  "Follow": {
+  },
   "NPCMovement": {}
 }
