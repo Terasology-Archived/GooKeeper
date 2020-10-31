@@ -234,7 +234,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             VisitBlockComponent visitBlockComponent = visitBlock.getComponent(VisitBlockComponent.class);
 
             Prefab gooeyPrefab = prefabManager.getPrefab("GooKeeper:" + visitBlockComponent.type);
-            if (&& gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
+            if (gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
                 player.updateComponent(EconomyComponent.class, economyComponent  -> {
                     float profitPayOff = gooeyPrefab.getComponent(GooeyComponent.class).profitPayOff;
                     economyComponent.playerWalletCredit += baseVisitFee * profitPayOff * (visitBlockComponent.gooeyQuantity / 3f);
