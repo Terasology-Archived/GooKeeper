@@ -120,7 +120,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
 
             if (visitorComponent.pensToVisit.isEmpty()) {
-                economySystem.payEntranceFee(visitor);
+                economySystem.payEntranceFee(visitorComponent);
 
                 int cutoffRNG = random.nextInt(0, 10);
 
@@ -260,7 +260,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                     Vector3f.distance(minionMoveComponent.target.x(), minionMoveComponent.target.y(),
                             minionMoveComponent.target.z(),
                             blockPos.x(), blockPos.y(), blockPos.z()) <= 1f) {
-                economySystem.payVisitFee(visitor, blockEntity);
+                economySystem.payVisitFee(visitorComponent, blockEntity);
                 visitorComponent.pensToVisit.remove(blockEntity);
             }
 
