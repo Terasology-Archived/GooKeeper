@@ -5,12 +5,14 @@
   "persisted": false,
   "skeletalMesh": {
     "mesh": "femaleHumanSmooth",
+    "heightOffset": -0.9,
     "material": "femaleHumanSkin",
     "animation": "femaleHumanSmooth#idle",
     "animationPool": [
       "femaleHumanSmooth#idle"
     ],
-    "loop": true
+    "loop": true,
+    "scale": [0.004, 0.004, 0.004]
   },
   "Behavior": {
     "tree": "GooKeeper:visitor"
