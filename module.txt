@@ -13,6 +13,7 @@
         { "id": "Fences", "minVersion": "1.0.0" },
         { "id": "Health", "minVersion": "1.0.0" },
         { "id": "Inventory", "minVersion": "1.1.0" },
+        { "id": "MawGooey", "minVersion": "1.0.0" },
         { "id": "Pathfinding", "minVersion": "1.0.0" },
         { "id": "StructureTemplates", "minVersion": "1.0.0" },
         { "id": "Valentines", "minVersion": "1.0.0" },
