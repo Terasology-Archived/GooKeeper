@@ -17,7 +17,7 @@
     "heightOffset": -0.5,
     "material": "1r",
     "animationPool": [
-      "MawGooey:gooey#ArmatureAction",
+      "MawGooey:gooey#ArmatureAction"
     ],
     "loop": true,
     "scale": [
@@ -31,7 +31,7 @@
   },
   "Stand": {
     "animationPool": [
-      "MawGooey:gooey#ArmatureAction",
+      "MawGooey:gooey#ArmatureAction"
     ]
   },
   "Walk": {
