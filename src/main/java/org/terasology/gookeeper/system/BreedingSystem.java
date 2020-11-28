@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.system;
 
+import com.google.common.collect.ImmutableMap;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.slf4j.Logger;
@@ -53,6 +54,9 @@ import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.joml.RoundingMode.HALF_UP;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
@@ -79,6 +83,29 @@ public class BreedingSystem extends BaseComponentSystem {
 
     @In
     private DelayManager delayManager;
+
+    // mapping of parent color portion combination to HTML color names used in gooey assets
+    private static final ImmutableMap<String, String> colors;
+
+    static {
+        colors = ImmutableMap.<String, String>builder()
+                .put("1r", "Red")
+                .put("1b", "Blue")
+                .put("1y", "Yellow")
+                .put("1r1b", "Magenta")
+                .put("1r2b", "BlueViolet")
+                .put("2r1b", "MediumVioletRed")
+                .put("2r2b", "Purple")
+                .put("1y1b", "Green")
+                .put("1y2b", "Teal")
+                .put("2y1b", "YellowGreen")
+                .put("2y2b", "Lime")
+                .put("1r1y", "DarkOrange")
+                .put("1r2y", "Gold")
+                .put("2r1y", "OrangeRed")
+                .put("2r2y", "Orange")
+                .build();
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
     private Random random = new FastRandom();
@@ -262,16 +289,19 @@ public class BreedingSystem extends BaseComponentSystem {
         int yellowValue = parent1Color.color.g() + parent2Color.color.g();
 
         offspringGooeyColor.color = new Color(redValue, yellowValue, blueValue);
-        String materialName = "";
+        String colorBlend = "";
         if (redValue > 0f) {
-            materialName += ((int) (Math.ceil(offspringGooeyColor.color.r() / 128))) + "r";
+            colorBlend += ((int) (Math.ceil(offspringGooeyColor.color.r() / 128))) + "r";
         }
         if (yellowValue > 0f) {
-            materialName += ((int) (Math.ceil(offspringGooeyColor.color.g() / 128))) + "y";
+            colorBlend += ((int) (Math.ceil(offspringGooeyColor.color.g() / 128))) + "y";
         }
         if (blueValue > 0f) {
-            materialName += ((int) (Math.ceil(offspringGooeyColor.color.b() / 128))) + "b";
+            colorBlend += ((int) (Math.ceil(offspringGooeyColor.color.b() / 128))) + "b";
         }
+
+        String colorName = colors.get(colorBlend);
+        String materialName = "gooeySkin" + colorName;
 
         offspringEntity.addOrSaveComponent(offspringGooeyColor);
         offspringMaterial = Assets.getMaterial(materialName).orElse(null);
