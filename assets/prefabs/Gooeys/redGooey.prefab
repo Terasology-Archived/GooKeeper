@@ -15,7 +15,7 @@
   "skeletalMesh": {
     "mesh": "MawGooey:gooey",
     "heightOffset": -0.5,
-    "material": "MawGooey:gooeyRed",
+    "material": "MawGooey:gooeySkinRed",
     "animationPool": [
       "MawGooey:gooey#ArmatureAction"
     ],
