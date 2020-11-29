@@ -13,34 +13,11 @@
     ]
   },
   "skeletalMesh": {
-    "mesh": "gooey",
+    "mesh": "MawGooey:gooey",
     "heightOffset": -0.5,
-    "material": "1b",
+    "material": "MawGooey:gooeySkinBlue",
     "animationPool": [
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction"
+      "MawGooey:gooey#ArmatureAction"
     ],
     "loop": true,
     "scale": [
@@ -51,30 +28,7 @@
   },
   "Stand": {
     "animationPool": [
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction"
+      "MawGooey:gooey#ArmatureAction"
     ]
   },
   "Behavior": {
@@ -82,7 +36,7 @@
   },
   "Walk": {
     "animationPool": [
-      "gooey#ArmatureAction"
+      "MawGooey:gooey#ArmatureAction"
     ]
   },
   "location": {},
