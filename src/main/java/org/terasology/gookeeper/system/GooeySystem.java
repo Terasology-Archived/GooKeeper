@@ -433,7 +433,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onBump(HorizontalCollisionEvent event, EntityRef entity) {
         GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
-        Vector3f collisionPosition = JomlUtil.from(event.getLocation());
+        Vector3f collisionPosition = event.getLocation();
 
         EntityRef blockEntity = EntityRef.NULL;
 
