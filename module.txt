@@ -11,6 +11,7 @@
         { "id": "CoreRendering", "minVersion": "1.0.0" },
         { "id": "CoreWorlds", "minVersion": "1.1.0" },
         { "id": "Fences", "minVersion": "1.0.0" },
+        { "id": "Gooey", "minVersion": "1.0.0" },
         { "id": "Health", "minVersion": "1.0.0" },
         { "id": "Inventory", "minVersion": "1.1.0" },
         { "id": "Pathfinding", "minVersion": "1.0.0" },

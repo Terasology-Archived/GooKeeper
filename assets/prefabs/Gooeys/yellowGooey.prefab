@@ -13,34 +13,11 @@
     ]
   },
   "skeletalMesh": {
-    "mesh": "gooey",
+    "mesh": "Gooey:gooey",
     "heightOffset": -0.5,
-    "material": "1y",
+    "material": "Gooey:gooeySkinYellow",
     "animationPool": [
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction"
+      "Gooey:gooey#ArmatureAction"
     ],
     "loop": true,
     "scale": [
@@ -54,35 +31,12 @@
   },
   "Stand": {
     "animationPool": [
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction",
-      "gooey#ArmatureAction"
+      "Gooey:gooey#ArmatureAction"
     ]
   },
   "Walk": {
     "animationPool": [
-      "gooey#ArmatureAction"
+      "Gooey:gooey#ArmatureAction"
     ]
   },
   "location": {},
