@@ -13,11 +13,11 @@
     ]
   },
   "skeletalMesh": {
-    "mesh": "MawGooey:gooey",
+    "mesh": "Gooey:gooey",
     "heightOffset": -0.5,
-    "material": "MawGooey:gooeySkinRed",
+    "material": "Gooey:gooeySkinRed",
     "animationPool": [
-      "MawGooey:gooey#ArmatureAction"
+      "Gooey:gooey#ArmatureAction"
     ],
     "loop": true,
     "scale": [
@@ -31,12 +31,12 @@
   },
   "Stand": {
     "animationPool": [
-      "MawGooey:gooey#ArmatureAction"
+      "Gooey:gooey#ArmatureAction"
     ]
   },
   "Walk": {
     "animationPool": [
-      "MawGooey:gooey#ArmatureAction"
+      "Gooey:gooey#ArmatureAction"
     ]
   },
   "location": {},
