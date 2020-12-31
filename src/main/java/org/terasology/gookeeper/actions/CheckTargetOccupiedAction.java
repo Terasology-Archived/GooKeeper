@@ -53,7 +53,7 @@ public class CheckTargetOccupiedAction extends BaseAction {
                         int currentPenIndex = visitorComponent.pensToVisit.indexOf(pen);
                         int newPenIndex = RNG(currentPenIndex, visitorComponent.pensToVisit.size());
                         moveComponent.target =
-                                visitorComponent.pensToVisit.get(newPenIndex).getComponent(LocationComponent.class).getWorldPosition();
+                                visitorComponent.pensToVisit.get(newPenIndex).getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
                         return BehaviorState.SUCCESS;
                     }
                 }

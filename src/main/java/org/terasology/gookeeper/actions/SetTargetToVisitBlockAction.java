@@ -15,6 +15,7 @@
  */
 package org.terasology.gookeeper.actions;
 
+import org.joml.Vector3f;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
@@ -46,7 +47,7 @@ public class SetTargetToVisitBlockAction extends BaseAction {
             int penIndex = getRandomPenIndex(visitorComponent);
             EntityRef penToVisit = visitorComponent.pensToVisit.get(penIndex);
 
-            moveComponent.target = penToVisit.getComponent(LocationComponent.class).getWorldPosition();
+            moveComponent.target = penToVisit.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
             actor.save(moveComponent);
         } else {
             return BehaviorState.FAILURE;
