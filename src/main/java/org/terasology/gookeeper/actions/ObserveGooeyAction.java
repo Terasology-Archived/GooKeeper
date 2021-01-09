@@ -62,7 +62,7 @@ public class ObserveGooeyAction extends BaseAction {
         float yaw = (float) Math.atan2(targetDirection.x, targetDirection.z);
         float requestedYaw = 180f + yaw * TeraMath.RAD_TO_DEG;
 
-        CharacterMoveInputEvent wantedInput = new CharacterMoveInputEvent(0, 0, 0, JomlUtil.from(new Vector3f(0)),
+        CharacterMoveInputEvent wantedInput = new CharacterMoveInputEvent(0, 0, 0, new Vector3f(0),
                 false, false, false, (long) (actor.getDelta() * 1000));
         actor.getEntity().send(wantedInput);
     }
