@@ -112,7 +112,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
             LocationComponent location = projectile.getComponent(LocationComponent.class);
             PlazMasterShotComponent shot = projectile.getComponent(PlazMasterShotComponent.class);
 
-            location.setWorldPosition(location.getWorldPosition().add(location.getWorldDirection().mul(shot.velocity)));
+            location.setWorldPosition(location.getWorldPosition(new Vector3f()).add(location.getWorldDirection(new Vector3f()).mul(shot.velocity)));
             projectile.saveComponent(location);
         }
     }
