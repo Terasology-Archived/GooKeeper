@@ -59,7 +59,6 @@ import org.terasology.logic.health.HealthComponent;
 import org.terasology.logic.health.event.OnDamagedEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.ChunkMath;
 import org.terasology.math.JomlUtil;
 import org.terasology.registry.In;
 import org.terasology.rendering.assets.skeletalmesh.SkeletalMesh;
@@ -72,7 +71,7 @@ import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockComponent;
 import org.terasology.world.block.BlockManager;
-import org.terasology.world.chunks.ChunkConstants;
+import org.terasology.world.chunks.Chunks;
 import org.terasology.world.sun.CelestialSystem;
 
 import java.util.ArrayList;
@@ -188,7 +187,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      */
     private void spawnNearPlayer () {
         Vector3f pos = localPlayer.getPosition(new Vector3f());
-        Vector3i chunkPos = ChunkMath.calcChunkPos((int) pos.x(), (int) pos.y(), (int) pos.z(), new Vector3i());
+        Vector3i chunkPos = Chunks.toChunkPos((int) pos.x(), (int) pos.y(), (int) pos.z(), new Vector3i());
         for (Prefab gooey : gooeyPrefabs) {
             boolean trySpawn = (gooey.getComponent(GooeyComponent.class).SPAWN_CHANCE/10f) > random.nextInt(400);
             if (trySpawn) {
@@ -196,23 +195,6 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             }
         }
     }
-
-    /**
-     * When a new chunk gets generated, it tries to call the gooey spawning method
-     *
-     * @param event,worldEntity   The corresponding OnChunkGenerated event and the worldEntity ref
-     */
-//    @ReceiveEvent
-//    public void onChunkGenerated(OnChunkGenerated event, EntityRef worldEntity) {
-//        for (Optional<Prefab> gooey : gooeyPrefabs) {
-//            boolean trySpawn = gooey.get().getComponent(GooeyComponent.class).SPAWN_CHANCE > random.nextInt(100);
-//            if (!trySpawn) {
-//                return;
-//            }
-//            Vector3i chunkPos = event.getChunkPos();
-//            tryGooeySpawn(gooey, chunkPos);
-//        }
-//    }
 
     /**
      * Attempts to spawn gooey on the specified chunk. The number of gooeys spawned will depend on probability
@@ -248,12 +230,12 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     private List<Vector3i> findGooeySpawnPositions(GooeyComponent gooeyComponent, Vector3i chunkPos) {
         Vector3i worldPos = new Vector3i(chunkPos);
-        worldPos.mul(ChunkConstants.SIZE_X, ChunkConstants.SIZE_Y, ChunkConstants.SIZE_Z);
+        worldPos.mul(Chunks.SIZE_X, Chunks.SIZE_Y, Chunks.SIZE_Z);
         List<Vector3i> foundPositions = Lists.newArrayList();
         Vector3i blockPos = new Vector3i();
-        for (int y = ChunkConstants.SIZE_Y - 1; y >= 0; y--) {
-            for (int z = 0; z < ChunkConstants.SIZE_Z; z++) {
-                for (int x = 0; x < ChunkConstants.SIZE_X; x++) {
+        for (int y = Chunks.SIZE_Y - 1; y >= 0; y--) {
+            for (int z = 0; z < Chunks.SIZE_Z; z++) {
+                for (int x = 0; x < Chunks.SIZE_X; x++) {
                     blockPos.set(x + worldPos.x, y + worldPos.y, z + worldPos.z);
                     if (isValidSpawnPosition(gooeyComponent, blockPos)) {
                         foundPositions.add(new Vector3i(blockPos));
@@ -284,7 +266,6 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
                 locationComponent.setWorldPosition(floatVectorLocation);
                 locationComponent.setWorldRotation(rotation);
                 entityBuilder.build();
-                //entityManager.create(gooey.get(), floatVectorLocation, rotation);
             }
         }
     }
@@ -393,20 +374,14 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
         if (entity.hasComponent(AggressiveComponent.class)) {
             slimePodComponent.disabledComponents.add(entity.getComponent(AggressiveComponent.class));
-//            slimePodComponent.disabledComponents.add(entity.getComponent(FindNearbyPlayersComponent.class));
-
             entity.removeComponent(AggressiveComponent.class);
             entity.removeComponent(FindNearbyPlayersComponent.class);
         } else if (entity.hasComponent(NeutralComponent.class)) {
             slimePodComponent.disabledComponents.add(entity.getComponent(NeutralComponent.class));
-//            slimePodComponent.disabledComponents.add(entity.getComponent(AttackOnHitComponent.class));
-
             entity.removeComponent(NeutralComponent.class);
             entity.removeComponent(AttackOnHitComponent.class);
         } else {
             slimePodComponent.disabledComponents.add(entity.getComponent(FriendlyComponent.class));
-//            slimePodComponent.disabledComponents.add(entity.getComponent(FindNearbyPlayersComponent.class));
-
             entity.removeComponent(FriendlyComponent.class);
             entity.removeComponent(FindNearbyPlayersComponent.class);
         }
