@@ -204,7 +204,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             if (entityBuilder.hasComponent(MeshComponent.class)) {
                 MeshComponent mesh = entityBuilder.getComponent(MeshComponent.class);
                 BoxShapeComponent box = new BoxShapeComponent();
-                box.extents = JomlUtil.from(mesh.mesh.getAABB().getExtents().scale(2.0f));
+                Vector3f extent = mesh.mesh.getAABB().extent(new Vector3f());
+                box.extents = extent.mul(2.0f);
                 entityBuilder.addOrSaveComponent(box);
             }
             locationComponent.setWorldScale(0.3f);
