@@ -46,7 +46,6 @@ import org.terasology.logic.inventory.PickupComponent;
 import org.terasology.logic.inventory.events.DropItemEvent;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.JomlUtil;
 import org.terasology.math.TeraMath;
 import org.terasology.physics.HitResult;
 import org.terasology.physics.Physics;
@@ -62,8 +61,6 @@ import org.terasology.utilities.random.Random;
 import org.terasology.world.BlockEntityRegistry;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.BlockComponent;
-
-import java.math.RoundingMode;
 
 import static org.joml.RoundingMode.HALF_UP;
 
@@ -234,7 +231,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
             Vector3f newPosition = position;
             newPosition.add(maxAllowedDistanceInDirection.mul(0.9f));
 
-            slimePodEntity.send(new DropItemEvent(JomlUtil.from(newPosition)));
+            slimePodEntity.send(new DropItemEvent(newPosition));
             slimePodEntity.send(new ImpulseEvent(dir.mul(125f)));
 
             slimePodItemComponent.slimePods--;
