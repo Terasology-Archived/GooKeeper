@@ -183,9 +183,8 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
             Vector3f initialDir = locationComponent.getWorldDirection(new Vector3f());
             Vector3f finalDir = new Vector3f(dir);
             finalDir.normalize();
-            Quaternionf localRotation = new Quaternionf(JomlUtil.from(locationComponent.getLocalRotation()));
-            localRotation.rotateTo(initialDir.x(), initialDir.y(), initialDir.z(), finalDir.x(), finalDir.y(),
-                    finalDir.z());
+            Quaternionf localRotation = new Quaternionf(locationComponent.getLocalRotation());
+            localRotation.rotateTo(initialDir, finalDir);
             locationComponent.setWorldRotation(localRotation);
 
             locationComponent.setWorldScale(0.3f);
