@@ -132,8 +132,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             if (locationComponent != null) {
                 Vector3f worldPosition = locationComponent.getWorldPosition(new Vector3f());
                 Vector3f playerPosition = localPlayer.getPosition(new Vector3f());
-                float distanceFromPlayer = Vector3f.distance(worldPosition.x(), worldPosition.y(), worldPosition.z(),
-                        playerPosition.x(), playerPosition.y(), playerPosition.z());
+                float distanceFromPlayer = worldPosition.distance(playerPosition);
                 if (distanceFromPlayer > MAX_DISTANCE_FROM_PLAYER && !gooeyComponent.isCaptured) {
                     entity.destroy();
                     currentNumOfEntities--;
@@ -239,18 +238,16 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      */
     private void spawnGooey(Prefab gooey, Vector3i location) {
         Vector3f floatVectorLocation = new Vector3f(location);
-        Vector3f yAxis = new Vector3f(0, 1, 0);
         float randomAngle = (float) (random.nextFloat()*Math.PI*2);
-        Quaternionf rotation = new Quaternionf(yAxis.x(), yAxis.y(), yAxis.z(), randomAngle);
 
         Vector3f playerPosition = localPlayer.getPosition(new Vector3f());
-        float distanceFromPlayer = Vector3f.distance(location.x(), location.y(), location.z(), playerPosition.x(), playerPosition.y(), playerPosition.z());
+        float distanceFromPlayer = floatVectorLocation.distance(playerPosition);
         if (distanceFromPlayer < MAX_DISTANCE_FROM_PLAYER) {
             if (gooey.exists() && gooey.getComponent(LocationComponent.class) != null) {
                 EntityBuilder entityBuilder = entityManager.newBuilder(gooey);
                 LocationComponent locationComponent = entityBuilder.getComponent(LocationComponent.class);
                 locationComponent.setWorldPosition(floatVectorLocation);
-                locationComponent.setWorldRotation(rotation);
+                locationComponent.setWorldRotation(new Quaternionf().setAngleAxis(randomAngle, 0, 1, 0));
                 entityBuilder.build();
             }
         }
