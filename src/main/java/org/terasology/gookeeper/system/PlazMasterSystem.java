@@ -47,7 +47,6 @@ import org.terasology.logic.health.event.DoDamageEvent;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.JomlUtil;
 import org.terasology.math.TeraMath;
 import org.terasology.network.ClientComponent;
 import org.terasology.physics.CollisionGroup;
