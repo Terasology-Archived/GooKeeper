@@ -15,8 +15,8 @@
  */
 package org.terasology.gookeeper.component;
 
-import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.prefab.Prefab;
+import org.terasology.engine.entitySystem.Component;
+import org.terasology.engine.entitySystem.prefab.Prefab;
 
 public class SlimePodItemComponent implements Component {
     /**

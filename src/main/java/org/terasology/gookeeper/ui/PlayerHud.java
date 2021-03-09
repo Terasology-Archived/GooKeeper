@@ -2,17 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.ui;
 
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.logic.inventory.InventoryManager;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.rendering.nui.layers.hud.CoreHudWidget;
 import org.terasology.gookeeper.component.EconomyComponent;
 import org.terasology.gookeeper.component.PlazMasterComponent;
 import org.terasology.gookeeper.component.SlimePodItemComponent;
-import org.terasology.logic.inventory.InventoryManager;
-import org.terasology.logic.players.LocalPlayer;
 import org.terasology.nui.databinding.ReadOnlyBinding;
 import org.terasology.nui.widgets.UIText;
-import org.terasology.registry.In;
-import org.terasology.rendering.nui.layers.hud.CoreHudWidget;
 
 public class PlayerHud extends CoreHudWidget {
     @In

@@ -6,17 +6,17 @@ import org.terasology.behaviors.components.AttackOnHitComponent;
 import org.terasology.behaviors.components.FleeOnHitComponent;
 import org.terasology.behaviors.components.FleeingComponent;
 import org.terasology.behaviors.components.FollowComponent;
-import org.terasology.engine.Time;
+import org.terasology.engine.core.Time;
+import org.terasology.engine.logic.behavior.BehaviorAction;
+import org.terasology.engine.logic.behavior.core.Actor;
+import org.terasology.engine.logic.behavior.core.BaseAction;
+import org.terasology.engine.logic.behavior.core.BehaviorState;
+import org.terasology.engine.logic.characters.CharacterMovementComponent;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.registry.In;
 import org.terasology.gookeeper.component.AggressiveComponent;
 import org.terasology.gookeeper.component.FriendlyComponent;
 import org.terasology.gookeeper.component.NeutralComponent;
-import org.terasology.logic.behavior.BehaviorAction;
-import org.terasology.logic.behavior.core.Actor;
-import org.terasology.logic.behavior.core.BaseAction;
-import org.terasology.logic.behavior.core.BehaviorState;
-import org.terasology.logic.characters.CharacterMovementComponent;
-import org.terasology.logic.players.LocalPlayer;
-import org.terasology.registry.In;
 
 
 @BehaviorAction(name = "AfterStunAction")

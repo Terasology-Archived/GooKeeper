@@ -3,8 +3,8 @@
 package org.terasology.gookeeper.component;
 
 import com.google.common.collect.Lists;
-import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.prefab.Prefab;
+import org.terasology.engine.entitySystem.Component;
+import org.terasology.engine.entitySystem.prefab.Prefab;
 
 import java.util.List;
 import java.util.Optional;

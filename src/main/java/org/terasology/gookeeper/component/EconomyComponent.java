@@ -15,7 +15,7 @@
  */
 package org.terasology.gookeeper.component;
 
-import org.terasology.entitySystem.Component;
+import org.terasology.engine.entitySystem.Component;
 
 public class EconomyComponent implements Component {
     public float playerWalletCredit = 2000f;

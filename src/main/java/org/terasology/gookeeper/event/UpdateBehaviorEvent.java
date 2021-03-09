@@ -15,7 +15,7 @@
  */
 package org.terasology.gookeeper.event;
 
-import org.terasology.entitySystem.event.AbstractConsumableEvent;
+import org.terasology.engine.entitySystem.event.AbstractConsumableEvent;
 
 /**
  * This event is sent whenever an entity requires a change in it's behavior tree.

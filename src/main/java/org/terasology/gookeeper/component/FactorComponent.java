@@ -15,7 +15,7 @@
  */
 package org.terasology.gookeeper.component;
 
-import org.terasology.entitySystem.Component;
+import org.terasology.engine.entitySystem.Component;
 
 abstract public class FactorComponent implements Component {
     public float magnitude;

@@ -15,7 +15,7 @@
  */
 package org.terasology.gookeeper.interfaces;
 
-import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.entity.EntityRef;
 import org.terasology.gookeeper.component.VisitorComponent;
 
 public interface EconomyManager {

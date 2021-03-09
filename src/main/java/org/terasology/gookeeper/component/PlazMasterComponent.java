@@ -15,9 +15,9 @@
  */
 package org.terasology.gookeeper.component;
 
-import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.prefab.Prefab;
-import org.terasology.logic.health.EngineDamageTypes;
+import org.terasology.engine.entitySystem.Component;
+import org.terasology.engine.entitySystem.prefab.Prefab;
+import org.terasology.engine.logic.health.EngineDamageTypes;
 
 public class PlazMasterComponent implements Component {
     /**

@@ -15,8 +15,8 @@
  */
 package org.terasology.gookeeper.component;
 
-import org.terasology.entitySystem.Component;
-import org.terasology.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.Component;
+import org.terasology.engine.entitySystem.entity.EntityRef;
 
 public class MatingComponent implements Component {
     public EntityRef matingWithEntity = EntityRef.NULL;
