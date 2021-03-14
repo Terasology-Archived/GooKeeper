@@ -34,7 +34,7 @@ import org.terasology.engine.logic.characters.GazeMountPointComponent;
 import org.terasology.engine.logic.characters.events.OnEnterBlockEvent;
 import org.terasology.engine.logic.common.ActivateEvent;
 import org.terasology.engine.logic.delay.DelayManager;
-import org.terasology.engine.logic.health.HealthComponent;
+import org.terasology.logic.health.HealthComponent;
 import org.terasology.engine.logic.inventory.InventoryManager;
 import org.terasology.engine.logic.inventory.PickupComponent;
 import org.terasology.engine.logic.inventory.events.DropItemEvent;
