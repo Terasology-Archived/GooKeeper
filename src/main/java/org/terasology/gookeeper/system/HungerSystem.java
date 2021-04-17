@@ -21,7 +21,7 @@ import org.terasology.engine.logic.delay.DelayedActionTriggeredEvent;
 import org.terasology.engine.logic.delay.PeriodicActionTriggeredEvent;
 import org.terasology.engine.logic.health.DoDestroyEvent;
 import org.terasology.engine.logic.health.EngineDamageTypes;
-import org.terasology.logic.health.HealthComponent;
+import org.terasology.module.health.components.HealthComponent;
 import org.terasology.module.inventory.systems.InventoryManager;
 import org.terasology.engine.logic.players.LocalPlayer;
 import org.terasology.engine.registry.In;
