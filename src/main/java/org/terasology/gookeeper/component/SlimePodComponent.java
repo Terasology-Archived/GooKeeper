@@ -3,16 +3,16 @@
 package org.terasology.gookeeper.component;
 
 import com.google.common.collect.Lists;
-import org.terasology.engine.entitySystem.Component;
 import org.terasology.engine.entitySystem.entity.EntityRef;
 import org.terasology.engine.entitySystem.prefab.Prefab;
 import org.terasology.engine.rendering.assets.skeletalmesh.SkeletalMesh;
 import org.terasology.engine.world.block.ForceBlockActive;
+import org.terasology.gestalt.entitysystem.component.Component;
 
 import java.util.List;
 
 @ForceBlockActive
-public class SlimePodComponent implements Component {
+public class SlimePodComponent implements Component<SlimePodComponent> {
     /**
      * The prefab that is actually thrown as a projectile
      */

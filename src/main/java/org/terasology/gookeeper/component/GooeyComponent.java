@@ -3,13 +3,13 @@
 package org.terasology.gookeeper.component;
 
 import com.google.common.collect.Lists;
-import org.terasology.engine.entitySystem.Component;
 import org.terasology.engine.entitySystem.prefab.Prefab;
+import org.terasology.gestalt.entitysystem.component.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-public class GooeyComponent implements Component {
+public class GooeyComponent implements Component<GooeyComponent> {
     /**
      *  The prefab corresponding to this gooey type
      */
