@@ -14,4 +14,10 @@ public class PurchasableComponent implements Component<PurchasableComponent> {
      * The base quantity of this item to be purchased if quantity isn't mentioned explicitly
      */
     public int baseQuantity = 16;
+
+    @Override
+    public void copy(PurchasableComponent other) {
+        this.basePrice = other.basePrice;
+        this.baseQuantity = other.baseQuantity;
+    }
 }

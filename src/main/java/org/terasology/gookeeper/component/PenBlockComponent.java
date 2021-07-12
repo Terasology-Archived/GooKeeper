@@ -23,4 +23,13 @@ public class PenBlockComponent implements Component<PenBlockComponent> {
     public int penNumber = 0;
 
     public boolean penIDSet = false;
+
+    @Override
+    public void copy(PenBlockComponent other) {
+        this.type = other.type;
+        this.cutoffFactor = other.cutoffFactor;
+        this.penNumber = other.penNumber;
+        this.penIDSet = other.penIDSet;
+
+    }
 }

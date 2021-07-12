@@ -3,4 +3,8 @@
 package org.terasology.gookeeper.component;
 
 public class AggressiveComponent extends FactorComponent {
+    @Override
+    public void copy(FactorComponent other) {
+
+    }
 }

@@ -15,4 +15,10 @@ public class SlimePodItemComponent implements Component<SlimePodItemComponent> {
      * The number of slime pods available in the launcher
      */
     public int slimePods = 5;
+
+    @Override
+    public void copy(SlimePodItemComponent other) {
+        this.launchPrefab = other.launchPrefab;
+        this.slimePods = other.slimePods;
+    }
 }

@@ -6,4 +6,9 @@ import org.terasology.gestalt.entitysystem.component.Component;
 
 public class EconomyComponent implements Component<EconomyComponent> {
     public float playerWalletCredit = 2000f;
+
+    @Override
+    public void copy(EconomyComponent other) {
+        this.playerWalletCredit = other.playerWalletCredit;
+    }
 }

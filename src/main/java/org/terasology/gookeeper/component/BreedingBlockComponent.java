@@ -10,4 +10,9 @@ public class BreedingBlockComponent implements Component<BreedingBlockComponent>
      * The gooey entity which is to be involved in mating
      */
     public EntityRef parentGooey = EntityRef.NULL;
+
+    @Override
+    public void copy(BreedingBlockComponent other) {
+        this.parentGooey = other.parentGooey;
+    }
 }

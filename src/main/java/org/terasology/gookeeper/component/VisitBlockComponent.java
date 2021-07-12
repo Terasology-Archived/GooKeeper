@@ -35,4 +35,14 @@ public class VisitBlockComponent implements Component<VisitBlockComponent> {
      * The owner entity of this block
      */
     public EntityRef owner = EntityRef.NULL;
+
+    @Override
+    public void copy(VisitBlockComponent other) {
+        this.isOccupied = other.isOccupied;
+        this.type = other.type;
+        this.cutoffFactor = other.cutoffFactor;
+        this.penNumber = other.penNumber;
+        this.gooeyQuantity = other.gooeyQuantity;
+        this.owner = other.owner;
+    }
 }

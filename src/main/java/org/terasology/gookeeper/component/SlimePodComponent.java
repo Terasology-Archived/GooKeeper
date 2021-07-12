@@ -47,4 +47,14 @@ public class SlimePodComponent implements Component<SlimePodComponent> {
      * The mesh corresponding to the captured gooey (used while releasing form pod)
      */
     public SkeletalMesh capturedGooeyMesh;
+
+    @Override
+    public void copy(SlimePodComponent other) {
+        this.launchPrefab = other.launchPrefab;
+        this.capturedEntity = other.capturedEntity;
+        this.podType = other.podType;
+        this.maxDistance = other.maxDistance;
+        this.isActivated = other.isActivated;
+        this.disabledComponents = Lists.newArrayList(other.disabledComponents);
+    }
 }

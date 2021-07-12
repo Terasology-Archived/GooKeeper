@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.component;
 
+import com.google.common.collect.Lists;
 import org.terasology.engine.entitySystem.entity.EntityRef;
 import org.terasology.gestalt.entitysystem.component.Component;
 
@@ -18,4 +19,10 @@ public class VisitorComponent implements Component<VisitorComponent> {
      * The associated visitor entrance block from where the NPC got spawned
      */
     public EntityRef visitorEntranceBlock = EntityRef.NULL;
+
+    @Override
+    public void copy(VisitorComponent other) {
+        this.visitorEntranceBlock = other.visitorEntranceBlock;
+        this.pensToVisit = Lists.newArrayList(other.pensToVisit);
+    }
 }

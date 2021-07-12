@@ -5,4 +5,8 @@ package org.terasology.gookeeper.component;
 import org.terasology.gestalt.entitysystem.component.Component;
 
 public class VisitorExitComponent implements Component<VisitorExitComponent> {
+    @Override
+    public void copy(VisitorExitComponent other) {
+
+    }
 }

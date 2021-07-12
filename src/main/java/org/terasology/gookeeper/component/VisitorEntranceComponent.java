@@ -20,4 +20,11 @@ public class VisitorEntranceComponent implements Component<VisitorEntranceCompon
      * The owner entity of this block
      */
     public EntityRef owner = EntityRef.NULL;
+
+    @Override
+    public void copy(VisitorEntranceComponent other) {
+        this.initialDelay = other.initialDelay;
+        this.visitorSpawnRate = other.visitorSpawnRate;
+        this.owner = other.owner;
+    }
 }

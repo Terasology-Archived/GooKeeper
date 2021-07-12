@@ -4,6 +4,11 @@ package org.terasology.gookeeper.component;
 
 import org.terasology.gestalt.entitysystem.component.Component;
 
-abstract public class FactorComponent implements Component<FactorComponent> {
+public abstract class FactorComponent<T extends FactorComponent> implements Component<T> {
     public float magnitude;
+
+    @Override
+    public void copy(T other) {
+        this.magnitude = other.magnitude;
+    }
 }

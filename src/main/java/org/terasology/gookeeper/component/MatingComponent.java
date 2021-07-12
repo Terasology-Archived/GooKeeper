@@ -8,4 +8,10 @@ import org.terasology.gestalt.entitysystem.component.Component;
 public class MatingComponent implements Component<MatingComponent> {
     public EntityRef matingWithEntity = EntityRef.NULL;
     public boolean selectedForMating = false;
+
+    @Override
+    public void copy(MatingComponent other) {
+        this.matingWithEntity = other.matingWithEntity;
+        this.selectedForMating = other.selectedForMating;
+    }
 }

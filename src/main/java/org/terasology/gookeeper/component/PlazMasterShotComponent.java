@@ -6,4 +6,9 @@ import org.terasology.gestalt.entitysystem.component.Component;
 
 public class PlazMasterShotComponent implements Component<PlazMasterShotComponent> {
     public float velocity = 0.7f;
+
+    @Override
+    public void copy(PlazMasterShotComponent other) {
+        this.velocity = other.velocity;
+    }
 }

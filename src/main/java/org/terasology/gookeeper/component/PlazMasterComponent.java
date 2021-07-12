@@ -48,4 +48,17 @@ public class PlazMasterComponent implements Component<PlazMasterComponent> {
     public int damageAmount = 6;
 
     public Prefab damageType = EngineDamageTypes.PHYSICAL.get();
+
+    @Override
+    public void copy(PlazMasterComponent other) {
+        this.maxDistance = other.maxDistance;
+        this.maxCharges = other.maxCharges;
+        this.charges = other.charges;
+        this.shotRecoveryTime = other.shotRecoveryTime;
+        this.rateOfFire = other.rateOfFire;
+        this.maxFrequency = other.maxFrequency;
+        this.frequency = other.frequency;
+        this.damageAmount = other.damageAmount;
+        this.damageType = other.damageType;
+    }
 }
