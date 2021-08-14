@@ -50,7 +50,7 @@ public class PlazMasterComponent implements Component<PlazMasterComponent> {
     public Prefab damageType = EngineDamageTypes.PHYSICAL.get();
 
     @Override
-    public void copy(PlazMasterComponent other) {
+    public void copyFrom(PlazMasterComponent other) {
         this.maxDistance = other.maxDistance;
         this.maxCharges = other.maxCharges;
         this.charges = other.charges;

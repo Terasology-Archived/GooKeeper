@@ -86,7 +86,7 @@ public class GooeyComponent implements Component<GooeyComponent> {
     public long lifeTime = 1800000;
 
     @Override
-    public void copy(GooeyComponent other) {
+    public void copyFrom(GooeyComponent other) {
         this.prefab = other.prefab;
         this.profitPayOff = other.profitPayOff;
         this.biome = other.biome;

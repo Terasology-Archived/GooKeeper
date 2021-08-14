@@ -22,7 +22,7 @@ public class VisitorEntranceComponent implements Component<VisitorEntranceCompon
     public EntityRef owner = EntityRef.NULL;
 
     @Override
-    public void copy(VisitorEntranceComponent other) {
+    public void copyFrom(VisitorEntranceComponent other) {
         this.initialDelay = other.initialDelay;
         this.visitorSpawnRate = other.visitorSpawnRate;
         this.owner = other.owner;

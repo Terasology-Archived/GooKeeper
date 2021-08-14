@@ -49,7 +49,7 @@ public class SlimePodComponent implements Component<SlimePodComponent> {
     public SkeletalMesh capturedGooeyMesh;
 
     @Override
-    public void copy(SlimePodComponent other) {
+    public void copyFrom(SlimePodComponent other) {
         this.launchPrefab = other.launchPrefab;
         this.capturedEntity = other.capturedEntity;
         this.podType = other.podType;

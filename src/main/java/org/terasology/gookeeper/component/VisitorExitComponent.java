@@ -6,7 +6,7 @@ import org.terasology.gestalt.entitysystem.component.Component;
 
 public class VisitorExitComponent implements Component<VisitorExitComponent> {
     @Override
-    public void copy(VisitorExitComponent other) {
+    public void copyFrom(VisitorExitComponent other) {
 
     }
 }

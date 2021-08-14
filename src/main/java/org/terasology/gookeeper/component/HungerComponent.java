@@ -30,7 +30,7 @@ public class HungerComponent implements Component<HungerComponent> {
     public float healthDecreaseAmount = 2f;
 
     @Override
-    public void copy(HungerComponent other) {
+    public void copyFrom(HungerComponent other) {
         this.food = Lists.newArrayList(other.food);
         this.timeBeforeHungry = other.timeBeforeHungry;
         this.healthDecreaseInterval = other.healthDecreaseInterval;

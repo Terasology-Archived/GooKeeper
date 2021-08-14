@@ -21,7 +21,7 @@ public class VisitorComponent implements Component<VisitorComponent> {
     public EntityRef visitorEntranceBlock = EntityRef.NULL;
 
     @Override
-    public void copy(VisitorComponent other) {
+    public void copyFrom(VisitorComponent other) {
         this.visitorEntranceBlock = other.visitorEntranceBlock;
         this.pensToVisit = Lists.newArrayList(other.pensToVisit);
     }

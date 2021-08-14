@@ -17,7 +17,7 @@ public class SlimePodItemComponent implements Component<SlimePodItemComponent> {
     public int slimePods = 5;
 
     @Override
-    public void copy(SlimePodItemComponent other) {
+    public void copyFrom(SlimePodItemComponent other) {
         this.launchPrefab = other.launchPrefab;
         this.slimePods = other.slimePods;
     }

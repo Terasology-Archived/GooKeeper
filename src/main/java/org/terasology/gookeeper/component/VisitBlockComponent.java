@@ -37,7 +37,7 @@ public class VisitBlockComponent implements Component<VisitBlockComponent> {
     public EntityRef owner = EntityRef.NULL;
 
     @Override
-    public void copy(VisitBlockComponent other) {
+    public void copyFrom(VisitBlockComponent other) {
         this.isOccupied = other.isOccupied;
         this.type = other.type;
         this.cutoffFactor = other.cutoffFactor;

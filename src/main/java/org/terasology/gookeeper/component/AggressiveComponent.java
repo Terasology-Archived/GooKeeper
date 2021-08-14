@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.component;
 
-public class AggressiveComponent extends FactorComponent {
-    @Override
-    public void copy(FactorComponent other) {
+public class AggressiveComponent extends FactorComponent<AggressiveComponent> {
 
-    }
 }

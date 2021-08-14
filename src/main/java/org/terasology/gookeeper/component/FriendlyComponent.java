@@ -4,7 +4,7 @@ package org.terasology.gookeeper.component;
 
 public class FriendlyComponent extends FactorComponent<FriendlyComponent> {
     @Override
-    public void copy(FriendlyComponent other) {
-        super.copy(other);
+    public void copyFrom(FriendlyComponent other) {
+        super.copyFrom(other);
     }
 }

@@ -16,7 +16,7 @@ public class PurchasableComponent implements Component<PurchasableComponent> {
     public int baseQuantity = 16;
 
     @Override
-    public void copy(PurchasableComponent other) {
+    public void copyFrom(PurchasableComponent other) {
         this.basePrice = other.basePrice;
         this.baseQuantity = other.baseQuantity;
     }

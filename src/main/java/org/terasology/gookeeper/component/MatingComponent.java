@@ -10,7 +10,7 @@ public class MatingComponent implements Component<MatingComponent> {
     public boolean selectedForMating = false;
 
     @Override
-    public void copy(MatingComponent other) {
+    public void copyFrom(MatingComponent other) {
         this.matingWithEntity = other.matingWithEntity;
         this.selectedForMating = other.selectedForMating;
     }

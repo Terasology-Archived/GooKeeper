@@ -26,7 +26,7 @@ public class UpgradableComponent implements Component<UpgradableComponent> {
     public int baseQuantity = 5;
 
     @Override
-    public void copy(UpgradableComponent other) {
+    public void copyFrom(UpgradableComponent other) {
         this.currentTier = other.currentTier;
         this.baseUpgradePrice = other.baseUpgradePrice;
         this.baseQuantityMultiplier = other.baseQuantityMultiplier;

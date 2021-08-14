@@ -12,7 +12,7 @@ public class BreedingBlockComponent implements Component<BreedingBlockComponent>
     public EntityRef parentGooey = EntityRef.NULL;
 
     @Override
-    public void copy(BreedingBlockComponent other) {
+    public void copyFrom(BreedingBlockComponent other) {
         this.parentGooey = other.parentGooey;
     }
 }

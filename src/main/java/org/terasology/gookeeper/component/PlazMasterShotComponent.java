@@ -8,7 +8,7 @@ public class PlazMasterShotComponent implements Component<PlazMasterShotComponen
     public float velocity = 0.7f;
 
     @Override
-    public void copy(PlazMasterShotComponent other) {
+    public void copyFrom(PlazMasterShotComponent other) {
         this.velocity = other.velocity;
     }
 }

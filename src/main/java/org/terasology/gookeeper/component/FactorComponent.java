@@ -8,7 +8,7 @@ public abstract class FactorComponent<T extends FactorComponent> implements Comp
     public float magnitude;
 
     @Override
-    public void copy(T other) {
+    public void copyFrom(T other) {
         this.magnitude = other.magnitude;
     }
 }

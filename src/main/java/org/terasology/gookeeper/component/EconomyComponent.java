@@ -8,7 +8,7 @@ public class EconomyComponent implements Component<EconomyComponent> {
     public float playerWalletCredit = 2000f;
 
     @Override
-    public void copy(EconomyComponent other) {
+    public void copyFrom(EconomyComponent other) {
         this.playerWalletCredit = other.playerWalletCredit;
     }
 }

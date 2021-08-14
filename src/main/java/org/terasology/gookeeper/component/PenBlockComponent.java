@@ -25,7 +25,7 @@ public class PenBlockComponent implements Component<PenBlockComponent> {
     public boolean penIDSet = false;
 
     @Override
-    public void copy(PenBlockComponent other) {
+    public void copyFrom(PenBlockComponent other) {
         this.type = other.type;
         this.cutoffFactor = other.cutoffFactor;
         this.penNumber = other.penNumber;
