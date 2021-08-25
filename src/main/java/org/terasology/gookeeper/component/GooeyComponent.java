@@ -3,17 +3,17 @@
 package org.terasology.gookeeper.component;
 
 import com.google.common.collect.Lists;
-import org.terasology.engine.entitySystem.Component;
 import org.terasology.engine.entitySystem.prefab.Prefab;
+import org.terasology.gestalt.entitysystem.component.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-public class GooeyComponent implements Component {
+public class GooeyComponent implements Component<GooeyComponent> {
     /**
      *  The prefab corresponding to this gooey type
      */
-    public Optional<Prefab> prefab;
+    public Optional<Prefab> prefab = Optional.empty();
 
     /**
      *  The profit factor. (i.e how much money does the player make from the visitors viewing the gooey)
@@ -85,4 +85,22 @@ public class GooeyComponent implements Component {
      */
     public long lifeTime = 1800000;
 
+    @Override
+    public void copyFrom(GooeyComponent other) {
+        this.prefab = other.prefab;
+        this.profitPayOff = other.profitPayOff;
+        this.biome = other.biome;
+        this.blockBelow = other.blockBelow;
+        this.SPAWN_CHANCE = other.SPAWN_CHANCE;
+        this.MAX_GROUP_SIZE = other.MAX_GROUP_SIZE;
+        this.maxStunChargesReq = other.maxStunChargesReq;
+        this.stunChargesReq = other.stunChargesReq;
+        this.stunTime = other.stunTime;
+        this.stunFrequency = other.stunFrequency;
+        this.isStunned = other.isStunned;
+        this.isCaptured = other.isCaptured;
+        this.captureProbabiltyFactor = other.captureProbabiltyFactor;
+        this.penNumber = other.penNumber;
+        this.lifeTime = other.lifeTime;
+    }
 }

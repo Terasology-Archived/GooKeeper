@@ -1,25 +1,12 @@
-/*
- * Copyright 2018 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2021 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.component;
 
-import org.terasology.engine.entitySystem.Component;
 import org.terasology.engine.entitySystem.prefab.Prefab;
 import org.terasology.engine.logic.health.EngineDamageTypes;
+import org.terasology.gestalt.entitysystem.component.Component;
 
-public class PlazMasterComponent implements Component {
+public class PlazMasterComponent implements Component<PlazMasterComponent> {
     /**
      * The max. distance till which the cannon is viable.
      */
@@ -61,4 +48,17 @@ public class PlazMasterComponent implements Component {
     public int damageAmount = 6;
 
     public Prefab damageType = EngineDamageTypes.PHYSICAL.get();
+
+    @Override
+    public void copyFrom(PlazMasterComponent other) {
+        this.maxDistance = other.maxDistance;
+        this.maxCharges = other.maxCharges;
+        this.charges = other.charges;
+        this.shotRecoveryTime = other.shotRecoveryTime;
+        this.rateOfFire = other.rateOfFire;
+        this.maxFrequency = other.maxFrequency;
+        this.frequency = other.frequency;
+        this.damageAmount = other.damageAmount;
+        this.damageType = other.damageType;
+    }
 }
