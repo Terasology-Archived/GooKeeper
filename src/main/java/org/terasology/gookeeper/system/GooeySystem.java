@@ -31,8 +31,6 @@ import org.terasology.engine.logic.characters.WalkComponent;
 import org.terasology.engine.logic.characters.events.HorizontalCollisionEvent;
 import org.terasology.engine.logic.common.DisplayNameComponent;
 import org.terasology.engine.logic.delay.DelayManager;
-import org.terasology.module.health.components.HealthComponent;
-import org.terasology.module.health.events.OnDamagedEvent;
 import org.terasology.engine.logic.location.LocationComponent;
 import org.terasology.engine.logic.players.LocalPlayer;
 import org.terasology.engine.registry.In;
@@ -59,6 +57,8 @@ import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.event.FollowGooeyEvent;
 import org.terasology.gookeeper.event.OnCapturedEvent;
 import org.terasology.gookeeper.event.OnStunnedEvent;
+import org.terasology.module.health.components.HealthComponent;
+import org.terasology.module.health.events.OnDamagedEvent;
 
 import java.util.ArrayList;
 import java.util.List;

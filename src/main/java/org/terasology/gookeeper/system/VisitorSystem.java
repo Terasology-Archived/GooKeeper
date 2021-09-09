@@ -33,7 +33,6 @@ import org.terasology.engine.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.engine.logic.common.ActivateEvent;
 import org.terasology.engine.logic.delay.DelayManager;
 import org.terasology.engine.logic.delay.PeriodicActionTriggeredEvent;
-import org.terasology.module.inventory.systems.InventoryManager;
 import org.terasology.engine.logic.location.LocationComponent;
 import org.terasology.engine.logic.players.LocalPlayer;
 import org.terasology.engine.math.Direction;
@@ -60,6 +59,7 @@ import org.terasology.gookeeper.component.VisitorExitComponent;
 import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
 import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.module.inventory.systems.InventoryManager;
 
 import java.util.Optional;
 

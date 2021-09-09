@@ -36,8 +36,6 @@ import org.terasology.engine.logic.characters.GazeMountPointComponent;
 import org.terasology.engine.logic.common.ActivateEvent;
 import org.terasology.engine.logic.delay.DelayManager;
 import org.terasology.engine.logic.delay.DelayedActionTriggeredEvent;
-import org.terasology.module.health.events.DoDamageEvent;
-import org.terasology.module.inventory.systems.InventoryManager;
 import org.terasology.engine.logic.location.LocationComponent;
 import org.terasology.engine.logic.players.LocalPlayer;
 import org.terasology.engine.network.ClientComponent;
@@ -60,6 +58,8 @@ import org.terasology.gookeeper.event.OnStunnedEvent;
 import org.terasology.gookeeper.input.DecreaseFrequencyButton;
 import org.terasology.gookeeper.input.IncreaseFrequencyButton;
 import org.terasology.math.TeraMath;
+import org.terasology.module.health.events.DoDamageEvent;
+import org.terasology.module.inventory.systems.InventoryManager;
 
 import static org.joml.RoundingMode.HALF_UP;
 

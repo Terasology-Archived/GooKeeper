@@ -8,13 +8,13 @@ import org.terasology.engine.entitySystem.event.ReceiveEvent;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterMode;
 import org.terasology.engine.entitySystem.systems.RegisterSystem;
-import org.terasology.module.inventory.components.InventoryComponent;
-import org.terasology.module.inventory.systems.InventoryManager;
-import org.terasology.module.inventory.events.RemoveItemAction;
 import org.terasology.engine.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.engine.registry.In;
 import org.terasology.engine.world.block.BlockManager;
 import org.terasology.engine.world.block.items.BlockItemFactory;
+import org.terasology.module.inventory.components.InventoryComponent;
+import org.terasology.module.inventory.events.RemoveItemAction;
+import org.terasology.module.inventory.systems.InventoryManager;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class PlayerStartingInventorySystem extends BaseComponentSystem {
