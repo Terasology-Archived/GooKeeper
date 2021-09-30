@@ -126,6 +126,9 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     public void onActivate(ActivateEvent event, EntityRef entity, PlazMasterComponent plazMasterComponent) {
         if ((time.getGameTime() > lastTime + 1.0f / plazMasterComponent.rateOfFire) && plazMasterComponent.charges > 0f) {
             Vector3f target = event.getHitNormal();
+            if (target == null) {
+                return;
+            }
             Vector3i blockPos = new Vector3i(target, HALF_UP);
             Vector3f dir;
             Vector3f position = new Vector3f(event.getOrigin());
