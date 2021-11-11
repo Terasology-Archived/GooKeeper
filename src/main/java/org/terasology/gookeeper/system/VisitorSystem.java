@@ -59,7 +59,7 @@ import org.terasology.gookeeper.component.VisitorEntranceComponent;
 import org.terasology.gookeeper.component.VisitorExitComponent;
 import org.terasology.gookeeper.event.LeaveVisitBlockEvent;
 import org.terasology.gookeeper.interfaces.EconomyManager;
-import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.module.pathfindingbehaviors.move.MinionMoveComponent;
 
 import java.util.Optional;
 

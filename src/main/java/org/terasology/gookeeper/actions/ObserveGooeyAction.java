@@ -13,7 +13,7 @@ import org.terasology.engine.logic.location.LocationComponent;
 import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
 import org.terasology.math.TeraMath;
-import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.module.pathfindingbehaviors.move.MinionMoveComponent;
 
 @BehaviorAction(name = "observe_gooey")
 public class ObserveGooeyAction extends BaseAction {

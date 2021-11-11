@@ -24,7 +24,7 @@ import org.terasology.engine.logic.behavior.core.BehaviorState;
 import org.terasology.engine.logic.location.LocationComponent;
 import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
-import org.terasology.minion.move.MinionMoveComponent;
+import org.terasology.module.pathfindingbehaviors.move.MinionMoveComponent;
 
 import java.util.Random;
 
