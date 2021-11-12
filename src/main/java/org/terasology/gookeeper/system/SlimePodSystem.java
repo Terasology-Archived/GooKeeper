@@ -282,7 +282,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
 
         Vector3f slimePodPosition = slimePodLocation.getWorldPosition(new Vector3f());
         Vector3f gooeyPosition = gooeyLocation.getWorldPosition(new Vector3f());
-        float distanceFromGooey = Vector3f.distance(slimePodPosition.x(), slimePodPosition.y(), slimePodPosition.z(), gooeyPosition.x(), gooeyPosition.y(), gooeyPosition.z());
+        float distanceFromGooey = Vector3f
+                .distance(slimePodPosition.x(), slimePodPosition.y(), slimePodPosition.z(), gooeyPosition.x(), gooeyPosition.y(), gooeyPosition.z());
         if (distanceFromGooey > slimePodComponent.maxDistance) {
             return 0f;
         }

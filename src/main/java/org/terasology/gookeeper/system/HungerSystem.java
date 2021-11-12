@@ -77,7 +77,8 @@ public class HungerSystem extends BaseComponentSystem {
     @ReceiveEvent
     public void onGooeyActivated(OnAddedComponent event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
         if (gooeyComponent.isCaptured) {
-            delayManager.addPeriodicAction(entity, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+            delayManager.addPeriodicAction(
+                    entity, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
             delayManager.addDelayedAction(entity, Constants.gooeyDeathEventID, gooeyComponent.lifeTime);
         }
     }
@@ -136,7 +137,8 @@ public class HungerSystem extends BaseComponentSystem {
         HungerComponent hungerComponent = entityRef.getComponent(HungerComponent.class);
 
         healthComponent.currentHealth = healthComponent.maxHealth;
-        delayManager.addPeriodicAction(entityRef, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+        delayManager.addPeriodicAction(
+                entityRef, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
 
         event.getItem().destroy();
         entityRef.saveComponent(healthComponent);
@@ -185,7 +187,8 @@ public class HungerSystem extends BaseComponentSystem {
 
     @ReceiveEvent(components = GooeyComponent.class)
     public void setIcon(GetTooltipIconEvent event, EntityRef entityRef) {
-        Optional<TextureRegionAsset> textureRegion = Assets.getTextureRegion("GooKeeper:"+ entityRef.getComponent(DisplayNameComponent.class).name + "Tooltip");
+        Optional<TextureRegionAsset> textureRegion = Assets.getTextureRegion(
+                "GooKeeper:"+ entityRef.getComponent(DisplayNameComponent.class).name + "Tooltip");
         if (textureRegion.isPresent()) {
             event.setIcon(textureRegion.get());
         }

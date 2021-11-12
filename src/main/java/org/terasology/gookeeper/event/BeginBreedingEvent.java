@@ -37,5 +37,7 @@ public class BeginBreedingEvent implements Event {
         return instigator;
     }
 
-    public EntityRef getMatingWithEntity() { return matingWithEntity; }
+    public EntityRef getMatingWithEntity() {
+        return matingWithEntity;
+    }
 }

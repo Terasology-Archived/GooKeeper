@@ -41,8 +41,8 @@ public class GooeyCheckAttackStopAction extends BaseAction {
             return BehaviorState.FAILURE;
         }
         Vector3f actorPosition = actorLocationComponent.getWorldPosition(new Vector3f());
-        float maxDistance = actor.hasComponent(AttackOnHitComponent.class) ?
-                actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistance;
+        float maxDistance = actor.hasComponent(AttackOnHitComponent.class)
+                ? actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistance;
 
         float maxDistanceSquared = maxDistance * maxDistance;
         FollowComponent followWish = actor.getComponent(FollowComponent.class);

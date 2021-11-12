@@ -34,7 +34,9 @@ public class AfterGooeyBreedingEvent implements Event {
         return gooey;
     }
 
-    public EntityRef getMatingWithEntity() { return matingWithEntity; }
+    public EntityRef getMatingWithEntity() {
+        return matingWithEntity; }
 
-    public EntityRef getOffspringGooey() { return offspringGooey; }
+    public EntityRef getOffspringGooey() {
+        return offspringGooey; }
 }

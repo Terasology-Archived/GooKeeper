@@ -158,7 +158,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         if (locationComponent != null) {
             Vector3f worldPosition = locationComponent.getWorldPosition(new Vector3f());
             Vector3f playerPosition = localPlayer.getPosition(new Vector3f());
-            float distanceFromPlayer = Vector3f.distance(worldPosition.x(), worldPosition.y(), worldPosition.z(), playerPosition.x(), playerPosition.y(), playerPosition.z());
+            float distanceFromPlayer = Vector3f
+                    .distance(worldPosition.x(), worldPosition.y(), worldPosition.z(), playerPosition.x(), playerPosition.y(), playerPosition.z());
             if (distanceFromPlayer > 50f && skeleton.mesh != null) {
                 skeleton.mesh = null;
             } else if (distanceFromPlayer <= 50f && skeleton.mesh == null) {
@@ -404,7 +405,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             }
 
             Vector3f worldPosition = blockPos.getWorldPosition(new Vector3f());
-            if (Vector3f.distance(worldPosition.x(), worldPosition.y(), worldPosition.z(), collisionPosition.x(), collisionPosition.y(), collisionPosition.z()) <= 3f) {
+            if (Vector3f.distance(worldPosition.x()
+                    , worldPosition.y(), worldPosition.z(), collisionPosition.x(), collisionPosition.y(), collisionPosition.z()) <= 3f) {
                 blockEntity = entityRef;
             }
         }

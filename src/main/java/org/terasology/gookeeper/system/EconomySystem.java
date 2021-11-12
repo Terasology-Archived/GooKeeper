@@ -163,7 +163,8 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
 
             if (displayNameComponent != null && displayNameComponent.name.equals(itemPrefabName)) {
                 UpgradableComponent upgradableComponent = itemInSlot.getComponent(UpgradableComponent.class);
-                if (economyComponent != null && upgradableComponent != null && (economyComponent.playerWalletCredit - (upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier) > 0f)) {
+                if (economyComponent != null && upgradableComponent != null
+                        && (economyComponent.playerWalletCredit - (upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier) > 0f)) {
                     upgradeByType(itemInSlot, upgradableComponent);
                     economyComponent.playerWalletCredit -= upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier;
                     player.saveComponent(economyComponent);

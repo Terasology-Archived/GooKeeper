@@ -125,7 +125,8 @@ public class BreedingSystem extends BaseComponentSystem {
             FollowComponent followComponent = entity.getComponent(FollowComponent.class);
             BreedingBlockComponent breedingBlockComponent = blockEntity.getComponent(BreedingBlockComponent.class);
 
-            if (followComponent.entityToFollow != EntityRef.NULL && breedingBlockComponent.parentGooey == EntityRef.NULL && gooeyComponent.isCaptured) {
+            if (followComponent.entityToFollow != EntityRef.NULL
+                    && breedingBlockComponent.parentGooey == EntityRef.NULL && gooeyComponent.isCaptured) {
                 breedingBlockComponent.parentGooey = entity;
                 blockEntity.saveComponent(breedingBlockComponent);
                 entity.send(new SelectForBreedingEvent(followComponent.entityToFollow, entity));
@@ -362,7 +363,8 @@ public class BreedingSystem extends BaseComponentSystem {
 
         Vector3f parent1Location = gooeyEntity.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
         Vector3f parent2Location =
-                gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
+                gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class)
+                                .getWorldPosition(new Vector3f());
 
         Vector3f middleLocation = new Vector3f((parent1Location.x + parent2Location.x) / 2f, parent1Location.y + 1f,
                 (parent2Location.z + parent2Location.z) / 2f);

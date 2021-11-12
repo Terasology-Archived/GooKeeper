@@ -223,7 +223,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
                 EntityRef neighborEntity = blockEntityRegistry.getEntityAt(neighborLocation);
                 BlockComponent blockComponent1 = neighborEntity.getComponent(BlockComponent.class);
 
-                if (blockComponent1 != null && neighborEntity.hasComponent(ConnectsToFencesComponent.class) && neighborEntity.hasComponent(PenBlockComponent.class)) {
+                if (blockComponent1 != null && neighborEntity.hasComponent(ConnectsToFencesComponent.class)
+                        && neighborEntity.hasComponent(PenBlockComponent.class)) {
                     PenBlockComponent penBlockComponent1 = neighborEntity.getComponent(PenBlockComponent.class);
                     if (penBlockComponent1.type.equals(penBlockComponent.type)) {
                         penBlockComponent1.penNumber = penIdCounter;
@@ -256,8 +257,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
         if (blockEntity.hasComponent(VisitBlockComponent.class) && visitor.hasComponent(VisitorComponent.class) && minionMoveComponent != null) {
             VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
             Vector3f blockPos = blockEntity.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
-            if (visitorComponent.pensToVisit.contains(blockEntity) &&
-                    Vector3f.distance(minionMoveComponent.target.x(), minionMoveComponent.target.y(),
+            if (visitorComponent.pensToVisit.contains(blockEntity)
+                    && Vector3f.distance(minionMoveComponent.target.x(), minionMoveComponent.target.y(),
                             minionMoveComponent.target.z(),
                             blockPos.x(), blockPos.y(), blockPos.z()) <= 1f) {
                 economySystem.payVisitFee(visitorComponent, blockEntity);
