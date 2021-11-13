@@ -61,7 +61,7 @@ import static org.joml.RoundingMode.HALF_UP;
 public class BreedingSystem extends BaseComponentSystem {
 
     // mapping of parent color portion combination to HTML color names used in gooey assets
-    private static final ImmutableMap<String, String> colors;
+    private static final ImmutableMap<String, String> COLORS;
     private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
 
     @In
@@ -86,7 +86,7 @@ public class BreedingSystem extends BaseComponentSystem {
     private DelayManager delayManager;
 
     static {
-        colors = ImmutableMap.<String, String>builder()
+        COLORS = ImmutableMap.<String, String>builder()
                 .put("1r", "Red")
                 .put("1b", "Blue")
                 .put("1y", "Yellow")
@@ -174,7 +174,7 @@ public class BreedingSystem extends BaseComponentSystem {
      */
     @ReceiveEvent
     public void onBeginBreedingProcess(BeginBreedingEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
-        delayManager.addDelayedAction(gooeyEntity, Constants.spawnGooeyEggEventID, random.nextLong(4000, 7000));
+        delayManager.addDelayedAction(gooeyEntity, Constants.SPAWN_GOOEY_EGG_EVENT_ID, random.nextLong(4000, 7000));
     }
 
     /**
@@ -232,9 +232,9 @@ public class BreedingSystem extends BaseComponentSystem {
      */
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef gooeyEntity) {
-        if (event.getActionId().equals(Constants.spawnGooeyEggEventID)) {
+        if (event.getActionId().equals(Constants.SPAWN_GOOEY_EGG_EVENT_ID)) {
             spawnGooeyEgg(gooeyEntity);
-        } else if (event.getActionId().equals(Constants.hatchEggEventID)) {
+        } else if (event.getActionId().equals(Constants.HATCH_EGG_EVENT_ID)) {
             hatchGooeyEgg(gooeyEntity);
         }
     }
@@ -298,7 +298,7 @@ public class BreedingSystem extends BaseComponentSystem {
             colorBlend += ((int) (Math.ceil(offspringGooeyColor.color.b() / 128))) + "b";
         }
 
-        String colorName = colors.get(colorBlend);
+        String colorName = COLORS.get(colorBlend);
         String materialName = "gooeySkin" + colorName;
 
         offspringEntity.addOrSaveComponent(offspringGooeyColor);
@@ -404,8 +404,8 @@ public class BreedingSystem extends BaseComponentSystem {
 
         long timeToHatch = random.nextLong(2000, 6000);
 
-        delayManager.addDelayedAction(eggEntity, Constants.hatchEggEventID, timeToHatch);
-        delayManager.addDelayedAction(offspringGooey, Constants.hatchEggEventID, timeToHatch);
+        delayManager.addDelayedAction(eggEntity, Constants.HATCH_EGG_EVENT_ID, timeToHatch);
+        delayManager.addDelayedAction(offspringGooey, Constants.HATCH_EGG_EVENT_ID, timeToHatch);
     }
 
     private void hatchGooeyEgg(EntityRef gooeyEntity) {
