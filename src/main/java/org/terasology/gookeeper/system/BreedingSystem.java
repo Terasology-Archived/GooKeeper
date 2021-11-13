@@ -60,6 +60,10 @@ import static org.joml.RoundingMode.HALF_UP;
 @Share(value = BreedingSystem.class)
 public class BreedingSystem extends BaseComponentSystem {
 
+    // mapping of parent color portion combination to HTML color names used in gooey assets
+    private static final ImmutableMap<String, String> colors;
+    private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
+
     @In
     private BlockEntityRegistry blockEntityRegistry;
 
@@ -81,9 +85,6 @@ public class BreedingSystem extends BaseComponentSystem {
     @In
     private DelayManager delayManager;
 
-    // mapping of parent color portion combination to HTML color names used in gooey assets
-    private static final ImmutableMap<String, String> colors;
-
     static {
         colors = ImmutableMap.<String, String>builder()
                 .put("1r", "Red")
@@ -104,7 +105,6 @@ public class BreedingSystem extends BaseComponentSystem {
                 .build();
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
     private Random random = new FastRandom();
 
     /**

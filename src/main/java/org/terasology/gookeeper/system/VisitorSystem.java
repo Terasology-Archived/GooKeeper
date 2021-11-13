@@ -52,6 +52,11 @@ import java.util.Optional;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class VisitorSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+
+    private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
+    private static int penIdCounter = 1;
+    private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
+
     @In
     private WorldProvider worldProvider;
 
@@ -88,9 +93,6 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
     @In
     private NetworkSystem networkSystem;
 
-    private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
-    private static int penIdCounter = 1;
-    private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
     private Random random = new FastRandom();
 
     @Override

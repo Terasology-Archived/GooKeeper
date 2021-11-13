@@ -47,6 +47,11 @@ import org.terasology.gookeeper.interfaces.EconomyManager;
 @Share(value = EconomyManager.class)
 public class EconomySystem extends BaseComponentSystem implements UpdateSubscriberSystem, EconomyManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(EconomySystem.class);
+    private static final float baseEntranceFee = 100f;
+    private static final float baseVisitFee = 10f;
+    private static boolean setHud = false;
+
     @In
     private WorldProvider worldProvider;
 
@@ -80,11 +85,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     @In
     private ItemCommands itemCommands;
 
-    private static final Logger logger = LoggerFactory.getLogger(EconomySystem.class);
     private Random random = new FastRandom();
-    private static final float baseEntranceFee = 100f;
-    private static final float baseVisitFee = 10f;
-    private static boolean setHud = false;
 
     @Override
     public void update(float delta) {

@@ -52,6 +52,10 @@ import static org.joml.RoundingMode.HALF_UP;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlazMasterSystem.class);
+    private static final Prefab ARROW_PREFAB = Assets.getPrefab("GooKeeper:arrow").get();
+
     @In
     private WorldProvider worldProvider;
 
@@ -77,10 +81,8 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     private LocalPlayer localPlayer;
 
     private CollisionGroup filter = StandardCollisionGroup.ALL;
-    private static final Logger logger = LoggerFactory.getLogger(PlazMasterSystem.class);
     private float lastTime = 0f;
     private Random random = new FastRandom();
-    private static final Prefab ARROW_PREFAB = Assets.getPrefab("GooKeeper:arrow").get();
     private StaticSound gunShotAudio = Assets.getSound("GooKeeper:PlasmaShot").get();
     private StaticSound gooeyHitAudio = Assets.getSound("GooKeeper:GooeyHit").get();
 

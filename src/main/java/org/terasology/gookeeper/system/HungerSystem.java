@@ -46,6 +46,8 @@ import java.util.Optional;
 @Share(value = HungerSystem.class)
 public class HungerSystem extends BaseComponentSystem {
 
+    private static final Logger logger = LoggerFactory.getLogger(HungerSystem.class);
+
     @In
     private EntityManager entityManager;
 
@@ -66,8 +68,6 @@ public class HungerSystem extends BaseComponentSystem {
 
     @In
     private NUIManager nuiManager;
-
-    private static final Logger logger = LoggerFactory.getLogger(HungerSystem.class);
 
     /**
      * Adds health degradation action for the already captured gooey entities.

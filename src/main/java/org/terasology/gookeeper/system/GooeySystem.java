@@ -65,6 +65,13 @@ import java.util.List;
 
 @RegisterSystem
 public class GooeySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+
+    private static final int NUM_OF_ENTITIES_ALLOWED = 10;
+    private static int currentNumOfEntities = 0;
+    private static final float MAX_DISTANCE_FROM_PLAYER = 60f;
+    private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
+
+
     @In
     private WorldProvider worldProvider;
 
@@ -100,12 +107,6 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     private SkeletalMesh gooeySkeletalMesh = null;
 
     private Block airBlock;
-
-    private static final int NUM_OF_ENTITIES_ALLOWED = 10;
-    private static int currentNumOfEntities = 0;
-    private static final float MAX_DISTANCE_FROM_PLAYER = 60f;
-
-    private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
 
     @Override
     public void initialise() {
