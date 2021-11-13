@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper;
 
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public class Constants {
     public static final String VISITOR_SPAWN_DELAY_EVENT_ID = "VISITOR_SPAWN_DELAY";
     public static final String DESTROY_ARROW_EVENT_ID = "DESTROY_ARROW";
