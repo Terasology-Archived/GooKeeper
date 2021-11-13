@@ -72,7 +72,10 @@ public class HungerSystem extends BaseComponentSystem {
     /**
      * Adds health degradation action for the already captured gooey entities.
      *
-     * @param event,entity,gooeyComponent,hungerComponent
+     * @param event
+     * @param entity
+     * @param gooeyComponent
+     * @param hungerComponent
      */
     @ReceiveEvent
     public void onGooeyActivated(OnAddedComponent event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
@@ -86,7 +89,9 @@ public class HungerSystem extends BaseComponentSystem {
     /**
      * Receives ActivateEvent when the targeted gooey is 'activated' and then provides an interactive screen to the player.
      *
-     * @param event,entity,gooeyComponent   The ActivateEvent, the gooey entity, the GooeyComponent of the corresponding entity
+     * @param event    The ActivateEvent
+     * @param gooeyEntity   The gooey entity
+     * @param gooeyComponent    The GooeyComponent of the corresponding entity
      */
     @ReceiveEvent
     public void onGooeyActivated(ActivateEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
@@ -129,7 +134,8 @@ public class HungerSystem extends BaseComponentSystem {
     /**
      * Receives AfterGooeyFedEvent when the targeted gooey is fed the held food block and hence resets the health to max.
      *
-     * @param event,entity   The AfterGooeyFedEvent, the gooey entity
+     * @param event        The AfterGooeyFedEvent
+     * @param entityRef    The gooey entity
      */
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onGooeyFed(AfterGooeyFedEvent event, EntityRef entityRef) {
@@ -147,7 +153,8 @@ public class HungerSystem extends BaseComponentSystem {
     /**
      * Receives PeriodicActionTriggeredEvent when the gooey entity's health is decreased
      *
-     * @param event,entity   The PeriodicActionTriggeredEvent, the gooey entity
+     * @param event     The PeriodicActionTriggeredEvent
+     * @param entity    The gooey entity
      */
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onGooeyHealthDecrease(PeriodicActionTriggeredEvent event, EntityRef entity) {
@@ -168,7 +175,8 @@ public class HungerSystem extends BaseComponentSystem {
     /**
      * Receives DelayedActionTriggeredEvent when the gooey entity's life span terminates
      *
-     * @param event,entity   The DelayedActionTriggeredEvent, the gooey entity
+     * @param event     The DelayedActionTriggeredEvent
+     * @param entity    The gooey entity
      */
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onGooeyDestroy(DelayedActionTriggeredEvent event, EntityRef entity) {

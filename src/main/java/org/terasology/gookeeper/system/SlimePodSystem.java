@@ -116,7 +116,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     /**
      * Receives ActivateEvent when the held slime pod launcher item is activated, shooting out a slime pod.
      *
-     * @param event,entity The ActivateEvent, the instigator entity
+     * @param event  The ActivateEvent
+     * @param entity The instigator entity
      */
     @ReceiveEvent(components = {SlimePodComponent.class})
     public void onActivate(ActivateEvent event, EntityRef entity) {
@@ -171,7 +172,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
     /**
      * Receives ActivateEvent when the held/targeted slime pod item is activated, releasing the captured gooey.
      *
-     * @param event,entity The ActivateEvent, the instigator entity
+     * @param event  The ActivateEvent
+     * @param entity The instigator entity
      */
     @ReceiveEvent(components = {SlimePodItemComponent.class})
     public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
@@ -231,7 +233,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      * <p>
      * Receives OnEnterBlockEvent when a gooey entity steps over a slime pod.
      *
-     * @param event,entity The OnEnterBlockEvent, the gooey entity
+     * @param event  The OnEnterBlockEvent
+     * @param entity The gooey entity
      */
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
@@ -255,7 +258,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      * This method is computes the probability of capturing a gooey entity within a slime pod, based on its type and
      * distance from the slime pod.
      *
-     * @param slimePodEntity,gooeyEntity slime pod item entity, the gooey entity
+     * @param slimePodEntity  slime pod item entity
+     * @param gooeyEntity The gooey entity
      */
     private float tryToCapture(EntityRef slimePodEntity, EntityRef gooeyEntity) {
         SlimePodComponent slimePodComponent = slimePodEntity.getComponent(SlimePodComponent.class);
@@ -284,7 +288,8 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      * Sends a `OnCapturedEvent` to the gooey entity, and sets the `SlimePodComponent` capturedEntity to the
      * corresponding gooey entity.
      *
-     * @param slimePodComponent,gooeyEntity slime pod component, the gooey entity
+     * @param slimePodComponent  slime pod component
+     * @param gooeyEntity The gooey entity
      */
     private void captureGooey(SlimePodComponent slimePodComponent, EntityRef gooeyEntity) {
         GooeyComponent gooeyComponent = gooeyEntity.getComponent(GooeyComponent.class);
@@ -302,7 +307,9 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      * <p>
      * Receives CollideEvent when a player steps over a slime pod
      *
-     * @param event,entity,pickupComponent The CollideEvent, the slime pod item entity, pickupComponent
+     * @param event  The CollideEvent
+     * @param entity The slime pod item entity
+     * @param pickupComponent  pickupComponent
      */
     @ReceiveEvent
     public void onBumpGiveItemToEntity(CollideEvent event, EntityRef entity, PickupComponent pickupComponent) {

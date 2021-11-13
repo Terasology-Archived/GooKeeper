@@ -152,7 +152,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Implementation of distance-based visual culling for gooey entities
      *
-     * @param entity,locationComponent   The corresponding gooey entity and its location component
+     * @param entity The corresponding gooey entity
+     * @param locationComponent Gooey entity's location component
      */
     private void cullDistantGooeys(EntityRef entity, LocationComponent locationComponent) {
         SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
@@ -187,7 +188,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * Attempts to spawn gooey on the specified chunk. The number of gooeys spawned will depend on probability
      * configurations defined earlier
      *
-     * @param gooey,chunkPos   The prefab to be spawned and the chunk which the game will try to spawn gooeys on
+     * @param gooey The prefab to be spawned
+     * @param chunkPos The chunk which the game will try to spawn gooeys on
      */
     private void tryGooeySpawn(Prefab gooey, Vector3i chunkPos) {
         GooeyComponent gooeyComponent = gooey.getComponent(GooeyComponent.class);
@@ -236,7 +238,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Spawns the gooey at the location specified by the parameter.
      *
-     * @param gooey,location   Gooey prefab to be spawned and the location where the gooey is to be spawned
+     * @param gooey  Gooey prefab to be spawned
+     * @param location The location where the gooey is to be spawned
      */
     private void spawnGooey(Prefab gooey, Vector3i location) {
         Vector3f floatVectorLocation = new Vector3f(location);
@@ -258,7 +261,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Check blocks at and around the target position and check if it's a valid spawning spot
      *
-     * @param gooeyComponent,pos   GooeyComponent of the particular gooey to be spawned & the block to be checked if it's a valid spot for spawning
+     * @param gooeyComponent GooeyComponent of the particular gooey to be spawned
+     * @param pos The block to be checked if it's a valid spot for spawning
      * @return A boolean with the value of true if the block is a valid spot for spawing
      */
     private boolean isValidSpawnPosition(GooeyComponent gooeyComponent, Vector3i pos) {
@@ -326,7 +330,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Receives OnStunnedEvent sent to a gooey entity when it gets stunned by PlazMaster.
      *
-     * @param event,entity   The OnStunnedEvent and the gooey entity to which it is sent
+     * @param event    The OnStunnedEvent
+     * @param entity   The gooey entity to which it is sent
      */
     @ReceiveEvent
     public void onStunned(OnStunnedEvent event, EntityRef entity) {
@@ -341,7 +346,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Receives OnCapturedEvent sent to a gooey entity when it gets captured in a slime pod.
      *
-     * @param event,entity   The OnCapturedEvent and the gooey entity to which it is sent
+     * @param event    The OnCapturedEvent
+     * @param entity   The gooey entity to which it is sent
      */
     @ReceiveEvent
     public void onCaptured(OnCapturedEvent event, EntityRef entity) {
@@ -388,7 +394,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * Also, it adds to the total number of gooeys in a pen, which is stored in the corresponding
      * VisitBlockComponent
      *
-     * @param event,entity   The HorizontalCollisionEvent and the gooey entity to which it is sent
+     * @param event    The HorizontalCollisionEvent
+     * @param entity   The gooey entity to which it is sent
      */
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onBump(HorizontalCollisionEvent event, EntityRef entity) {

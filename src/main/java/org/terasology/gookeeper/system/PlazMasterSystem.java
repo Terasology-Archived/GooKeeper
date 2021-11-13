@@ -108,8 +108,10 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives ActivateEvent when the held PlazMaster item is activated, shooting a plasma pulse.
      *
-     * @param event,entity,plazMasterComponent The ActivateEvent, the instigator entity and the corresponding
-     *         PlazMasterComponent of the activated item
+     * @param event  The ActivateEvent
+     * @param entity The instigator entity
+     * @param plazMasterComponent   The corresponding PlazMasterComponent of the activated item
+     *
      */
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, PlazMasterComponent plazMasterComponent) {
@@ -196,7 +198,8 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives DelayedActionTriggeredEvent, which deletes the plasma stub entity
      *
-     * @param event,entity The DelayedActionTriggeredEvent event, plasma stub entity to be destroyed
+     * @param event   The DelayedActionTriggeredEvent event
+     * @param entityRef  Plasma stub entity to be destroyed
      */
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef entityRef) {
@@ -210,7 +213,8 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives IncreaseFrequencyButton, which increases the plazmasters frequency.
      *
-     * @param event,entity The IncreaseFrequencyButton event
+     * @param event  The IncreaseFrequencyButton event
+     * @param entityRef
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onIncreaseFrequency(IncreaseFrequencyButton event, EntityRef entityRef) {
@@ -236,7 +240,8 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives DecreaseFrequencyButton, which decreases the plazmasters frequency.
      *
-     * @param event,entity The DecreaseFrequencyButton event
+     * @param event The DecreaseFrequencyButton event
+     * @param entityRef
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onDecreaseFrequency(DecreaseFrequencyButton event, EntityRef entityRef) {

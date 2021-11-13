@@ -210,7 +210,8 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
      * This function is to be called by a visitor entity when it visits a particular visit block attached to a pen, and
      * depending upon the rarity and number of gooeys in the pen, credits get added accordingly.
      *
-     * @param visitorComponent,visitBlock The visitor entity's {@link VisitorComponent}, the visit block entity
+     * @param visitorComponent The visitor entity's {@link VisitorComponent}
+     * @param visitBlock The visit block entity
      */
 
     @Override
