@@ -78,8 +78,8 @@ public class HungerSystem extends BaseComponentSystem {
     public void onGooeyActivated(OnAddedComponent event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
         if (gooeyComponent.isCaptured) {
             delayManager.addPeriodicAction(
-                    entity, Constants.HEALTH_DECREASE_EVENT_ID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
-            delayManager.addDelayedAction(entity, Constants.GOOEY_DEATH_EVENT_ID, gooeyComponent.lifeTime);
+                    entity, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+            delayManager.addDelayedAction(entity, Constants.gooeyDeathEventID, gooeyComponent.lifeTime);
         }
     }
 
@@ -118,7 +118,7 @@ public class HungerSystem extends BaseComponentSystem {
             if (!itemName.isEmpty() && hungerComponent.food.contains(itemName)) {
                 logger.info("Gooey Health: " + healthComponent.currentHealth);
 
-                delayManager.cancelPeriodicAction(gooeyEntity, Constants.HEALTH_DECREASE_EVENT_ID);
+                delayManager.cancelPeriodicAction(gooeyEntity, Constants.healthDecreaseEventID);
                 gooeyEntity.send(new AfterGooeyFedEvent(event.getInstigator(), gooeyEntity, item));
             }
         }
@@ -138,7 +138,7 @@ public class HungerSystem extends BaseComponentSystem {
 
         healthComponent.currentHealth = healthComponent.maxHealth;
         delayManager.addPeriodicAction(
-                entityRef, Constants.HEALTH_DECREASE_EVENT_ID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+                entityRef, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
 
         event.getItem().destroy();
         entityRef.saveComponent(healthComponent);
@@ -151,7 +151,7 @@ public class HungerSystem extends BaseComponentSystem {
      */
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onGooeyHealthDecrease(PeriodicActionTriggeredEvent event, EntityRef entity) {
-        if (event.getActionId().equals(Constants.HEALTH_DECREASE_EVENT_ID)) {
+        if (event.getActionId().equals(Constants.healthDecreaseEventID)) {
             HealthComponent healthComponent = entity.getComponent(HealthComponent.class);
             HungerComponent hungerComponent = entity.getComponent(HungerComponent.class);
 
@@ -172,7 +172,7 @@ public class HungerSystem extends BaseComponentSystem {
      */
     @ReceiveEvent(components = {GooeyComponent.class})
     public void onGooeyDestroy(DelayedActionTriggeredEvent event, EntityRef entity) {
-        if (event.getActionId().equals(Constants.GOOEY_DEATH_EVENT_ID)) {
+        if (event.getActionId().equals(Constants.gooeyDeathEventID)) {
             entity.send(new DoDestroyEvent(EntityRef.NULL, EntityRef.NULL, EngineDamageTypes.PHYSICAL.get()));
         }
     }

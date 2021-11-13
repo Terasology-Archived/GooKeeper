@@ -38,7 +38,7 @@ public class CheckTargetOccupiedAction extends BaseAction {
                         return BehaviorState.SUCCESS;
                     } else {
                         int currentPenIndex = visitorComponent.pensToVisit.indexOf(pen);
-                        int newPenIndex = rng(currentPenIndex, visitorComponent.pensToVisit.size());
+                        int newPenIndex = RNG(currentPenIndex, visitorComponent.pensToVisit.size());
                         moveComponent.target =
                                 visitorComponent.pensToVisit.get(newPenIndex).getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
                         return BehaviorState.SUCCESS;
@@ -51,13 +51,13 @@ public class CheckTargetOccupiedAction extends BaseAction {
         }
     }
 
-    private int rng(int oldNumber, int size) {
+    private int RNG(int oldNumber, int size) {
         int newNumber = random.nextInt(size);
 
         if (newNumber != oldNumber) {
             return newNumber;
         } else {
-            return rng(newNumber, size);
+            return RNG(newNumber, size);
         }
     }
 }

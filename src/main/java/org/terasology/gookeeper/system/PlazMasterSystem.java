@@ -189,7 +189,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
 
             arrowEntity.send(new PlaySoundEvent(gunShotAudio, 0.4f));
 
-            delayManager.addDelayedAction(arrowEntity, Constants.DESTROY_ARROW_EVENT_ID, 3000);
+            delayManager.addDelayedAction(arrowEntity, Constants.destroyArrowEventID, 3000);
         }
     }
 
@@ -200,7 +200,7 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
      */
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef entityRef) {
-        if (event.getActionId().equals(Constants.DESTROY_ARROW_EVENT_ID)) {
+        if (event.getActionId().equals(Constants.destroyArrowEventID)) {
             entityRef.destroy();
         }
     }
