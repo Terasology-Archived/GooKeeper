@@ -176,7 +176,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         Vector3f pos = localPlayer.getPosition(new Vector3f());
         Vector3i chunkPos = Chunks.toChunkPos((int) pos.x(), (int) pos.y(), (int) pos.z(), new Vector3i());
         for (Prefab gooey : gooeyPrefabs) {
-            boolean trySpawn = (gooey.getComponent(GooeyComponent.class).SPAWN_CHANCE / 10f) > random.nextInt(400);
+            boolean trySpawn = (gooey.getComponent(GooeyComponent.class).spawnChance / 10f) > random.nextInt(400);
             if (trySpawn) {
                 tryGooeySpawn(gooey, chunkPos);
             }
@@ -198,8 +198,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         }
 
         int maxGooeyCount = foundPositions.size();
-        if (maxGooeyCount > gooeyComponent.MAX_GROUP_SIZE) {
-            maxGooeyCount = gooeyComponent.MAX_GROUP_SIZE;
+        if (maxGooeyCount > gooeyComponent.maxGroupSize) {
+            maxGooeyCount = gooeyComponent.maxGroupSize;
         }
         int gooeyCount = random.nextInt(maxGooeyCount - 1) + 1;
 

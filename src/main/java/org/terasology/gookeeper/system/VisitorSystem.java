@@ -55,7 +55,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
 
     private static final Logger logger = LoggerFactory.getLogger(VisitorSystem.class);
     private static int penIdCounter = 1;
-    private static final Optional<Prefab> visitorPrefab = Assets.getPrefab("visitor");
+    private static final Optional<Prefab> VISITOR_PREFAB = Assets.getPrefab("visitor");
 
     @In
     private WorldProvider worldProvider;
@@ -169,7 +169,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             visitorEntranceComponent.owner = event.getInstigator();
             event.getPlacedBlock().saveComponent(visitorEntranceComponent);
 
-            delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.visitorSpawnDelayEventID,
+            delayManager.addPeriodicAction(event.getPlacedBlock(), Constants.VISITOR_SPAWN_DELAY_EVENT_ID,
                     visitorEntranceComponent.initialDelay, visitorEntranceComponent.visitorSpawnRate);
         }
     }
@@ -267,7 +267,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
      */
     @ReceiveEvent(components = {VisitorEntranceComponent.class})
     public void onPeriodicAction(PeriodicActionTriggeredEvent event, EntityRef entityRef) {
-        if (event.getActionId().equals(Constants.visitorSpawnDelayEventID)) {
+        if (event.getActionId().equals(Constants.VISITOR_SPAWN_DELAY_EVENT_ID)) {
             LocationComponent locationComponent = entityRef.getComponent(LocationComponent.class);
             Vector3f blockPos = locationComponent.getWorldPosition(new Vector3f()).add(0, 1f, 0);
 
@@ -281,8 +281,8 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
             }
             Quaternionf rotation = new Quaternionf().rotateTo(Direction.FORWARD.asVector3f(), dir);
 
-            if (visitorPrefab.isPresent() && visitorPrefab.get().getComponent(LocationComponent.class) != null) {
-                EntityRef visitor = entityManager.create(visitorPrefab.get(), spawnPos, rotation);
+            if (VISITOR_PREFAB.isPresent() && VISITOR_PREFAB.get().getComponent(LocationComponent.class) != null) {
+                EntityRef visitor = entityManager.create(VISITOR_PREFAB.get(), spawnPos, rotation);
                 VisitorComponent visitorComponent = visitor.getComponent(VisitorComponent.class);
                 visitorComponent.visitorEntranceBlock = entityRef;
                 visitor.saveComponent(visitorComponent);

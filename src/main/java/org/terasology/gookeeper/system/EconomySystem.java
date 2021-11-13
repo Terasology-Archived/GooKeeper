@@ -48,8 +48,8 @@ import org.terasology.gookeeper.interfaces.EconomyManager;
 public class EconomySystem extends BaseComponentSystem implements UpdateSubscriberSystem, EconomyManager {
 
     private static final Logger logger = LoggerFactory.getLogger(EconomySystem.class);
-    private static final float baseEntranceFee = 100f;
-    private static final float baseVisitFee = 10f;
+    private static final float BASE_ENTRANCE_FEE = 100f;
+    private static final float BASE_VISIT_FEE = 10f;
     private static boolean setHud = false;
 
     @In
@@ -198,7 +198,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             EntityRef player = visitorEntranceComponent.owner;
 
             player.updateComponent(EconomyComponent.class, economyComponent  -> {
-                economyComponent.playerWalletCredit += baseEntranceFee;
+                economyComponent.playerWalletCredit += BASE_ENTRANCE_FEE;
                 return economyComponent;
             });
         } else {
@@ -226,7 +226,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             if (gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
                 player.updateComponent(EconomyComponent.class, economyComponent  -> {
                     float profitPayOff = gooeyPrefab.getComponent(GooeyComponent.class).profitPayOff;
-                    economyComponent.playerWalletCredit += baseVisitFee * profitPayOff * (visitBlockComponent.gooeyQuantity / 3f);
+                    economyComponent.playerWalletCredit += BASE_VISIT_FEE * profitPayOff * (visitBlockComponent.gooeyQuantity / 3f);
                     return economyComponent;
                 });
             } else {

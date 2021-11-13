@@ -82,8 +82,8 @@
       "PLAINS"
     ],
     "blockBelow": "CoreAssets:Grass",
-    "SPAWN_CHANCE": 35,
-    "MAX_GROUP_SIZE": 4
+    "spawnChance": 35,
+    "maxGroupSize": 4
   },
   "Friendly": {
     "magnitude": 85
