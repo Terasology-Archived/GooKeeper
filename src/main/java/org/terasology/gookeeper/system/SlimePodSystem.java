@@ -119,7 +119,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      * @param event  The ActivateEvent
      * @param entity The instigator entity
      */
-    @ReceiveEvent(components = {SlimePodComponent.class})
+    @ReceiveEvent(components = SlimePodComponent.class)
     public void onActivate(ActivateEvent event, EntityRef entity) {
         EntityRef blockEntity =
                 blockEntityRegistry.getExistingBlockEntityAt(new org.joml.Vector3i(event.getTargetLocation(),
@@ -175,7 +175,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      * @param event  The ActivateEvent
      * @param entity The instigator entity
      */
-    @ReceiveEvent(components = {SlimePodItemComponent.class})
+    @ReceiveEvent(components = SlimePodItemComponent.class)
     public void onSlimePodActivate(ActivateEvent event, EntityRef entity) {
 
         SlimePodItemComponent slimePodItemComponent = entity.getComponent(SlimePodItemComponent.class);
@@ -236,7 +236,7 @@ public class SlimePodSystem extends BaseComponentSystem implements UpdateSubscri
      * @param event  The OnEnterBlockEvent
      * @param entity The gooey entity
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void onEnterBlock(OnEnterBlockEvent event, EntityRef entity) {
         LocationComponent loc = entity.getComponent(LocationComponent.class);
         Vector3f pos = loc.getWorldPosition(new Vector3f());

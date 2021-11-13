@@ -397,7 +397,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * @param event    The HorizontalCollisionEvent
      * @param entity   The gooey entity to which it is sent
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void onBump(HorizontalCollisionEvent event, EntityRef entity) {
         GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
         Vector3f collisionPosition = event.getLocation();

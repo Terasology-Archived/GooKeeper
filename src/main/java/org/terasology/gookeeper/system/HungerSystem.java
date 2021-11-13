@@ -137,7 +137,7 @@ public class HungerSystem extends BaseComponentSystem {
      * @param event        The AfterGooeyFedEvent
      * @param entityRef    The gooey entity
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void onGooeyFed(AfterGooeyFedEvent event, EntityRef entityRef) {
         HealthComponent healthComponent = entityRef.getComponent(HealthComponent.class);
         HungerComponent hungerComponent = entityRef.getComponent(HungerComponent.class);
@@ -156,7 +156,7 @@ public class HungerSystem extends BaseComponentSystem {
      * @param event     The PeriodicActionTriggeredEvent
      * @param entity    The gooey entity
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void onGooeyHealthDecrease(PeriodicActionTriggeredEvent event, EntityRef entity) {
         if (event.getActionId().equals(Constants.HEALTH_DECREASE_EVENT_ID)) {
             HealthComponent healthComponent = entity.getComponent(HealthComponent.class);
@@ -178,7 +178,7 @@ public class HungerSystem extends BaseComponentSystem {
      * @param event     The DelayedActionTriggeredEvent
      * @param entity    The gooey entity
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void onGooeyDestroy(DelayedActionTriggeredEvent event, EntityRef entity) {
         if (event.getActionId().equals(Constants.GOOEY_DEATH_EVENT_ID)) {
             entity.send(new DoDestroyEvent(EntityRef.NULL, EntityRef.NULL, EngineDamageTypes.PHYSICAL.get()));
@@ -202,7 +202,7 @@ public class HungerSystem extends BaseComponentSystem {
         }
     }
 
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void setName(GetTooltipNameEvent event, EntityRef entityRef) {
         event.setName(entityRef.getComponent(DisplayNameComponent.class).name);
     }

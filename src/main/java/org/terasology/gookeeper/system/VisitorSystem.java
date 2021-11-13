@@ -265,7 +265,7 @@ public class VisitorSystem extends BaseComponentSystem implements UpdateSubscrib
      * @param event the PeriodicActionTriggeredEvent event
      * @param entityRef the visitor entrance block entity to which it is sent
      */
-    @ReceiveEvent(components = {VisitorEntranceComponent.class})
+    @ReceiveEvent(components = VisitorEntranceComponent.class)
     public void onPeriodicAction(PeriodicActionTriggeredEvent event, EntityRef entityRef) {
         if (event.getActionId().equals(Constants.VISITOR_SPAWN_DELAY_EVENT_ID)) {
             LocationComponent locationComponent = entityRef.getComponent(LocationComponent.class);
