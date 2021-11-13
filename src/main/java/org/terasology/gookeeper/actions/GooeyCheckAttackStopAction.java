@@ -17,7 +17,7 @@ import org.terasology.nui.properties.Range;
 public class GooeyCheckAttackStopAction extends BaseAction {
 
     @Range(max = 40)
-    private float maxDistance = 10f;
+    private float maxDistanceToBeFollowed = 10f;
 
     /**
      * Makes the character follow a player within a given range Sends FAILURE when the distance is greater than
@@ -42,7 +42,7 @@ public class GooeyCheckAttackStopAction extends BaseAction {
         }
         Vector3f actorPosition = actorLocationComponent.getWorldPosition(new Vector3f());
         float maxDistance = actor.hasComponent(AttackOnHitComponent.class)
-                ? actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistance;
+                ? actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistanceToBeFollowed;
 
         float maxDistanceSquared = maxDistance * maxDistance;
         FollowComponent followWish = actor.getComponent(FollowComponent.class);
