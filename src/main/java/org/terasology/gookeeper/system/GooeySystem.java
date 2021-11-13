@@ -120,7 +120,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     }
 
     @Override
-    public void update (float delta) {
+    public void update(float delta) {
         for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class)) {
             if (gooeySkeletalMesh == null) {
                 SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
@@ -172,11 +172,11 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Try spawning gooeys based on the player's current world position
      */
-    private void spawnNearPlayer () {
+    private void spawnNearPlayer() {
         Vector3f pos = localPlayer.getPosition(new Vector3f());
         Vector3i chunkPos = Chunks.toChunkPos((int) pos.x(), (int) pos.y(), (int) pos.z(), new Vector3i());
         for (Prefab gooey : gooeyPrefabs) {
-            boolean trySpawn = (gooey.getComponent(GooeyComponent.class).SPAWN_CHANCE/10f) > random.nextInt(400);
+            boolean trySpawn = (gooey.getComponent(GooeyComponent.class).SPAWN_CHANCE / 10f) > random.nextInt(400);
             if (trySpawn) {
                 tryGooeySpawn(gooey, chunkPos);
             }
@@ -203,10 +203,10 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         }
         int gooeyCount = random.nextInt(maxGooeyCount - 1) + 1;
 
-        for (int i = 0; i < gooeyCount; i++ ) {
+        for (int i = 0; i < gooeyCount; i++) {
             int randomIndex = random.nextInt(foundPositions.size());
             Vector3i randomSpawnPosition = foundPositions.remove(randomIndex);
-            currentNumOfEntities ++;
+            currentNumOfEntities++;
             if (currentNumOfEntities <= NUM_OF_ENTITIES_ALLOWED) {
                 spawnGooey(gooey, randomSpawnPosition);
             } else {
@@ -240,7 +240,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      */
     private void spawnGooey(Prefab gooey, Vector3i location) {
         Vector3f floatVectorLocation = new Vector3f(location);
-        float randomAngle = (float) (random.nextFloat()*Math.PI*2);
+        float randomAngle = (float) (random.nextFloat() * Math.PI * 2);
 
         Vector3f playerPosition = localPlayer.getPosition(new Vector3f());
         float distanceFromPlayer = floatVectorLocation.distance(playerPosition);
@@ -288,7 +288,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * @param biomeName   The name of the biome (String)
      * @return Corresponding biome
      */
-    private Biome getBiomeFromString (String biomeName) {
+    private Biome getBiomeFromString(String biomeName) {
         if (biomeName.equals("DESERT")) {
             return CoreBiome.DESERT;
         } else if (biomeName.equals("FOREST")) {
@@ -310,7 +310,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * @param blockName   The name of the block (String)
      * @return Corresponding block
      */
-    private Block getBlockFromString (String blockName) {
+    private Block getBlockFromString(String blockName) {
         if (blockName != null) {
             return blockManager.getBlock(blockName);
         } else {
@@ -406,8 +406,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             }
 
             Vector3f worldPosition = blockPos.getWorldPosition(new Vector3f());
-            if (Vector3f.distance(worldPosition.x()
-                    , worldPosition.y(), worldPosition.z(), collisionPosition.x(), collisionPosition.y(), collisionPosition.z()) <= 3f) {
+            if (Vector3f.distance(worldPosition.x(),
+                    worldPosition.y(), worldPosition.z(), collisionPosition.x(), collisionPosition.y(), collisionPosition.z()) <= 3f) {
                 blockEntity = entityRef;
             }
         }

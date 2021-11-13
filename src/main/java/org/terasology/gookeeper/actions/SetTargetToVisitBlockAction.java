@@ -42,7 +42,7 @@ public class SetTargetToVisitBlockAction extends BaseAction {
         return BehaviorState.SUCCESS;
     }
 
-    private int getRandomPenIndex (VisitorComponent visitorComponent) {
+    private int getRandomPenIndex(VisitorComponent visitorComponent) {
         int penIndex = random.nextInt(visitorComponent.pensToVisit.size());
 
         EntityRef penToVisit = visitorComponent.pensToVisit.get(penIndex);

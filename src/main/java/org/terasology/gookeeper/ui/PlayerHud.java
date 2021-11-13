@@ -43,7 +43,7 @@ public class PlayerHud extends CoreHudWidget {
         }
     }
 
-    public void bindWalletText (EconomyComponent component) {
+    public void bindWalletText(EconomyComponent component) {
         if (component != null) {
             UIText walletBalance;
 
@@ -57,7 +57,7 @@ public class PlayerHud extends CoreHudWidget {
         }
     }
 
-    public void bindSlimePodText (SlimePodItemComponent component) {
+    public void bindSlimePodText(SlimePodItemComponent component) {
         if (component != null) {
             UIText slimePodQuantity;
 
@@ -71,7 +71,7 @@ public class PlayerHud extends CoreHudWidget {
         }
     }
 
-    public void bindPlazmasterText (PlazMasterComponent component) {
+    public void bindPlazmasterText(PlazMasterComponent component) {
         if (component != null) {
             UIText plazmasterCharge;
             UIText plazmasterFrequency;

@@ -239,8 +239,8 @@ public class BreedingSystem extends BaseComponentSystem {
         }
     }
 
-    private Component getDominantComponent(AggressiveComponent aggressiveComponent, NeutralComponent neutralComponent
-            , FriendlyComponent friendlyComponent) {
+    private Component getDominantComponent(AggressiveComponent aggressiveComponent, NeutralComponent neutralComponent,
+                                           FriendlyComponent friendlyComponent) {
         if (aggressiveComponent.magnitude >= neutralComponent.magnitude && aggressiveComponent.magnitude >= friendlyComponent.magnitude) {
             return aggressiveComponent;
         } else if (neutralComponent.magnitude >= aggressiveComponent.magnitude && neutralComponent.magnitude >= friendlyComponent.magnitude) {

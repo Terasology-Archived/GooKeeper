@@ -188,7 +188,7 @@ public class HungerSystem extends BaseComponentSystem {
     @ReceiveEvent(components = GooeyComponent.class)
     public void setIcon(GetTooltipIconEvent event, EntityRef entityRef) {
         Optional<TextureRegionAsset> textureRegion = Assets.getTextureRegion(
-                "GooKeeper:"+ entityRef.getComponent(DisplayNameComponent.class).name + "Tooltip");
+                "GooKeeper:" + entityRef.getComponent(DisplayNameComponent.class).name + "Tooltip");
         if (textureRegion.isPresent()) {
             event.setIcon(textureRegion.get());
         }
