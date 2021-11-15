@@ -77,8 +77,8 @@
     "profitPayOff": 1,
     "biome": ["FOREST", "PLAINS", "MOUNTAINS"],
     "blockBelow": "CoreAssets:Grass",
-    "SPAWN_CHANCE": 85,
-    "MAX_GROUP_SIZE": 6
+    "spawnChance": 85,
+    "maxGroupSize": 6
   },
   "Neutral": {
     "magnitude": 50

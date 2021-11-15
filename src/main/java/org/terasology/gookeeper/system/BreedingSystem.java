@@ -60,6 +60,10 @@ import static org.joml.RoundingMode.HALF_UP;
 @Share(value = BreedingSystem.class)
 public class BreedingSystem extends BaseComponentSystem {
 
+    // mapping of parent color portion combination to HTML color names used in gooey assets
+    private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
+    private static final ImmutableMap<String, String> COLORS;
+
     @In
     private BlockEntityRegistry blockEntityRegistry;
 
@@ -81,11 +85,8 @@ public class BreedingSystem extends BaseComponentSystem {
     @In
     private DelayManager delayManager;
 
-    // mapping of parent color portion combination to HTML color names used in gooey assets
-    private static final ImmutableMap<String, String> colors;
-
     static {
-        colors = ImmutableMap.<String, String>builder()
+        COLORS = ImmutableMap.<String, String>builder()
                 .put("1r", "Red")
                 .put("1b", "Blue")
                 .put("1y", "Yellow")
@@ -104,7 +105,6 @@ public class BreedingSystem extends BaseComponentSystem {
                 .build();
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
     private Random random = new FastRandom();
 
     /**
@@ -125,7 +125,8 @@ public class BreedingSystem extends BaseComponentSystem {
             FollowComponent followComponent = entity.getComponent(FollowComponent.class);
             BreedingBlockComponent breedingBlockComponent = blockEntity.getComponent(BreedingBlockComponent.class);
 
-            if (followComponent.entityToFollow != EntityRef.NULL && breedingBlockComponent.parentGooey == EntityRef.NULL && gooeyComponent.isCaptured) {
+            if (followComponent.entityToFollow != EntityRef.NULL
+                    && breedingBlockComponent.parentGooey == EntityRef.NULL && gooeyComponent.isCaptured) {
                 breedingBlockComponent.parentGooey = entity;
                 blockEntity.saveComponent(breedingBlockComponent);
                 entity.send(new SelectForBreedingEvent(followComponent.entityToFollow, entity));
@@ -173,7 +174,7 @@ public class BreedingSystem extends BaseComponentSystem {
      */
     @ReceiveEvent
     public void onBeginBreedingProcess(BeginBreedingEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
-        delayManager.addDelayedAction(gooeyEntity, Constants.spawnGooeyEggEventID, random.nextLong(4000, 7000));
+        delayManager.addDelayedAction(gooeyEntity, Constants.SPAWN_GOOEY_EGG_EVENT_ID, random.nextLong(4000, 7000));
     }
 
     /**
@@ -231,15 +232,15 @@ public class BreedingSystem extends BaseComponentSystem {
      */
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef gooeyEntity) {
-        if (event.getActionId().equals(Constants.spawnGooeyEggEventID)) {
+        if (event.getActionId().equals(Constants.SPAWN_GOOEY_EGG_EVENT_ID)) {
             spawnGooeyEgg(gooeyEntity);
-        } else if (event.getActionId().equals(Constants.hatchEggEventID)) {
+        } else if (event.getActionId().equals(Constants.HATCH_EGG_EVENT_ID)) {
             hatchGooeyEgg(gooeyEntity);
         }
     }
 
-    private Component getDominantComponent(AggressiveComponent aggressiveComponent, NeutralComponent neutralComponent
-            , FriendlyComponent friendlyComponent) {
+    private Component getDominantComponent(AggressiveComponent aggressiveComponent, NeutralComponent neutralComponent,
+                                           FriendlyComponent friendlyComponent) {
         if (aggressiveComponent.magnitude >= neutralComponent.magnitude && aggressiveComponent.magnitude >= friendlyComponent.magnitude) {
             return aggressiveComponent;
         } else if (neutralComponent.magnitude >= aggressiveComponent.magnitude && neutralComponent.magnitude >= friendlyComponent.magnitude) {
@@ -297,7 +298,7 @@ public class BreedingSystem extends BaseComponentSystem {
             colorBlend += ((int) (Math.ceil(offspringGooeyColor.color.b() / 128))) + "b";
         }
 
-        String colorName = colors.get(colorBlend);
+        String colorName = COLORS.get(colorBlend);
         String materialName = "gooeySkin" + colorName;
 
         offspringEntity.addOrSaveComponent(offspringGooeyColor);
@@ -362,7 +363,8 @@ public class BreedingSystem extends BaseComponentSystem {
 
         Vector3f parent1Location = gooeyEntity.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
         Vector3f parent2Location =
-                gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
+                gooeyEntity.getComponent(MatingComponent.class).matingWithEntity.getComponent(LocationComponent.class)
+                                .getWorldPosition(new Vector3f());
 
         Vector3f middleLocation = new Vector3f((parent1Location.x + parent2Location.x) / 2f, parent1Location.y + 1f,
                 (parent2Location.z + parent2Location.z) / 2f);
@@ -402,8 +404,8 @@ public class BreedingSystem extends BaseComponentSystem {
 
         long timeToHatch = random.nextLong(2000, 6000);
 
-        delayManager.addDelayedAction(eggEntity, Constants.hatchEggEventID, timeToHatch);
-        delayManager.addDelayedAction(offspringGooey, Constants.hatchEggEventID, timeToHatch);
+        delayManager.addDelayedAction(eggEntity, Constants.HATCH_EGG_EVENT_ID, timeToHatch);
+        delayManager.addDelayedAction(offspringGooey, Constants.HATCH_EGG_EVENT_ID, timeToHatch);
     }
 
     private void hatchGooeyEgg(EntityRef gooeyEntity) {

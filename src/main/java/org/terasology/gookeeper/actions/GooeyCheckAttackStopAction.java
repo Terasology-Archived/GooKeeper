@@ -1,4 +1,4 @@
-// Copyright 2020 The Terasology Foundation
+// Copyright 2021 The Terasology Foundation
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.actions;
 
@@ -17,7 +17,7 @@ import org.terasology.nui.properties.Range;
 public class GooeyCheckAttackStopAction extends BaseAction {
 
     @Range(max = 40)
-    private float maxDistance = 10f;
+    private float maxDistanceToBeFollowed = 10f;
 
     /**
      * Makes the character follow a player within a given range Sends FAILURE when the distance is greater than
@@ -41,8 +41,8 @@ public class GooeyCheckAttackStopAction extends BaseAction {
             return BehaviorState.FAILURE;
         }
         Vector3f actorPosition = actorLocationComponent.getWorldPosition(new Vector3f());
-        float maxDistance = actor.hasComponent(AttackOnHitComponent.class) ?
-                actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistance;
+        float maxDistance = actor.hasComponent(AttackOnHitComponent.class)
+                ? actor.getComponent(AttackOnHitComponent.class).maxDistance : this.maxDistanceToBeFollowed;
 
         float maxDistanceSquared = maxDistance * maxDistance;
         FollowComponent followWish = actor.getComponent(FollowComponent.class);
