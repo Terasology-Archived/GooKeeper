@@ -61,8 +61,8 @@ import static org.joml.RoundingMode.HALF_UP;
 public class BreedingSystem extends BaseComponentSystem {
 
     // mapping of parent color portion combination to HTML color names used in gooey assets
-    private static final ImmutableMap<String, String> COLORS;
     private static final Logger logger = LoggerFactory.getLogger(BreedingSystem.class);
+    private static final ImmutableMap<String, String> COLORS;
 
     @In
     private BlockEntityRegistry blockEntityRegistry;

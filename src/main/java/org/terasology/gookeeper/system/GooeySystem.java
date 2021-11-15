@@ -66,10 +66,10 @@ import java.util.List;
 @RegisterSystem
 public class GooeySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
 
-    private static final int NUM_OF_ENTITIES_ALLOWED = 10;
-    private static int currentNumOfEntities = 0;
-    private static final float MAX_DISTANCE_FROM_PLAYER = 60f;
     private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
+    private static final int NUM_OF_ENTITIES_ALLOWED = 10;
+    private static final float MAX_DISTANCE_FROM_PLAYER = 60f;
+    private static int currentNumOfEntities = 0;
 
 
     @In

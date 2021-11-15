@@ -10,6 +10,7 @@ public final class Constants {
     public static final String SPAWN_GOOEY_EGG_EVENT_ID = "SPAWN_GOOEY_EGG";
     public static final String HATCH_EGG_EVENT_ID = "HATCH_GOOEY_EGG";
 
+
     private Constants() {
     }
 }
