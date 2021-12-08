@@ -33,12 +33,12 @@ public class GooeyComponent implements Component<GooeyComponent> {
     /**
      * The percentage chance of spawning this type of gooey. (i.e rarity factor)
      */
-    public float SPAWN_CHANCE;
+    public float spawnChance;
 
     /**
      * The maximum number of gooeys in a group.
      */
-    public int MAX_GROUP_SIZE;
+    public int maxGroupSize;
 
     /**
      * The max. number of charges required to stun the gooey.
@@ -91,8 +91,8 @@ public class GooeyComponent implements Component<GooeyComponent> {
         this.profitPayOff = other.profitPayOff;
         this.biome = other.biome;
         this.blockBelow = other.blockBelow;
-        this.SPAWN_CHANCE = other.SPAWN_CHANCE;
-        this.MAX_GROUP_SIZE = other.MAX_GROUP_SIZE;
+        this.spawnChance = other.spawnChance;
+        this.maxGroupSize = other.maxGroupSize;
         this.maxStunChargesReq = other.maxStunChargesReq;
         this.stunChargesReq = other.stunChargesReq;
         this.stunTime = other.stunTime;

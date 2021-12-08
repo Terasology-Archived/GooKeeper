@@ -1,4 +1,4 @@
-// Copyright 2020 The Terasology Foundation
+// Copyright 2021 The Terasology Foundation
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.system;
 
@@ -46,6 +46,8 @@ import java.util.Optional;
 @Share(value = HungerSystem.class)
 public class HungerSystem extends BaseComponentSystem {
 
+    private static final Logger logger = LoggerFactory.getLogger(HungerSystem.class);
+
     @In
     private EntityManager entityManager;
 
@@ -67,25 +69,29 @@ public class HungerSystem extends BaseComponentSystem {
     @In
     private NUIManager nuiManager;
 
-    private static final Logger logger = LoggerFactory.getLogger(HungerSystem.class);
-
     /**
      * Adds health degradation action for the already captured gooey entities.
      *
-     * @param event,entity,gooeyComponent,hungerComponent
+     * @param event
+     * @param entity
+     * @param gooeyComponent
+     * @param hungerComponent
      */
     @ReceiveEvent
     public void onGooeyActivated(OnAddedComponent event, EntityRef entity, GooeyComponent gooeyComponent, HungerComponent hungerComponent) {
         if (gooeyComponent.isCaptured) {
-            delayManager.addPeriodicAction(entity, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
-            delayManager.addDelayedAction(entity, Constants.gooeyDeathEventID, gooeyComponent.lifeTime);
+            delayManager.addPeriodicAction(
+                    entity, Constants.HEALTH_DECREASE_EVENT_ID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+            delayManager.addDelayedAction(entity, Constants.GOOEY_DEATH_EVENT_ID, gooeyComponent.lifeTime);
         }
     }
 
     /**
      * Receives ActivateEvent when the targeted gooey is 'activated' and then provides an interactive screen to the player.
      *
-     * @param event,entity,gooeyComponent   The ActivateEvent, the gooey entity, the GooeyComponent of the corresponding entity
+     * @param event    The ActivateEvent
+     * @param gooeyEntity   The gooey entity
+     * @param gooeyComponent    The GooeyComponent of the corresponding entity
      */
     @ReceiveEvent
     public void onGooeyActivated(ActivateEvent event, EntityRef gooeyEntity, GooeyComponent gooeyComponent) {
@@ -117,7 +123,7 @@ public class HungerSystem extends BaseComponentSystem {
             if (!itemName.isEmpty() && hungerComponent.food.contains(itemName)) {
                 logger.info("Gooey Health: " + healthComponent.currentHealth);
 
-                delayManager.cancelPeriodicAction(gooeyEntity, Constants.healthDecreaseEventID);
+                delayManager.cancelPeriodicAction(gooeyEntity, Constants.HEALTH_DECREASE_EVENT_ID);
                 gooeyEntity.send(new AfterGooeyFedEvent(event.getInstigator(), gooeyEntity, item));
             }
         }
@@ -128,15 +134,17 @@ public class HungerSystem extends BaseComponentSystem {
     /**
      * Receives AfterGooeyFedEvent when the targeted gooey is fed the held food block and hence resets the health to max.
      *
-     * @param event,entity   The AfterGooeyFedEvent, the gooey entity
+     * @param event        The AfterGooeyFedEvent
+     * @param entityRef    The gooey entity
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void onGooeyFed(AfterGooeyFedEvent event, EntityRef entityRef) {
         HealthComponent healthComponent = entityRef.getComponent(HealthComponent.class);
         HungerComponent hungerComponent = entityRef.getComponent(HungerComponent.class);
 
         healthComponent.currentHealth = healthComponent.maxHealth;
-        delayManager.addPeriodicAction(entityRef, Constants.healthDecreaseEventID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
+        delayManager.addPeriodicAction(
+                entityRef, Constants.HEALTH_DECREASE_EVENT_ID, hungerComponent.timeBeforeHungry, hungerComponent.healthDecreaseInterval);
 
         event.getItem().destroy();
         entityRef.saveComponent(healthComponent);
@@ -145,11 +153,12 @@ public class HungerSystem extends BaseComponentSystem {
     /**
      * Receives PeriodicActionTriggeredEvent when the gooey entity's health is decreased
      *
-     * @param event,entity   The PeriodicActionTriggeredEvent, the gooey entity
+     * @param event     The PeriodicActionTriggeredEvent
+     * @param entity    The gooey entity
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void onGooeyHealthDecrease(PeriodicActionTriggeredEvent event, EntityRef entity) {
-        if (event.getActionId().equals(Constants.healthDecreaseEventID)) {
+        if (event.getActionId().equals(Constants.HEALTH_DECREASE_EVENT_ID)) {
             HealthComponent healthComponent = entity.getComponent(HealthComponent.class);
             HungerComponent hungerComponent = entity.getComponent(HungerComponent.class);
 
@@ -166,11 +175,12 @@ public class HungerSystem extends BaseComponentSystem {
     /**
      * Receives DelayedActionTriggeredEvent when the gooey entity's life span terminates
      *
-     * @param event,entity   The DelayedActionTriggeredEvent, the gooey entity
+     * @param event     The DelayedActionTriggeredEvent
+     * @param entity    The gooey entity
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void onGooeyDestroy(DelayedActionTriggeredEvent event, EntityRef entity) {
-        if (event.getActionId().equals(Constants.gooeyDeathEventID)) {
+        if (event.getActionId().equals(Constants.GOOEY_DEATH_EVENT_ID)) {
             entity.send(new DoDestroyEvent(EntityRef.NULL, EntityRef.NULL, EngineDamageTypes.PHYSICAL.get()));
         }
     }
@@ -185,13 +195,14 @@ public class HungerSystem extends BaseComponentSystem {
 
     @ReceiveEvent(components = GooeyComponent.class)
     public void setIcon(GetTooltipIconEvent event, EntityRef entityRef) {
-        Optional<TextureRegionAsset> textureRegion = Assets.getTextureRegion("GooKeeper:"+ entityRef.getComponent(DisplayNameComponent.class).name + "Tooltip");
+        Optional<TextureRegionAsset> textureRegion = Assets.getTextureRegion(
+                "GooKeeper:" + entityRef.getComponent(DisplayNameComponent.class).name + "Tooltip");
         if (textureRegion.isPresent()) {
             event.setIcon(textureRegion.get());
         }
     }
 
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void setName(GetTooltipNameEvent event, EntityRef entityRef) {
         event.setName(entityRef.getComponent(DisplayNameComponent.class).name);
     }

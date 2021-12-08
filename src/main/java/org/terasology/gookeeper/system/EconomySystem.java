@@ -1,18 +1,5 @@
-/*
- * Copyright 2018 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2021 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.system;
 
 import org.slf4j.Logger;
@@ -60,6 +47,11 @@ import org.terasology.gookeeper.interfaces.EconomyManager;
 @Share(value = EconomyManager.class)
 public class EconomySystem extends BaseComponentSystem implements UpdateSubscriberSystem, EconomyManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(EconomySystem.class);
+    private static final float BASE_ENTRANCE_FEE = 100f;
+    private static final float BASE_VISIT_FEE = 10f;
+    private static boolean setHud = false;
+
     @In
     private WorldProvider worldProvider;
 
@@ -93,11 +85,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
     @In
     private ItemCommands itemCommands;
 
-    private static final Logger logger = LoggerFactory.getLogger(EconomySystem.class);
     private Random random = new FastRandom();
-    private static final float baseEntranceFee = 100f;
-    private static final float baseVisitFee = 10f;
-    private static boolean setHud = false;
 
     @Override
     public void update(float delta) {
@@ -163,7 +151,8 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
 
             if (displayNameComponent != null && displayNameComponent.name.equals(itemPrefabName)) {
                 UpgradableComponent upgradableComponent = itemInSlot.getComponent(UpgradableComponent.class);
-                if (economyComponent != null && upgradableComponent != null && (economyComponent.playerWalletCredit - (upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier) > 0f)) {
+                if (economyComponent != null && upgradableComponent != null
+                        && (economyComponent.playerWalletCredit - (upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier) > 0f)) {
                     upgradeByType(itemInSlot, upgradableComponent);
                     economyComponent.playerWalletCredit -= upgradableComponent.baseUpgradePrice * upgradableComponent.currentTier;
                     player.saveComponent(economyComponent);
@@ -209,7 +198,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             EntityRef player = visitorEntranceComponent.owner;
 
             player.updateComponent(EconomyComponent.class, economyComponent  -> {
-                economyComponent.playerWalletCredit += baseEntranceFee;
+                economyComponent.playerWalletCredit += BASE_ENTRANCE_FEE;
                 return economyComponent;
             });
         } else {
@@ -221,7 +210,8 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
      * This function is to be called by a visitor entity when it visits a particular visit block attached to a pen, and
      * depending upon the rarity and number of gooeys in the pen, credits get added accordingly.
      *
-     * @param visitorComponent,visitBlock The visitor entity's {@link VisitorComponent}, the visit block entity
+     * @param visitorComponent The visitor entity's {@link VisitorComponent}
+     * @param visitBlock The visit block entity
      */
 
     @Override
@@ -237,7 +227,7 @@ public class EconomySystem extends BaseComponentSystem implements UpdateSubscrib
             if (gooeyPrefab != null && gooeyPrefab.hasComponent(GooeyComponent.class)) {
                 player.updateComponent(EconomyComponent.class, economyComponent  -> {
                     float profitPayOff = gooeyPrefab.getComponent(GooeyComponent.class).profitPayOff;
-                    economyComponent.playerWalletCredit += baseVisitFee * profitPayOff * (visitBlockComponent.gooeyQuantity / 3f);
+                    economyComponent.playerWalletCredit += BASE_VISIT_FEE * profitPayOff * (visitBlockComponent.gooeyQuantity / 3f);
                     return economyComponent;
                 });
             } else {

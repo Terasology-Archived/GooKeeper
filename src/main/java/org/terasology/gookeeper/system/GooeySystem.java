@@ -65,6 +65,13 @@ import java.util.List;
 
 @RegisterSystem
 public class GooeySystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+
+    private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
+    private static final int NUM_OF_ENTITIES_ALLOWED = 10;
+    private static final float MAX_DISTANCE_FROM_PLAYER = 60f;
+    private static int currentNumOfEntities = 0;
+
+
     @In
     private WorldProvider worldProvider;
 
@@ -101,12 +108,6 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
 
     private Block airBlock;
 
-    private static final int NUM_OF_ENTITIES_ALLOWED = 10;
-    private static int currentNumOfEntities = 0;
-    private static final float MAX_DISTANCE_FROM_PLAYER = 60f;
-
-    private static final Logger logger = LoggerFactory.getLogger(GooeySystem.class);
-
     @Override
     public void initialise() {
         airBlock = blockManager.getBlock(BlockManager.AIR_ID);
@@ -119,7 +120,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     }
 
     @Override
-    public void update (float delta) {
+    public void update(float delta) {
         for (EntityRef entity : entityManager.getEntitiesWith(GooeyComponent.class)) {
             if (gooeySkeletalMesh == null) {
                 SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
@@ -151,14 +152,16 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Implementation of distance-based visual culling for gooey entities
      *
-     * @param entity,locationComponent   The corresponding gooey entity and its location component
+     * @param entity The corresponding gooey entity
+     * @param locationComponent Gooey entity's location component
      */
     private void cullDistantGooeys(EntityRef entity, LocationComponent locationComponent) {
         SkeletalMeshComponent skeleton = entity.getComponent(SkeletalMeshComponent.class);
         if (locationComponent != null) {
             Vector3f worldPosition = locationComponent.getWorldPosition(new Vector3f());
             Vector3f playerPosition = localPlayer.getPosition(new Vector3f());
-            float distanceFromPlayer = Vector3f.distance(worldPosition.x(), worldPosition.y(), worldPosition.z(), playerPosition.x(), playerPosition.y(), playerPosition.z());
+            float distanceFromPlayer = Vector3f
+                    .distance(worldPosition.x(), worldPosition.y(), worldPosition.z(), playerPosition.x(), playerPosition.y(), playerPosition.z());
             if (distanceFromPlayer > 50f && skeleton.mesh != null) {
                 skeleton.mesh = null;
             } else if (distanceFromPlayer <= 50f && skeleton.mesh == null) {
@@ -170,11 +173,11 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Try spawning gooeys based on the player's current world position
      */
-    private void spawnNearPlayer () {
+    private void spawnNearPlayer() {
         Vector3f pos = localPlayer.getPosition(new Vector3f());
         Vector3i chunkPos = Chunks.toChunkPos((int) pos.x(), (int) pos.y(), (int) pos.z(), new Vector3i());
         for (Prefab gooey : gooeyPrefabs) {
-            boolean trySpawn = (gooey.getComponent(GooeyComponent.class).SPAWN_CHANCE/10f) > random.nextInt(400);
+            boolean trySpawn = (gooey.getComponent(GooeyComponent.class).spawnChance / 10f) > random.nextInt(400);
             if (trySpawn) {
                 tryGooeySpawn(gooey, chunkPos);
             }
@@ -185,7 +188,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * Attempts to spawn gooey on the specified chunk. The number of gooeys spawned will depend on probability
      * configurations defined earlier
      *
-     * @param gooey,chunkPos   The prefab to be spawned and the chunk which the game will try to spawn gooeys on
+     * @param gooey The prefab to be spawned
+     * @param chunkPos The chunk which the game will try to spawn gooeys on
      */
     private void tryGooeySpawn(Prefab gooey, Vector3i chunkPos) {
         GooeyComponent gooeyComponent = gooey.getComponent(GooeyComponent.class);
@@ -196,15 +200,15 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
         }
 
         int maxGooeyCount = foundPositions.size();
-        if (maxGooeyCount > gooeyComponent.MAX_GROUP_SIZE) {
-            maxGooeyCount = gooeyComponent.MAX_GROUP_SIZE;
+        if (maxGooeyCount > gooeyComponent.maxGroupSize) {
+            maxGooeyCount = gooeyComponent.maxGroupSize;
         }
         int gooeyCount = random.nextInt(maxGooeyCount - 1) + 1;
 
-        for (int i = 0; i < gooeyCount; i++ ) {
+        for (int i = 0; i < gooeyCount; i++) {
             int randomIndex = random.nextInt(foundPositions.size());
             Vector3i randomSpawnPosition = foundPositions.remove(randomIndex);
-            currentNumOfEntities ++;
+            currentNumOfEntities++;
             if (currentNumOfEntities <= NUM_OF_ENTITIES_ALLOWED) {
                 spawnGooey(gooey, randomSpawnPosition);
             } else {
@@ -234,11 +238,12 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Spawns the gooey at the location specified by the parameter.
      *
-     * @param gooey,location   Gooey prefab to be spawned and the location where the gooey is to be spawned
+     * @param gooey  Gooey prefab to be spawned
+     * @param location The location where the gooey is to be spawned
      */
     private void spawnGooey(Prefab gooey, Vector3i location) {
         Vector3f floatVectorLocation = new Vector3f(location);
-        float randomAngle = (float) (random.nextFloat()*Math.PI*2);
+        float randomAngle = (float) (random.nextFloat() * Math.PI * 2);
 
         Vector3f playerPosition = localPlayer.getPosition(new Vector3f());
         float distanceFromPlayer = floatVectorLocation.distance(playerPosition);
@@ -256,7 +261,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Check blocks at and around the target position and check if it's a valid spawning spot
      *
-     * @param gooeyComponent,pos   GooeyComponent of the particular gooey to be spawned & the block to be checked if it's a valid spot for spawning
+     * @param gooeyComponent GooeyComponent of the particular gooey to be spawned
+     * @param pos The block to be checked if it's a valid spot for spawning
      * @return A boolean with the value of true if the block is a valid spot for spawing
      */
     private boolean isValidSpawnPosition(GooeyComponent gooeyComponent, Vector3i pos) {
@@ -286,7 +292,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * @param biomeName   The name of the biome (String)
      * @return Corresponding biome
      */
-    private Biome getBiomeFromString (String biomeName) {
+    private Biome getBiomeFromString(String biomeName) {
         if (biomeName.equals("DESERT")) {
             return CoreBiome.DESERT;
         } else if (biomeName.equals("FOREST")) {
@@ -308,7 +314,7 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * @param blockName   The name of the block (String)
      * @return Corresponding block
      */
-    private Block getBlockFromString (String blockName) {
+    private Block getBlockFromString(String blockName) {
         if (blockName != null) {
             return blockManager.getBlock(blockName);
         } else {
@@ -324,7 +330,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Receives OnStunnedEvent sent to a gooey entity when it gets stunned by PlazMaster.
      *
-     * @param event,entity   The OnStunnedEvent and the gooey entity to which it is sent
+     * @param event    The OnStunnedEvent
+     * @param entity   The gooey entity to which it is sent
      */
     @ReceiveEvent
     public void onStunned(OnStunnedEvent event, EntityRef entity) {
@@ -339,7 +346,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
     /**
      * Receives OnCapturedEvent sent to a gooey entity when it gets captured in a slime pod.
      *
-     * @param event,entity   The OnCapturedEvent and the gooey entity to which it is sent
+     * @param event    The OnCapturedEvent
+     * @param entity   The gooey entity to which it is sent
      */
     @ReceiveEvent
     public void onCaptured(OnCapturedEvent event, EntityRef entity) {
@@ -386,9 +394,10 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
      * Also, it adds to the total number of gooeys in a pen, which is stored in the corresponding
      * VisitBlockComponent
      *
-     * @param event,entity   The HorizontalCollisionEvent and the gooey entity to which it is sent
+     * @param event    The HorizontalCollisionEvent
+     * @param entity   The gooey entity to which it is sent
      */
-    @ReceiveEvent(components = {GooeyComponent.class})
+    @ReceiveEvent(components = GooeyComponent.class)
     public void onBump(HorizontalCollisionEvent event, EntityRef entity) {
         GooeyComponent gooeyComponent = entity.getComponent(GooeyComponent.class);
         Vector3f collisionPosition = event.getLocation();
@@ -404,7 +413,8 @@ public class GooeySystem extends BaseComponentSystem implements UpdateSubscriber
             }
 
             Vector3f worldPosition = blockPos.getWorldPosition(new Vector3f());
-            if (Vector3f.distance(worldPosition.x(), worldPosition.y(), worldPosition.z(), collisionPosition.x(), collisionPosition.y(), collisionPosition.z()) <= 3f) {
+            if (Vector3f.distance(worldPosition.x(),
+                    worldPosition.y(), worldPosition.z(), collisionPosition.x(), collisionPosition.y(), collisionPosition.z()) <= 3f) {
                 blockEntity = entityRef;
             }
         }

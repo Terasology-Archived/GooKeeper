@@ -1,18 +1,5 @@
-/*
- * Copyright 2018 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2021 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.system;
 
 import org.joml.Quaternionf;
@@ -65,6 +52,10 @@ import static org.joml.RoundingMode.HALF_UP;
 
 @RegisterSystem(RegisterMode.AUTHORITY)
 public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlazMasterSystem.class);
+    private static final Prefab ARROW_PREFAB = Assets.getPrefab("GooKeeper:arrow").get();
+
     @In
     private WorldProvider worldProvider;
 
@@ -90,10 +81,8 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     private LocalPlayer localPlayer;
 
     private CollisionGroup filter = StandardCollisionGroup.ALL;
-    private static final Logger logger = LoggerFactory.getLogger(PlazMasterSystem.class);
     private float lastTime = 0f;
     private Random random = new FastRandom();
-    private static final Prefab ARROW_PREFAB = Assets.getPrefab("GooKeeper:arrow").get();
     private StaticSound gunShotAudio = Assets.getSound("GooKeeper:PlasmaShot").get();
     private StaticSound gooeyHitAudio = Assets.getSound("GooKeeper:GooeyHit").get();
 
@@ -119,8 +108,10 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives ActivateEvent when the held PlazMaster item is activated, shooting a plasma pulse.
      *
-     * @param event,entity,plazMasterComponent The ActivateEvent, the instigator entity and the corresponding
-     *         PlazMasterComponent of the activated item
+     * @param event  The ActivateEvent
+     * @param entity The instigator entity
+     * @param plazMasterComponent   The corresponding PlazMasterComponent of the activated item
+     *
      */
     @ReceiveEvent
     public void onActivate(ActivateEvent event, EntityRef entity, PlazMasterComponent plazMasterComponent) {
@@ -200,18 +191,19 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
 
             arrowEntity.send(new PlaySoundEvent(gunShotAudio, 0.4f));
 
-            delayManager.addDelayedAction(arrowEntity, Constants.destroyArrowEventID, 3000);
+            delayManager.addDelayedAction(arrowEntity, Constants.DESTROY_ARROW_EVENT_ID, 3000);
         }
     }
 
     /**
      * Receives DelayedActionTriggeredEvent, which deletes the plasma stub entity
      *
-     * @param event,entity The DelayedActionTriggeredEvent event, plasma stub entity to be destroyed
+     * @param event   The DelayedActionTriggeredEvent event
+     * @param entityRef  Plasma stub entity to be destroyed
      */
     @ReceiveEvent
     public void onDelayedAction(DelayedActionTriggeredEvent event, EntityRef entityRef) {
-        if (event.getActionId().equals(Constants.destroyArrowEventID)) {
+        if (event.getActionId().equals(Constants.DESTROY_ARROW_EVENT_ID)) {
             entityRef.destroy();
         }
     }
@@ -221,7 +213,8 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives IncreaseFrequencyButton, which increases the plazmasters frequency.
      *
-     * @param event,entity The IncreaseFrequencyButton event
+     * @param event  The IncreaseFrequencyButton event
+     * @param entityRef
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onIncreaseFrequency(IncreaseFrequencyButton event, EntityRef entityRef) {
@@ -247,7 +240,8 @@ public class PlazMasterSystem extends BaseComponentSystem implements UpdateSubsc
     /**
      * Receives DecreaseFrequencyButton, which decreases the plazmasters frequency.
      *
-     * @param event,entity The DecreaseFrequencyButton event
+     * @param event The DecreaseFrequencyButton event
+     * @param entityRef
      */
     @ReceiveEvent(components = ClientComponent.class)
     public void onDecreaseFrequency(DecreaseFrequencyButton event, EntityRef entityRef) {

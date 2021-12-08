@@ -82,8 +82,8 @@
       "DESERT"
     ],
     "blockBelow": "CoreAssets:Sand",
-    "SPAWN_CHANCE": 5,
-    "MAX_GROUP_SIZE": 1
+    "spawnChance": 5,
+    "maxGroupSize": 1
   },
   "Aggressive": {
     "magnitude": 85
