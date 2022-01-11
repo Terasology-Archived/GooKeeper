@@ -1,4 +1,4 @@
-// Copyright 2021 The Terasology Foundation
+// Copyright 2022 The Terasology Foundation
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.actions;
 
@@ -9,19 +9,14 @@ import org.terasology.engine.logic.behavior.core.Actor;
 import org.terasology.engine.logic.behavior.core.BaseAction;
 import org.terasology.engine.logic.behavior.core.BehaviorState;
 import org.terasology.engine.logic.location.LocationComponent;
-import org.terasology.engine.registry.In;
 import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
 import org.terasology.minion.move.MinionMoveComponent;
-import org.terasology.pathfinding.componentSystem.PathfinderSystem;
 
 import java.util.Random;
 
 @BehaviorAction(name = "set_target_to_visit_block")
 public class SetTargetToVisitBlockAction extends BaseAction {
-
-    @In
-    private PathfinderSystem pathfinderSystem;
 
     private transient Random random = new Random();
 
