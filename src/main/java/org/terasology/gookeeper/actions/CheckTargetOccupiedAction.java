@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.actions;
 
+import org.joml.RoundingMode;
 import org.joml.Vector3f;
 import org.terasology.engine.entitySystem.entity.EntityRef;
 import org.terasology.engine.logic.behavior.BehaviorAction;
@@ -24,31 +25,30 @@ public class CheckTargetOccupiedAction extends BaseAction {
     public BehaviorState modify(Actor actor, BehaviorState state) {
         MinionMoveComponent moveComponent = actor.getComponent(MinionMoveComponent.class);
         VisitorComponent visitorComponent = actor.getComponent(VisitorComponent.class);
-        LocationComponent locationComponent = actor.getComponent(LocationComponent.class);
 
-        if (moveComponent.currentBlock != null) {
-            for (EntityRef pen : visitorComponent.pensToVisit) {
-                LocationComponent penLocationComponent = pen.getComponent(LocationComponent.class);
-                Vector3f penPosition = penLocationComponent.getWorldPosition(new Vector3f());
-                if (Vector3f.distance(moveComponent.target.x(), moveComponent.target.y(), moveComponent.target.z(),
-                        penPosition.x(), penPosition.y(), penPosition.z()) <= 1f) {
-                    VisitBlockComponent visitBlockComponent = pen.getComponent(VisitBlockComponent.class);
+        for (EntityRef pen : visitorComponent.pensToVisit) {
+            LocationComponent penLocationComponent = pen.getComponent(LocationComponent.class);
+            Vector3f penPosition = penLocationComponent.getWorldPosition(new Vector3f());
+            if (Vector3f.distance(moveComponent.target.x(), moveComponent.target.y(), moveComponent.target.z(),
+                    penPosition.x(), penPosition.y(), penPosition.z()) <= 1f) {
+                VisitBlockComponent visitBlockComponent = pen.getComponent(VisitBlockComponent.class);
 
-                    if (visitBlockComponent != null && !visitBlockComponent.isOccupied) {
-                        return BehaviorState.SUCCESS;
-                    } else {
-                        int currentPenIndex = visitorComponent.pensToVisit.indexOf(pen);
-                        int newPenIndex = rng(currentPenIndex, visitorComponent.pensToVisit.size());
-                        moveComponent.target =
-                                visitorComponent.pensToVisit.get(newPenIndex).getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
-                        return BehaviorState.SUCCESS;
-                    }
+                if (visitBlockComponent != null && !visitBlockComponent.isOccupied) {
+                    return BehaviorState.SUCCESS;
+                } else {
+                    int currentPenIndex = visitorComponent.pensToVisit.indexOf(pen);
+                    int newPenIndex = rng(currentPenIndex, visitorComponent.pensToVisit.size());
+                    Vector3f worldPos = visitorComponent.pensToVisit
+                            .get(newPenIndex)
+                            .getComponent(LocationComponent.class)
+                            .getWorldPosition(new Vector3f());
+                    moveComponent.target.set(worldPos, RoundingMode.FLOOR);
+                    return BehaviorState.SUCCESS;
                 }
             }
-            return BehaviorState.SUCCESS;
-        } else {
-            return BehaviorState.FAILURE;
         }
+        return BehaviorState.SUCCESS;
+
     }
 
     private int rng(int oldNumber, int size) {

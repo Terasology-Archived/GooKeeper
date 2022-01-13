@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.actions;
 
+import org.joml.RoundingMode;
 import org.joml.Vector3f;
 import org.terasology.engine.entitySystem.entity.EntityRef;
 import org.terasology.engine.logic.behavior.BehaviorAction;
@@ -30,11 +31,12 @@ public class SetTargetToVisitBlockAction extends BaseAction {
         MinionMoveComponent moveComponent = actor.getComponent(MinionMoveComponent.class);
         VisitorComponent visitorComponent = actor.getComponent(VisitorComponent.class);
 
-        if (moveComponent.currentBlock != null && visitorComponent.pensToVisit.size() > 0) {
+        if (visitorComponent.pensToVisit.size() > 0) {
             int penIndex = getRandomPenIndex(visitorComponent);
             EntityRef penToVisit = visitorComponent.pensToVisit.get(penIndex);
 
-            moveComponent.target = penToVisit.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
+            Vector3f worldPosition = penToVisit.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
+            moveComponent.target.set(worldPosition, RoundingMode.FLOOR);
             actor.save(moveComponent);
         } else {
             return BehaviorState.FAILURE;
