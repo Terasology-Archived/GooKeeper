@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.actions;
 
-import org.terasology.behaviors.components.AttackOnHitComponent;
-import org.terasology.behaviors.components.FleeOnHitComponent;
-import org.terasology.behaviors.components.FleeingComponent;
-import org.terasology.behaviors.components.FollowComponent;
+import org.terasology.module.behaviors.components.AttackOnHitComponent;
+import org.terasology.module.behaviors.components.FleeOnHitComponent;
+import org.terasology.module.behaviors.components.FleeingComponent;
+import org.terasology.module.behaviors.components.FollowComponent;
 import org.terasology.engine.core.Time;
 import org.terasology.engine.logic.behavior.BehaviorAction;
 import org.terasology.engine.logic.behavior.core.Actor;
