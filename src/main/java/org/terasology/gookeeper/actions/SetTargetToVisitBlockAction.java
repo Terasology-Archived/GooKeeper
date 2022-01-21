@@ -1,7 +1,8 @@
-// Copyright 2021 The Terasology Foundation
+// Copyright 2022 The Terasology Foundation
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.gookeeper.actions;
 
+import org.joml.RoundingMode;
 import org.joml.Vector3f;
 import org.terasology.engine.entitySystem.entity.EntityRef;
 import org.terasology.engine.logic.behavior.BehaviorAction;
@@ -9,19 +10,14 @@ import org.terasology.engine.logic.behavior.core.Actor;
 import org.terasology.engine.logic.behavior.core.BaseAction;
 import org.terasology.engine.logic.behavior.core.BehaviorState;
 import org.terasology.engine.logic.location.LocationComponent;
-import org.terasology.engine.registry.In;
 import org.terasology.gookeeper.component.VisitBlockComponent;
 import org.terasology.gookeeper.component.VisitorComponent;
 import org.terasology.module.behaviors.components.MinionMoveComponent;
-import org.terasology.pathfinding.componentSystem.PathfinderSystem;
 
 import java.util.Random;
 
 @BehaviorAction(name = "set_target_to_visit_block")
 public class SetTargetToVisitBlockAction extends BaseAction {
-
-    @In
-    private PathfinderSystem pathfinderSystem;
 
     private transient Random random = new Random();
 
@@ -30,11 +26,12 @@ public class SetTargetToVisitBlockAction extends BaseAction {
         MinionMoveComponent moveComponent = actor.getComponent(MinionMoveComponent.class);
         VisitorComponent visitorComponent = actor.getComponent(VisitorComponent.class);
 
-        if (moveComponent.currentBlock != null && visitorComponent.pensToVisit.size() > 0) {
+        if (visitorComponent.pensToVisit.size() > 0) {
             int penIndex = getRandomPenIndex(visitorComponent);
             EntityRef penToVisit = visitorComponent.pensToVisit.get(penIndex);
 
-            moveComponent.target = penToVisit.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
+            Vector3f worldPosition = penToVisit.getComponent(LocationComponent.class).getWorldPosition(new Vector3f());
+            moveComponent.target.set(worldPosition, RoundingMode.FLOOR);
             actor.save(moveComponent);
         } else {
             return BehaviorState.FAILURE;

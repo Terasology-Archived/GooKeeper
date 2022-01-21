@@ -1,7 +1,6 @@
 {
   sequence : [
     set_target_to_visit_block,
-    ensure_target_present,
     {
       animation : {
         play: "engine:Walk.animationPool",
