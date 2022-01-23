@@ -43,10 +43,8 @@
   "Character": {},
   "AliveCharacter": {},
   "CharacterMovement": {
-    "groundFriction": 16,
     "speedMultiplier": 0.3,
     "distanceBetweenFootsteps": 0.2,
-    "distanceBetweenSwimStrokes": 2.5,
     "height": 1.0,
     "radius": 0.5,
     "jumpSpeed": 12
